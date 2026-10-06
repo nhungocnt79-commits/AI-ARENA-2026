@@ -1,0 +1,6 @@
+{
+  "name": "Giao Thoa - Xưởng Phối Việt Phục Lễ Hội GenZ",
+  "description": "Nền tảng khám phá quy chuẩn, phác thảo và phối trang phục truyền thống Việt Nam (Tứ Thân, Ngũ Thân, Bà Ba) hiện đại, đoan trang cho học sinh, sinh viên.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
