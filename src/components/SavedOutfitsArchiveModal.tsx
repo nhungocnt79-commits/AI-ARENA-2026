@@ -34,7 +34,7 @@ interface SavedOutfitsArchiveModalProps {
   onLoadOutfit: (outfit: CostumeOutfitState) => void;
 }
 
-const STORAGE_KEY = 'giao_thoa_saved_outfits_archive_v1';
+const STORAGE_KEY = 'giao_thoa_saved_outfits_archive_v2';
 
 export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> = ({
   isOpen,
@@ -52,7 +52,7 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
   useEffect(() => {
     if (!isOpen) return;
 
-    // 3 Mẫu thiết kế trưng bày 3 miền với đầy đủ màu sắc và kích thước trang phục mẫu chuẩn
+    // 3 Mẫu thiết kế trưng bày 3 miền với đầy đủ màu sắc và kích thước trang phục mẫu chuẩn theo đúng thiết kế
     const seedPresets: SavedLookbookEntry[] = SHOWROOM_PRESETS.map((preset) => ({
       id: `seed-${preset.id}`,
       name: preset.title,
@@ -63,13 +63,21 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
     }));
 
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      // Đọc từ storage v2 hoặc v1 để bảo lưu toàn bộ thiết kế cá nhân người dùng đã lưu
+      const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('giao_thoa_saved_outfits_archive_v1');
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Bảo lưu toàn bộ các bộ đồ người dùng đã tự thiết kế
-          const userCustoms = parsed.filter((item: SavedLookbookEntry) => !item.isPreset);
-          // Đồng bộ và cập nhật 3 bộ trang phục mẫu chuẩn xác
+          // Bảo lưu toàn bộ các bộ đồ người dùng đã tự phối (lọc bỏ triệt để các preset mẫu cũ để cập nhật màu mới)
+          const userCustoms = parsed.filter((item: SavedLookbookEntry) => 
+            !item.isPreset && 
+            !item.id.startsWith('seed-') && 
+            !item.id.startsWith('showroom-') &&
+            !item.id.includes('tu-than-xanh-hong') &&
+            !item.id.includes('ngu-than') &&
+            !item.id.includes('ba-ba')
+          );
+          // Đồng bộ và cập nhật 3 bộ trang phục mẫu chuẩn xác đúng màu thiết kế
           const combined = [...seedPresets, ...userCustoms];
           setEntries(combined);
           setSelectedEntry(combined[0]);
@@ -276,6 +284,20 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
                               title={`Màu yếm: ${item.outfit.top.innerYemColor}`}
                             />
                           )}
+                          {item.outfit.rootId === 'ngu-than' && (
+                            <span
+                              className="w-2.5 h-2.5 rounded-full border border-black/20 shadow-2xs shrink-0"
+                              style={{ backgroundColor: '#D4AF37' }}
+                              title="Họa tiết thêu chỉ vàng hoàng cung"
+                            />
+                          )}
+                          {item.outfit.rootId === 'ba-ba' && (
+                            <span
+                              className="w-2.5 h-2.5 rounded-full border border-black/20 shadow-2xs shrink-0"
+                              style={{ backgroundColor: '#F8FAFC' }}
+                              title="Khăn rằn Nam Bộ dệt kẻ trắng đen"
+                            />
+                          )}
                         </div>
                       </div>
 
@@ -388,6 +410,20 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
                           className="w-3 h-3 rounded-full border border-black/20 shadow-2xs"
                           style={{ backgroundColor: selectedEntry.outfit.top.innerYemColor }}
                           title={`Yếm: ${selectedEntry.outfit.top.innerYemColor}`}
+                        />
+                      )}
+                      {selectedEntry.outfit.rootId === 'ngu-than' && (
+                        <span
+                          className="w-3 h-3 rounded-full border border-black/20 shadow-2xs"
+                          style={{ backgroundColor: '#D4AF37' }}
+                          title="Chỉ vàng hoàng cung"
+                        />
+                      )}
+                      {selectedEntry.outfit.rootId === 'ba-ba' && (
+                        <span
+                          className="w-3 h-3 rounded-full border border-black/20 shadow-2xs"
+                          style={{ backgroundColor: '#F8FAFC' }}
+                          title="Khăn rằn Nam Bộ"
                         />
                       )}
                     </div>

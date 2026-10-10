@@ -116,35 +116,35 @@ export const SHOWROOM_PRESETS: CuratedShowroomItem[] = [
 
   // 2. BỘ 2 - ÁO NGŨ THÂN TRUNG BỘ
   {
-    id: 'showroom-ngu-than-vang-mo-ga',
+    id: 'showroom-ngu-than-do-chu-sa',
     title: 'Bộ 2 - Áo Ngũ Thân Trung Bộ',
     subtitle: 'Tôn Nghiêm Ngũ Thường, Khí Chất Nhã Nhặn Chốn Thần Kinh',
     regionBadge: 'Trung Bộ • Cố Đô Huế',
-    regionColor: 'bg-amber-100 text-amber-800 border-amber-300',
-    paletteBadge: ['#FEF08A', '#FFFFFF', '#DC2626', '#E2E8F0'],
+    regionColor: 'bg-red-100 text-red-800 border-red-300',
+    paletteBadge: ['#B91C1C', '#FFFFFF', '#D4AF37', '#18181B'],
     description:
-      'Áo ngũ thân tay thụng màu vàng mỡ gà dịu, thêu họa tiết mây nước cung đình; phối cùng quần lụa trắng nhẹ nhàng.',
+      'Áo ngũ thân tay thụng sắc đỏ chu sa rực rỡ thêu chỉ vàng mây nước cung đình; phối cùng quần lụa trắng nhẹ nhàng thanh khiết.',
     accessoriesText:
-      'Guốc mộc quai nhung đỏ, khuyên tai nụ sen bạc đính ngọc, nón lá bài thơ xứ Huế.',
+      'Quạt xếp gỗ truyền thống tua rua đỏ, guốc mộc quai nhung đỏ thêu chỉ vàng, nón lá bài thơ xứ Huế.',
     shortMeaning:
       'Tôn nghiêm ngũ thường, khí chất nhã nhặn chốn thần kinh.',
     materialDetails:
-      'Tơ tằm dệt gân chìm mỡ gà cung đình thoáng mát, lụa trắng Hà Đông mềm mại, gỗ mộc tiện tròn quai nhung đỏ, nón lá bài thơ chằm sợi giang dẻo dai xứ Huế.',
+      'Gấm tơ tằm dệt gân chìm màu đỏ chu sa cung đình thêu chỉ vàng kim, lụa trắng Hà Đông mềm rủ thanh bạch, gỗ mộc quai nhung đỏ, nón lá bài thơ xứ Huế và quạt xếp gỗ tua rua đỏ.',
     originDetails:
       'Trang phục quốc phục cung đình và thị dân triều Nguyễn (xứ kinh kỳ Thừa Thiên Huế), đại diện cho tư tưởng đạo đức ngũ thường và cốt cách nho nhã.',
     stylingIdeaDetails:
-      'Màu vàng mỡ gà dịu mắt thanh tao tôn da Á Đông, kết hợp phom tay thụng bay bổng và nón lá bài thơ e ấp, tạo tổng thể đài các quý phái nhưng vô cùng gần gũi với giới trẻ.',
+      'Sắc đỏ chu sa quý phái rực rỡ đại diện cho hỷ sự và tôn nghiêm cung đình, kết hợp tay thụng bay bổng thêu chỉ vàng và nón lá bài thơ e ấp, cầm quạt xếp tua rua đỏ tạo nên tổng thể đài các, chuẩn mực theo đúng thiết kế nguyên bản của bạn.',
     modernTwist:
-      'Tay thụng bay bổng thoáng mát, màu vàng mỡ gà dịu mắt hiện đại.',
+      'Tay thụng bay bổng trang trọng, sắc đỏ chu sa hoàng cung thêu chỉ vàng lộng lẫy quý phái.',
     culturalHarmony:
       'Năm thân áo đoan trang, 5 cúc khuy cài kín đáo tôn vinh nề nếp truyền thống.',
-    occasion: 'Festival Huế, Lễ dâng hương Đền Hùng, Giao lưu học thuật',
+    occasion: 'Festival Huế, Lễ dâng hương Đền Hùng, Nghi thức truyền thống trọng thể',
     annotations: {
-      top: 'Áo Ngũ Thân tay thụng màu vàng mỡ gà dịu thêu họa tiết mây nước',
-      bottom: 'Quần lụa trắng nhẹ nhàng, suông dài thanh khiết',
+      top: 'Áo Ngũ Thân tay thụng màu đỏ chu sa thêu họa tiết cung đình chỉ vàng kim',
+      bottom: 'Quần lụa trắng nhẹ nhàng, suông dài thanh khiết chạm gót',
       shoes: 'Guốc mộc quai nhung đỏ thêu chỉ vàng truyền thống',
       jewelry: ['Khuyên tai nụ sen bạc đính ngọc', 'Nhẫn bạc họa tiết cung đình'],
-      headwear: 'Nón lá bài thơ xứ Huế quai lụa hồng duyên dáng',
+      headwear: 'Nón lá bài thơ xứ Huế hoặc mấn quấn nhung đen',
     },
     outfitState: {
       rootId: 'ngu-than',
@@ -153,9 +153,9 @@ export const SHOWROOM_PRESETS: CuratedShowroomItem[] = [
         necklineId: 'neck-lap-linh-chuan',
         buttonId: 'btn-5-khuy-bac-cham',
         patternId: 'pat-may-song-thuy-ba',
-        primaryColor: '#FEF08A', // Vàng mỡ gà dịu
+        primaryColor: '#B91C1C', // Đỏ chu sa chuẩn xác theo thiết kế
         innerYemColor: '#FFFFFF',
-        sashColor: '#FEF08A',
+        sashColor: '#B91C1C',
       },
       bottom: {
         bottomId: 'bot-quan-lua-trang-ngoc',
@@ -173,7 +173,7 @@ export const SHOWROOM_PRESETS: CuratedShowroomItem[] = [
       },
       outfitName: 'Bộ 2 - Áo Ngũ Thân Trung Bộ',
       designerNote:
-        'Áo ngũ thân tay thụng màu vàng mỡ gà dịu thêu mây nước, quần lụa trắng nhẹ nhàng, guốc mộc quai nhung đỏ, khuyên nụ sen ngọc và nón lá bài thơ xứ Huế.',
+        'Áo ngũ thân tay thụng màu đỏ chu sa thêu mây nước cung đình chỉ vàng kim, quần lụa trắng thanh khiết, quạt xếp tua rua đỏ, guốc mộc nhung đỏ và nón bài thơ.',
       selectedEventId: 'event-festival-hue',
       selectedWeatherId: 'weather-warm-sun',
     },
@@ -181,32 +181,32 @@ export const SHOWROOM_PRESETS: CuratedShowroomItem[] = [
 
   // 3. BỘ 3 - ÁO BÀ BA NAM BỘ
   {
-    id: 'showroom-ba-ba-tim-linen',
+    id: 'showroom-ba-ba-nau-song',
     title: 'Bộ 3 - Áo Bà Ba Nam Bộ',
     subtitle: 'Hồn Hậu Sông Nước Trong Phong Thái Hiện Đại Của Gen Z',
     regionBadge: 'Nam Bộ • Miền Sông Nước',
-    regionColor: 'bg-purple-100 text-purple-800 border-purple-300',
-    paletteBadge: ['#D8B4E2', '#18181B', '#FFFFFF', '#059669'],
+    regionColor: 'bg-amber-100 text-amber-900 border-amber-300',
+    paletteBadge: ['#8B5A2B', '#18181B', '#F8FAFC', '#2D6A4F'],
     description:
-      'Áo bà ba màu tím nhạt dịu ôm eo duyên dáng, phối cùng quần suông linen đen tuyền ống đứng cách tân.',
+      'Áo bà ba màu nâu sồng mộc mạc ôm eo duyên dáng, phối cùng quần lụa đen tuyền và khăn rằn Nam Bộ dệt kẻ đặc trưng.',
     accessoriesText:
-      'Sneaker trắng năng động, vòng tay cẩm thạch, túi cói đan tay thêu cánh sen yêu kiều.',
+      'Khăn rằn Nam Bộ dệt kẻ đen trắng, sneaker trắng năng động, vòng tay cẩm thạch ngọc bích, túi cói đan tay thêu cánh sen.',
     shortMeaning:
       'Hồn hậu sông nước trong phong thái hiện đại của Gen Z.',
     materialDetails:
-      'Lụa mềm nhuộm sắc tím hoa cà pastel dịu mát, vải linen tự nhiên dệt sợi thô thoáng khí, canvas thêu hoa sen, cẩm thạch thiên nhiên và sợi cói Nam Bộ đan tay.',
+      'Vải đũi tơ tằm thô mộc nhuộm màu nâu sồng vỏ dà tự nhiên thoáng mát, lụa satin đen tuyền óng ả mượt mà, khăn rằn Nam Bộ dệt sợi bông truyền thống, cẩm thạch thiên nhiên và sợi cói Nam Bộ.',
     originDetails:
-      'Đồng bằng sông Cửu Long phương Nam trù phú, biểu trưng cho sự đôn hậu, nghĩa khí và vẻ đẹp chân chất của con người Nam Bộ.',
+      'Đồng bằng sông Cửu Long phương Nam trù phú, biểu trưng cho sự đôn hậu, nghĩa khí và vẻ đẹp chân chất mộc mạc của con người Nam Bộ.',
     stylingIdeaDetails:
-      'Sự giao thoa bất ngờ giữa nét đằm thắm của áo bà ba chiết eo màu tím nhạt cùng phong cách street-style của quần ống đứng linen và sneaker trắng - tạo nên tuyên ngôn thời trang "Heritage-Core" đầy cuốn hút.',
+      'Màu nâu sồng nguyên bản của áo bà ba Nam Bộ kết hợp quần lụa đen óng ả và chiếc khăn rằn vắt vai - tái hiện chính xác 100% hình ảnh cô Ba sông nước theo đúng thiết kế nguyên bản của bạn, giao thoa cùng phong cách sneaker trắng năng động của Gen Z.',
     modernTwist:
-      'Phối cùng quần suông linen đen ống đứng và sneaker trắng cực kỳ năng động.',
+      'Phom dáng may đo ôm eo thon thả kết hợp sneaker trắng cực kỳ năng động và vòng ngọc cẩm thạch may mắn.',
     culturalHarmony:
       'Phom dáng ôm eo duyên dáng, xẻ tà hông tôn nét đẹp thắt đáy lưng ong mộc mạc.',
     occasion: 'Lễ hội Sông Nước Nam Bộ, Chợ nổi Cái Răng, Dạo phố kỷ niệm cuối tuần',
     annotations: {
-      top: 'Áo Bà Ba màu tím nhạt dịu ôm eo duyên dáng, xẻ tà hai bên',
-      bottom: 'Quần suông linen đen tuyền ống đứng cách tân tôn dáng',
+      top: 'Áo Bà Ba màu nâu sồng mộc mạc ôm eo duyên dáng, xẻ tà hai bên',
+      bottom: 'Quần lụa đen tuyền ống suông cổ điển tôn dáng',
       shoes: 'Sneaker trắng năng động, trẻ trung phong cách Gen Z',
       jewelry: ['Vòng tay cẩm thạch ngọc bích may mắn', 'Túi cói đan tay thêu cánh sen yêu kiều'],
       headwear: 'Khăn rằn lụa Nam Bộ dệt mảnh vắt hờ trên vai duyên dáng',
@@ -214,17 +214,17 @@ export const SHOWROOM_PRESETS: CuratedShowroomItem[] = [
     outfitState: {
       rootId: 'ba-ba',
       top: {
-        silhouetteId: 'ba-ba-truyen-thong-xe-ta',
+        silhouetteId: 'ba-ba-nu-chit-eo',
         necklineId: 'neck-co-tron-ba-ba',
         buttonId: 'btn-cuc-boc-vai-cung-mau',
-        patternId: 'pat-lua-gam-tron-sang',
-        primaryColor: '#D8B4E2', // Tím nhạt dịu
+        patternId: 'pat-dui-tho-moc',
+        primaryColor: '#8B5A2B', // Nâu sồng mộc mạc chuẩn xác theo thiết kế
         innerYemColor: '#FFFFFF',
-        sashColor: '#D8B4E2',
+        sashColor: '#8B5A2B',
       },
       bottom: {
-        bottomId: 'bot-quan-linen-den-ong-dung',
-        color: '#18181B',        // Quần suông linen đen tuyền
+        bottomId: 'bot-quan-lua-den-ba-ba',
+        color: '#18181B',        // Quần lụa đen tuyền
       },
       accessories: {
         shoesId: 'shoes-sneaker-canvas-theu', // Sneaker trắng năng động
@@ -238,7 +238,7 @@ export const SHOWROOM_PRESETS: CuratedShowroomItem[] = [
       },
       outfitName: 'Bộ 3 - Áo Bà Ba Nam Bộ',
       designerNote:
-        'Áo bà ba màu tím nhạt dịu ôm eo duyên dáng, quần suông linen đen tuyền ống đứng cách tân, sneaker trắng, vòng tay cẩm thạch và túi cói đan tay thêu sen.',
+        'Áo bà ba màu nâu sồng mộc mạc ôm eo duyên dáng, quần lụa đen tuyền cổ điển, sneaker trắng, khăn rằn Nam Bộ dệt kẻ, vòng tay cẩm thạch và túi cói đan tay thêu sen.',
       selectedEventId: 'event-hoi-song-nuoc',
       selectedWeatherId: 'weather-cool-autumn',
     },

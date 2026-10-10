@@ -68,9 +68,9 @@ export default function App() {
       necklineId: 'neck-lap-linh-chuan',
       buttonId: 'btn-5-khuy-bac-cham',
       patternId: 'pat-may-song-thuy-ba',
-      primaryColor: '#FEF08A',
+      primaryColor: '#B91C1C',
       innerYemColor: '#FFFFFF',
-      sashColor: '#FEF08A',
+      sashColor: '#B91C1C',
     },
     bottom: {
       bottomId: 'bot-quan-lua-trang-ngoc',
@@ -88,8 +88,8 @@ export default function App() {
       height: 160,
       weight: 52,
     },
-    outfitName: 'Ngũ Thân Tay Thụng Vàng Mỡ Gà Cố Đô',
-    designerNote: 'Áo ngũ thân tay thụng vàng mỡ gà thêu mây nước, quần lụa trắng, guốc mộc nhung đỏ và nón bài thơ.',
+    outfitName: 'Ngũ Thân Tay Thụng Đỏ Chu Sa Cố Đô',
+    designerNote: 'Áo ngũ thân tay thụng đỏ chu sa thêu mây nước cung đình chỉ vàng, quần lụa trắng, guốc mộc nhung đỏ và nón bài thơ.',
     selectedEventId: 'event-festival-hue',
     selectedWeatherId: 'weather-spring-breeze',
   });
