@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Image as ImageIcon, Lock } from 'lucide-react';
+import ceremonialHeritageImg from '../assets/images/ceremonial_vietnamese_heritage_trio_1791634963672.jpg';
 
 interface HeroPosterDisplayProps {
   defaultAlt?: string;
 }
 
 // Static asset paths for Ceremonial Vietnamese Heritage Trio (bound according to strict immutability rules)
-const PRIMARY_STATIC_ASSET = '/Ceremonial Vietnamese Heritage Trio.png';
+const PRIMARY_STATIC_ASSET = ceremonialHeritageImg;
 const FALLBACK_STATIC_ASSETS = [
+  '/Ceremonial Vietnamese Heritage Trio.png',
   '/assets/images/ceremonial_heritage_trio.png',
   '/assets/images/Ceremonial Vietnamese Heritage Trio.png',
   '/ceremonial-vietnamese-heritage-trio.png',
