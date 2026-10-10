@@ -10,6 +10,7 @@ interface HeaderProps {
   onOpenEtiquette: () => void;
   onOpenCompare: () => void;
   onOpenArchive: () => void;
+  onOpenAtelier3D?: () => void;
   onGoToStep: (step: number) => void;
 }
 
@@ -22,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenEtiquette,
   onOpenCompare,
   onOpenArchive,
+  onOpenAtelier3D,
   onGoToStep,
 }) => {
   return (
@@ -31,16 +33,19 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onGoToIntro}
           className="text-left group cursor-pointer flex items-center gap-2.5"
-          title="Về trang giới thiệu Giao Thoa"
+          title="Về trang giới thiệu Giao Thoa: Xưởng Việt Phục GenZ"
         >
-          <div className="w-8 h-8 rounded-xl bg-[#9B2C2C] text-white flex items-center justify-center font-serif font-black text-base shadow-xs group-hover:scale-105 transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-[#8B1E1E] text-white flex items-center justify-center font-serif font-black text-base shadow-xs group-hover:scale-105 transition-transform">
             GT
           </div>
           <div>
-            <span className="text-xl lg:text-2xl font-serif font-bold tracking-tight text-[#2C241E] group-hover:text-[#9B2C2C] transition-colors">
-              Giao Thoa
+            <span 
+              style={{ fontFamily: "'Times New Roman', Times, serif" }}
+              className="text-xl lg:text-2xl font-bold tracking-tight text-[#8B1E1E] group-hover:text-[#7A1C1C] transition-colors"
+            >
+              GIAO THOA
             </span>
-            <span className="hidden sm:inline-block ml-2 text-xs uppercase tracking-widest text-[#8C7A6B] font-sans">
+            <span className="hidden sm:inline-block ml-2 text-xs uppercase tracking-widest text-[#4A3525] font-sans font-semibold">
               Xưởng Việt Phục GenZ
             </span>
           </div>
@@ -50,8 +55,8 @@ export const Header: React.FC<HeaderProps> = ({
         <nav className="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-medium text-[#6B5A4B]">
           <button
             onClick={onGoToIntro}
-            className={`transition-colors hover:text-[#9B2C2C] cursor-pointer flex items-center gap-1.5 ${
-              pageView === 'intro' ? 'text-[#9B2C2C] font-bold' : ''
+            className={`transition-colors hover:text-[#8B1E1E] cursor-pointer flex items-center gap-1.5 ${
+              pageView === 'intro' ? 'text-[#8B1E1E] font-bold' : ''
             }`}
           >
             <Home className="w-4 h-4" />
@@ -60,8 +65,8 @@ export const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onGoToStudio}
-            className={`transition-colors hover:text-[#9B2C2C] cursor-pointer flex items-center gap-1.5 ${
-              pageView === 'atelier' && currentStep === 1 ? 'text-[#9B2C2C] font-bold' : ''
+            className={`transition-colors hover:text-[#8B1E1E] cursor-pointer flex items-center gap-1.5 ${
+              pageView === 'atelier' && currentStep === 1 ? 'text-[#8B1E1E] font-bold' : ''
             }`}
           >
             <Sparkles className="w-4 h-4" />
@@ -72,32 +77,32 @@ export const Header: React.FC<HeaderProps> = ({
             <>
               <button
                 onClick={() => onGoToStep(2)}
-                className={`transition-colors hover:text-[#9B2C2C] cursor-pointer ${
-                  currentStep === 2 ? 'text-[#9B2C2C] font-semibold' : ''
+                className={`transition-colors hover:text-[#8B1E1E] cursor-pointer ${
+                  currentStep === 2 ? 'text-[#8B1E1E] font-semibold' : ''
                 }`}
               >
                 Chọn Áo
               </button>
               <button
                 onClick={() => onGoToStep(3)}
-                className={`transition-colors hover:text-[#9B2C2C] cursor-pointer ${
-                  currentStep === 3 ? 'text-[#9B2C2C] font-semibold' : ''
+                className={`transition-colors hover:text-[#8B1E1E] cursor-pointer ${
+                  currentStep === 3 ? 'text-[#8B1E1E] font-semibold' : ''
                 }`}
               >
                 Chọn Quần
               </button>
               <button
                 onClick={() => onGoToStep(4)}
-                className={`transition-colors hover:text-[#9B2C2C] cursor-pointer ${
-                  currentStep === 4 ? 'text-[#9B2C2C] font-semibold' : ''
+                className={`transition-colors hover:text-[#8B1E1E] cursor-pointer ${
+                  currentStep === 4 ? 'text-[#8B1E1E] font-semibold' : ''
                 }`}
               >
                 Phụ Kiện
               </button>
               <button
                 onClick={() => onGoToStep(5)}
-                className={`transition-colors hover:text-[#9B2C2C] cursor-pointer ${
-                  currentStep === 5 ? 'text-[#9B2C2C] font-semibold' : ''
+                className={`transition-colors hover:text-[#8B1E1E] cursor-pointer ${
+                  currentStep === 5 ? 'text-[#8B1E1E] font-semibold' : ''
                 }`}
               >
                 Lookbook
@@ -138,11 +143,23 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden md:inline">Cẩm Nang</span>
           </button>
 
+          {/* Phòng Trưng Bày 3D 360° Của Nhà Thiết Kế */}
+          {onOpenAtelier3D && (
+            <button
+              onClick={onOpenAtelier3D}
+              title="Phòng Trưng Bày 3D 360°: Áo Ngũ Thân, Áo Tứ Thân, Áo Bà Ba (Màu Trắng · Xoay 360°)"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#8B1E1E] bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-xl transition-colors cursor-pointer shadow-2xs"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#8B1E1E]" />
+              <span className="hidden sm:inline">Phòng Trưng Bày 3D 360°</span>
+            </button>
+          )}
+
           {pageView === 'atelier' && (
             <button
               onClick={onOpenCompare}
               title="So sánh phương án phối đồ"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-[#9B2C2C] hover:bg-[#781818] rounded-xl shadow-xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-[#8B1E1E] hover:bg-[#7A1C1C] rounded-xl shadow-xs transition-colors cursor-pointer"
             >
               <GitCompare className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">So Sánh</span>
@@ -153,7 +170,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onGoToStudio}
               title="Bước vào phòng phối đồ ngay"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-[#9B2C2C] hover:bg-[#781818] rounded-xl shadow-xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-[#8B1E1E] hover:bg-[#7A1C1C] rounded-xl shadow-xs transition-colors cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#FDE047]" />
               <span>Phòng Phối Đồ</span>

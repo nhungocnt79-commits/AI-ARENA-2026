@@ -5,21 +5,38 @@ export type Gender = 'female' | 'male';
 export type FaceShape = 'oval' | 'round';
 
 export type Hairstyle = 
-  | 'long-straight-waist'    // 1. Dài thẳng eo (suôn mượt tơi lọn, mái ôm má, wispy strands)
-  | 'short-bob-straight'     // 2. Ngắn ngang vai (lob cúp ôm mặt, mái bay curtain bangs)
-  | 'braided-twin-waist'     // 3. Tết 2 bím (ngôi giữa, 2 bím tết lỏng tay buông ngực, chun nhỏ)
-  | 'braided-single-side'    // 4. Tết 1 bím vai phải (mái xéo/thưa, bím dày phồng lệch vai phải)
-  | 'side-bun-right'         // 5. Búi lệch phải (búi phồng tròn lỏng trễ, lọn mai uốn lơi)
-  | 'half-up-princess'       // 6. Nửa đầu tiểu thư (uốn sóng lơi bồng bềnh, kẹp nửa đầu, băng đô)
-  // Kiểu tóc nam (Male hairstyles - Thư sinh & Lãng tử phong trần)
-  | 'male-short-part'         // Nam 1: Tóc rẽ ngôi 7/3 thư sinh lãng tử (Anime/Webtoon Male)
-  | 'male-topknot-bun'       // Nam 2: Tóc búi củ tỏi cổ trang / Búi đỉnh đầu nam
-  | 'male-curtain-layers'     // Nam 3: Tóc layer mái rủ tự nhiên chuẩn nam chính Ghibli
-  | 'male-short-neat'         // Nam 4: Tóc ngắn gọn gàng hiện đại tân thời
-  | 'wavy-headband'          // Tóc uốn sóng lơi bồng bềnh cài băng đô
-  | 'side-ponytail-wavy'     // Tóc buộc đuôi ngựa lệch vai phải bồng bềnh
-  | 'short-curly-bows'       // Tóc ngắn uốn cụp mái thưa thắt bím nơ
-  | 'high-artistic-bun'      // Tóc búi cao xoắn đài các
+  // 6 Kiểu tóc Nữ chính thức
+  | 'long-straight-waist'      // Nữ 1: Dài thẳng tự nhiên (Long Sleek Natural)
+  | 'short-bob-straight'       // Nữ 2: Ngắn ngang vai uốn cụp nhẹ (Soft Bob Collarbone)
+  | 'braided-twin-waist'       // Nữ 3: Tết hai bím năng động (Playful Twin Braids)
+  | 'braided-single-side'      // Nữ 4: Tết 1 bím lệch vai phải (Side-Swept Braid)
+  | 'side-bun-right'           // Nữ 5: Búi lệch về phía bên phải (Asymmetrical Side Low Bun)
+  | 'half-up-princess'         // Nữ 6: Gợn sóng dài nửa lưng (Mid-Back Soft Mermaid Waves)
+  // 6 Kiểu tóc Nam chính thức
+  | 'male-short-part'           // Nam 1: Rẽ ngôi 7/3 thư sinh (Classic 7/3 Side Part)
+  | 'male-topknot-bun'         // Nam 2: Búi củ tỏi cổ trang cách tân (Heritage Topknot / Man Bun)
+  | 'male-curtain-layers'       // Nam 3: Layer mái rủ Ghibli (Shaggy Ghibli Flow)
+  | 'male-short-neat'           // Nam 4: Tóc ngắn tân thời (Modern Short Taper / Crew Cut)
+  | 'male-middle-curtain-55'   // Nam 5: Bổ luống 5/5 lãng tử (Retro Middle Part Curtain)
+  | 'male-textured-undercut'   // Nam 6: Tóc vuốt Slicked-back Quiff thanh lịch (Slicked-Back Quiff)
+  | 'male-slicked-back-quiff'  // Nam 6 alias
+  // Backward compatibility aliases
+  | 'long-straight-natural'
+  | 'soft-bob-collarbone'
+  | 'playful-twin-braids'
+  | 'side-swept-braid'
+  | 'asymmetrical-side-bun'
+  | 'mid-back-mermaid-waves'
+  | 'classic-side-part-73'
+  | 'heritage-topknot-bun'
+  | 'shaggy-ghibli-flow'
+  | 'modern-short-taper'
+  | 'retro-middle-part-55'
+  | 'modern-textured-fade'
+  | 'wavy-headband'
+  | 'side-ponytail-wavy'
+  | 'short-curly-bows'
+  | 'high-artistic-bun'
   | 'short-shoulder-length'
   | 'long-flowing'
   | 'traditional-bun'
@@ -106,6 +123,7 @@ export interface CostumeOutfitState {
     hairstyle: Hairstyle;
     skinTone: SkinTone;
     faceShape?: FaceShape;
+    hairColor?: string; // Hex color: '#1A1A1A' | '#2E2E32' | '#4A3728' | '#5C4033'
     customPhotoUrl?: string;
     height?: number; // Chiều cao: 140 - 200 cm (mặc định nữ: 160 cm, nam: 172 cm)
     weight?: number; // Cân nặng: 40 - 100 kg (mặc định nữ: 52 kg, nam: 64 kg)

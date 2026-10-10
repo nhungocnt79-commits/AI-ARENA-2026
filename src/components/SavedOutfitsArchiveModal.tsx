@@ -52,29 +52,34 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
   useEffect(() => {
     if (!isOpen) return;
 
+    // 3 Mẫu thiết kế trưng bày 3 miền với đầy đủ màu sắc và kích thước trang phục mẫu chuẩn
+    const seedPresets: SavedLookbookEntry[] = SHOWROOM_PRESETS.map((preset) => ({
+      id: `seed-${preset.id}`,
+      name: preset.title,
+      savedAt: 'Mẫu thiết kế trưng bày 3 miền',
+      outfit: preset.outfitState,
+      notes: preset.description,
+      isPreset: true,
+    }));
+
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setEntries(parsed);
-          setSelectedEntry(parsed[0]);
+          // Bảo lưu toàn bộ các bộ đồ người dùng đã tự thiết kế
+          const userCustoms = parsed.filter((item: SavedLookbookEntry) => !item.isPreset);
+          // Đồng bộ và cập nhật 3 bộ trang phục mẫu chuẩn xác
+          const combined = [...seedPresets, ...userCustoms];
+          setEntries(combined);
+          setSelectedEntry(combined[0]);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(combined));
           return;
         }
       }
     } catch {
       // ignore JSON parse error
     }
-
-    // Default Seed with the 3 Showroom Presets + A Classic festival outfit
-    const seedPresets: SavedLookbookEntry[] = SHOWROOM_PRESETS.map((preset, idx) => ({
-      id: `seed-${preset.id}`,
-      name: preset.title,
-      savedAt: 'Mẫu thiết kế trưng bày',
-      outfit: preset.outfitState,
-      notes: preset.description,
-      isPreset: true,
-    }));
 
     setEntries(seedPresets);
     setSelectedEntry(seedPresets[0]);
@@ -139,12 +144,12 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
         {/* Modal Header */}
         <div className="flex items-start justify-between pb-4 border-b border-[#E8DEC8]">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#9B2C2C] text-white flex items-center justify-center shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#8B1E1E] text-white flex items-center justify-center shadow-sm">
               <Archive className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#9B2C2C]">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#8B1E1E]">
                   Kho Dữ Liệu Nhân Vật
                 </span>
                 <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-semibold">
@@ -189,7 +194,7 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
                 onClick={() => setFilterRoot(tab.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                   filterRoot === tab.id
-                    ? 'bg-[#9B2C2C] text-white shadow-2xs'
+                    ? 'bg-[#8B1E1E] text-white shadow-2xs'
                     : 'bg-white hover:bg-[#EFE7DC] text-[#6B5A4B] border border-[#E8DEC8]'
                 }`}
               >
@@ -205,7 +210,7 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm theo tên bộ đồ..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-white rounded-xl border border-[#D8C7B0] focus:outline-none focus:ring-2 focus:ring-[#9B2C2C]/30 text-[#2C241E]"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-white rounded-xl border border-[#D8C7B0] focus:outline-none focus:ring-2 focus:ring-[#8B1E1E]/30 text-[#2C241E]"
             />
           </div>
         </div>
@@ -239,37 +244,69 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
                     onClick={() => setSelectedEntry(item)}
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-4 ${
                       isSelected
-                        ? 'bg-white border-[#9B2C2C] ring-2 ring-[#9B2C2C]/20 shadow-md'
+                        ? 'bg-white border-[#8B1E1E] ring-2 ring-[#8B1E1E]/20 shadow-md'
                         : 'bg-white/80 hover:bg-white border-[#E8DEC8] shadow-2xs hover:shadow-xs'
                     }`}
                   >
                     <div className="flex items-center gap-3.5 min-w-0">
-                      {/* Mini Avatar Snapshot */}
-                      <div className="w-16 h-20 rounded-xl bg-[#FAF7F2] border border-[#E8DEC8] overflow-hidden shrink-0 flex items-center justify-center">
+                      {/* Ảnh minh họa trang phục mẫu đúng màu và kích thước vào ô trống phía bên tay trái */}
+                      <div className="relative w-20 h-28 sm:w-24 sm:h-32 rounded-2xl bg-gradient-to-b from-[#FDF8F2] via-[#F6EDE1] to-[#EBE0D0] border-2 border-[#D8C7B0] shadow-xs overflow-hidden shrink-0 flex items-center justify-center p-1 group-hover:border-[#8B1E1E] transition-all duration-300">
                         <AvatarMannequin
                           outfit={item.outfit}
-                          heightClass="h-[120px]"
+                          heightClass="w-full h-full"
                           showDetailsOverlay={false}
+                          isThumbnail={true}
                         />
+                        {/* Bảng chấm màu sắc chính xác của trang phục mẫu */}
+                        <div className="absolute bottom-1 inset-x-1 flex items-center justify-center gap-1 bg-white/95 backdrop-blur-xs py-0.5 px-1.5 rounded-full border border-black/10 shadow-2xs">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full border border-black/20 shadow-2xs shrink-0"
+                            style={{ backgroundColor: item.outfit.top.primaryColor }}
+                            title={`Màu áo: ${item.outfit.top.primaryColor}`}
+                          />
+                          <span
+                            className="w-2.5 h-2.5 rounded-full border border-black/20 shadow-2xs shrink-0"
+                            style={{ backgroundColor: item.outfit.bottom.color }}
+                            title={`Màu quần: ${item.outfit.bottom.color}`}
+                          />
+                          {item.outfit.top.innerYemColor && item.outfit.rootId === 'tu-than' && (
+                            <span
+                              className="w-2.5 h-2.5 rounded-full border border-black/20 shadow-2xs shrink-0"
+                              style={{ backgroundColor: item.outfit.top.innerYemColor }}
+                              title={`Màu yếm: ${item.outfit.top.innerYemColor}`}
+                            />
+                          )}
+                        </div>
                       </div>
 
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#FAF7F2] text-[#78350F] border border-[#E8DEC8]">
                             {root.name}
                           </span>
                           {item.isPreset && (
                             <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
-                              Phối Sẵn
+                              Mẫu Chuẩn 3 Miền
                             </span>
                           )}
                         </div>
-                        <h4 className="text-sm font-serif font-bold text-[#2C241E] truncate mt-0.5">
+                        <h4 className="text-sm font-serif font-bold text-[#2C241E] truncate mt-1">
                           {item.name}
                         </h4>
                         <p className="text-[11px] text-[#8C7A6B] truncate">
                           {item.savedAt}
                         </p>
+                        <div className="flex items-center gap-2 mt-1.5 text-[10px] text-[#6B5A4B] flex-wrap">
+                          <span className="inline-flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: item.outfit.top.primaryColor }} />
+                            Áo
+                          </span>
+                          <span>•</span>
+                          <span className="inline-flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: item.outfit.bottom.color }} />
+                            Quần
+                          </span>
+                        </div>
                       </div>
                     </div>
 
@@ -282,7 +319,7 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
                           onClose();
                         }}
                         title="Đưa vào phòng phối đồ ngay"
-                        className="p-2 rounded-xl bg-[#9B2C2C] hover:bg-[#7F1D1D] text-white text-xs font-bold transition-transform hover:scale-105 cursor-pointer flex items-center gap-1"
+                        className="p-2 rounded-xl bg-[#8B1E1E] hover:bg-[#7A1C1C] text-white text-xs font-bold transition-transform hover:scale-105 cursor-pointer flex items-center gap-1"
                       >
                         <span className="hidden sm:inline">Phối đồ</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -310,7 +347,7 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
             {selectedEntry ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between pb-2 border-b border-[#F0E6D8]">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#9B2C2C] flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#8B1E1E] flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
                     Xem Chi Tiết Nhân Vật
                   </span>
@@ -320,18 +357,42 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
                 </div>
 
                 {/* Mannequin Preview */}
-                <div className="rounded-xl overflow-hidden bg-gradient-to-b from-[#FBF8F3] to-[#F2EADB] border border-[#E8DEC8] flex items-center justify-center p-2">
+                <div className="rounded-2xl overflow-hidden bg-gradient-to-b from-[#FBF8F3] to-[#F2EADB] border border-[#E8DEC8] flex items-center justify-center p-2 shadow-xs">
                   <AvatarMannequin
                     outfit={selectedEntry.outfit}
-                    heightClass="h-[280px]"
+                    heightClass="h-[320px]"
                     showDetailsOverlay={false}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="text-base font-serif font-bold text-[#2C241E]">
-                    {selectedEntry.name}
-                  </h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-base font-serif font-bold text-[#2C241E]">
+                      {selectedEntry.name}
+                    </h4>
+                    {/* Bảng màu mẫu thực tế */}
+                    <div className="flex items-center gap-1.5 bg-[#FAF7F2] px-2 py-0.5 rounded-full border border-[#D8C7B0]">
+                      <span className="text-[10px] text-[#6B5A4B] font-medium">Bảng màu:</span>
+                      <span
+                        className="w-3 h-3 rounded-full border border-black/20 shadow-2xs"
+                        style={{ backgroundColor: selectedEntry.outfit.top.primaryColor }}
+                        title={`Áo: ${selectedEntry.outfit.top.primaryColor}`}
+                      />
+                      <span
+                        className="w-3 h-3 rounded-full border border-black/20 shadow-2xs"
+                        style={{ backgroundColor: selectedEntry.outfit.bottom.color }}
+                        title={`Quần: ${selectedEntry.outfit.bottom.color}`}
+                      />
+                      {selectedEntry.outfit.top.innerYemColor && selectedEntry.outfit.rootId === 'tu-than' && (
+                        <span
+                          className="w-3 h-3 rounded-full border border-black/20 shadow-2xs"
+                          style={{ backgroundColor: selectedEntry.outfit.top.innerYemColor }}
+                          title={`Yếm: ${selectedEntry.outfit.top.innerYemColor}`}
+                        />
+                      )}
+                    </div>
+                  </div>
+
                   <p className="text-xs text-[#6B5A4B] leading-relaxed">
                     {selectedEntry.notes}
                   </p>
@@ -341,6 +402,10 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
                     <div className="flex justify-between">
                       <span className="text-[#8C7A6B]">Áo & Màu:</span>
                       <span className="font-semibold">{selectedEntry.outfit.top.primaryColor}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[#8C7A6B]">Quần & Màu:</span>
+                      <span className="font-semibold">{selectedEntry.outfit.bottom.color}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#8C7A6B]">Kiểu Tóc:</span>
@@ -359,7 +424,7 @@ export const SavedOutfitsArchiveModal: React.FC<SavedOutfitsArchiveModalProps> =
                     onLoadOutfit(selectedEntry.outfit);
                     onClose();
                   }}
-                  className="w-full py-2.5 px-4 rounded-xl bg-[#9B2C2C] hover:bg-[#7F1D1D] text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer mt-4"
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#8B1E1E] hover:bg-[#7A1C1C] text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer mt-4"
                 >
                   <span>Mở Trang Phục Này Trong Phòng Phối Đồ</span>
                   <ArrowRight className="w-4 h-4" />

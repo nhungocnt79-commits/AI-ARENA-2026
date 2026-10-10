@@ -20,16 +20,29 @@ export const Step1CostumeSelection: React.FC<Step1CostumeSelectionProps> = ({
     <div className="space-y-6">
       {/* Intro Editorial Banner */}
       <div className="bg-[#FAF7F2] p-6 rounded-2xl border border-[#E8DEC8] space-y-3">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#9B2C2C]">
-          <Sparkles className="w-4 h-4" />
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#8B1E1E]">
+          <Sparkles className="w-4 h-4 text-[#8B1E1E]" />
           <span>Bước 1 · Khởi Tạo Hệ Trang Phục Lễ Hội</span>
         </div>
         <h2 className="text-2xl lg:text-3xl font-serif font-bold text-[#2C241E] leading-tight">
           Chọn Cốt Cách Việt Phục Bạn Muốn Khám Phá
         </h2>
         <p className="text-sm text-[#6B5A4B] leading-relaxed max-w-3xl">
-          Mỗi hệ phục trang truyền thống Việt Nam đều mang trong mình chiều sâu triết lý sống, cốt cách đoan trang và vẻ đẹp đặc trưng của từng vùng miền. Hãy lựa chọn hệ trang phục bạn mong muốn diện trong dịp lễ hội truyền thống để bắt đầu hành trình sáng tạo phối đồ cho riêng mình!
+          Mỗi hệ phục trang truyền thống Việt Nam đều mang trong mình chiều sâu triết lý sống, cốt cách đoan trang và vẻ đẹp đặc trưng của từng vùng miền. Bạn có thể phối theo từng lớp (áo yếm lót trong, áo khoác ngoài, dải bao, quần lụa) hiển thị phía bên tay trái nhân vật để dễ dàng cảm nhận mức độ hài hòa!
         </p>
+
+        {/* Layer Exploded View Notice Banner */}
+        <div className="p-3 rounded-xl bg-[#F5EFEB] border border-[#D8C7B0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#3E2723]">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#8B1E1E] shrink-0" />
+            <span>
+              <strong>Trải nghiệm phối đồ đa tầng:</strong> Bạn sẽ thấy cả áo khoác ngoài và lớp áo yếm phía bên trong đã chọn, các lớp này hiển thị phía bên tay trái nhân vật để dễ dàng tinh chỉnh.
+            </span>
+          </div>
+          <span className="text-[11px] font-semibold text-[#8B1E1E] shrink-0">
+            ✓ Bóc tách & xem từng lớp
+          </span>
+        </div>
       </div>
 
       {/* 3 Main Costume Cards */}
@@ -43,20 +56,20 @@ export const Step1CostumeSelection: React.FC<Step1CostumeSelectionProps> = ({
               onClick={() => onSelectRoot(costume.id)}
               className={`group relative flex flex-col justify-between p-5 rounded-2xl border transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-[#FFFFFF] border-[#9B2C2C] ring-2 ring-[#9B2C2C]/20 shadow-md scale-[1.01]'
+                  ? 'bg-[#FFFFFF] border-[#8B1E1E] ring-2 ring-[#8B1E1E]/20 shadow-md scale-[1.01]'
                   : 'bg-[#FAF7F2]/60 hover:bg-[#FFFFFF] border-[#E8DEC8] hover:border-[#C8B39B] shadow-2xs'
               }`}
             >
               {/* Region Pill Indicator */}
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-medium text-[#8C7A6B] flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-[#9B2C2C]" />
+                  <MapPin className="w-3.5 h-3.5 text-[#8B1E1E]" />
                   {costume.region}
                 </span>
                 <span
                   className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
                     isSelected
-                      ? 'bg-[#9B2C2C] text-white'
+                      ? 'bg-[#8B1E1E] text-white'
                       : 'bg-[#EFE7DC] text-[#6B5A4B]'
                   }`}
                 >
@@ -66,7 +79,7 @@ export const Step1CostumeSelection: React.FC<Step1CostumeSelectionProps> = ({
 
               {/* Title & Epoch */}
               <div className="space-y-1.5 mb-3">
-                <h3 className="text-xl font-serif font-bold text-[#2C241E] group-hover:text-[#9B2C2C] transition-colors">
+                <h3 className="text-xl font-serif font-bold text-[#2C241E] group-hover:text-[#8B1E1E] transition-colors">
                   {costume.name}
                 </h3>
                 <p className="text-xs text-[#8C7A6B] italic">
@@ -78,7 +91,7 @@ export const Step1CostumeSelection: React.FC<Step1CostumeSelectionProps> = ({
               <div className="space-y-3 text-xs text-[#4A3B32] mb-4">
                 <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E8DEC8]/80 space-y-1">
                   <div className="font-semibold text-[#2C241E] flex items-center gap-1.5 text-[11px]">
-                    <Heart className="w-3 h-3 text-[#9B2C2C]" />
+                    <Heart className="w-3 h-3 text-[#8B1E1E]" />
                     Ý Nghĩa Cốt Lõi:
                   </div>
                   <p className="text-[#6B5A4B] leading-relaxed">
@@ -107,7 +120,7 @@ export const Step1CostumeSelection: React.FC<Step1CostumeSelectionProps> = ({
                 <div
                   className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
                     isSelected
-                      ? 'border-[#9B2C2C] bg-[#9B2C2C]'
+                      ? 'border-[#8B1E1E] bg-[#8B1E1E]'
                       : 'border-[#C8B39B] bg-white'
                   }`}
                 >
@@ -129,7 +142,7 @@ export const Step1CostumeSelection: React.FC<Step1CostumeSelectionProps> = ({
 
         <button
           onClick={onNext}
-          className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#9B2C2C] hover:bg-[#781818] rounded-xl shadow-xs transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#8B1E1E] hover:bg-[#7A1C1C] rounded-xl shadow-xs transition-colors cursor-pointer"
         >
           <span>Tiếp Tục Chọn & Thiết Kế Áo</span>
           <ArrowRight className="w-4 h-4" />

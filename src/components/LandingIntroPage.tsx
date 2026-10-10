@@ -38,90 +38,89 @@ export const LandingIntroPage: React.FC<LandingIntroPageProps> = ({
       {/* ========================================================= */}
       {/* 1. HERO INTRO SECTION (TRANG MỞ ĐẦU CHÍNH)                */}
       {/* ========================================================= */}
-      <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 flex flex-col items-center text-center space-y-8">
+      <section id="hero-section" className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 flex flex-col items-center text-center space-y-8">
         
-        {/* TÊN CỦA WEBSITE: GIAO THOA: xuống hàng XƯỞNG VIỆT PHỤC GENZ, tất cả canh giữa */}
-        <div className="w-full text-center space-y-4 flex flex-col items-center justify-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FEF3C7] border border-[#FCD34D] text-[#92400E] text-xs font-semibold uppercase tracking-widest shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#B45309]" />
-            Dự Án Phi Lợi Nhuận Tôn Vinh Di Sản Văn Hóa Việt
-          </div>
-
-          <h1 className="text-center font-serif font-black tracking-tight text-[#851D1D] leading-tight">
+        {/* TÊN CỦA WEBSITE: Times New Roman, màu đỏ đậm, in đậm, in hoa */}
+        <div className="w-full text-center space-y-3 flex flex-col items-center justify-center">
+          <h1
+            style={{ fontFamily: "'Times New Roman', Times, serif" }}
+            className="text-center font-bold uppercase tracking-tight text-[#8B1E1E] leading-[1.12]"
+          >
             <span className="block text-4xl sm:text-6xl lg:text-7xl tracking-wide">
               GIAO THOA:
             </span>
-            <span className="block text-2xl sm:text-4xl lg:text-5xl tracking-normal mt-1.5 sm:mt-2.5 text-[#9B2C2C]">
+            <span className="block text-2xl sm:text-4xl lg:text-5xl mt-1.5 sm:mt-2.5 tracking-normal">
               XƯỞNG VIỆT PHỤC GENZ
             </span>
           </h1>
 
-          <p className="text-center text-xs sm:text-sm uppercase tracking-[0.25em] text-[#8C7A6B] font-semibold">
-            Không Gian Khám Phá Quy Chuẩn & Phối Đồ Truyền Thống Đương Đại
+          {/* DÒNG CHỮ NHỎ HƠN PHÍA DƯỚI: NẰM TRÊN CÙNG MỘT HÀNG, MÀU NÂU ĐẬM #3E2723 */}
+          <p className="text-center text-sm sm:text-base lg:text-lg font-medium text-[#3E2723] whitespace-nowrap pt-1">
+            Nơi vẻ đẹp di sản dân tộc hòa cùng nhịp thở thanh xuân hiện đại
           </p>
         </div>
 
-        {/* HÌNH ẢNH MINH HỌA BÊN DƯỚI TÊN WEBSITE (GIỮ NGUYÊN HÌNH ẢNH GỐC, KHÔNG THIẾT KẾ LẠI) */}
+        {/* HÌNH ẢNH MINH HỌA VỚI KHUNG VIỀN BO GÓC NHẸ NHÀNG, GIỮ NGUYÊN 100% ẢNH CÓ SẴN */}
         <div className="w-full">
           <HeroPosterDisplay />
         </div>
 
-        {/* ĐOẠN MÔ TẢ THEO ĐÚNG NỘI DUNG YÊU CẦU */}
-        <div className="max-w-3xl mx-auto px-4 py-5 rounded-2xl bg-white/80 backdrop-blur-md border border-[#E8DEC8] shadow-sm">
-          <p className="text-sm sm:text-base lg:text-lg text-[#3E3228] font-medium leading-relaxed italic text-center font-serif">
-            &ldquo;Là một dự án phi lợi nhuận hoàn toàn không vì mục đích thương mại, 
-            nền tảng này được ra đời với sứ mệnh kết nối và tôn vinh vẻ đẹp Việt phục 
-            giao thoa cùng hơi thở đương đại - nơi bạn thỏa sức sáng tạo và định hình dấu 
-            ấn cá nhân thông qua từng trang phục Việt.&rdquo;
+        {/* ĐOẠN MÔ TẢ ĐỊNH DẠNG FONT LORA, IN NGHIÊNG, CHÍNH XÁC CHÍNH TẢ 100% */}
+        <div className="max-w-4xl mx-auto px-6 py-5 rounded-2xl bg-[#F5EFEB]/90 backdrop-blur-md border border-[#D8C7B0] shadow-sm">
+          <p
+            style={{ fontFamily: "'Lora', serif" }}
+            className="text-sm sm:text-base lg:text-lg text-[#3E2723] leading-relaxed italic text-center font-normal"
+          >
+            &ldquo;Là một dự án phi lợi nhuận hoàn toàn không vì mục đích thương mại, nền tảng này được ra đời với sứ mệnh kết nối và tôn vinh vẻ đẹp Việt phục giao thoa cùng hơi thở đương đại - nơi bạn thỏa sức sáng tạo và định hình dấu ấn cá nhân thông qua từng trang phục Việt.&rdquo;
           </p>
         </div>
 
-        {/* 3 NÚT HÀNH ĐỘNG CHÍNH */}
-        <div className="w-full max-w-2xl flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
-          {/* Nút 1: Cẩm nang văn hóa */}
+        {/* 3 NÚT HÀNH ĐỘNG: CẨM NANG VĂN HÓA, KHO LƯU TRỮ VIỆT PHỤC, ĐI ĐẾN PHÒNG PHỐI ĐỒ NGAY */}
+        <div className="w-full max-w-3xl flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+          {/* Nút 1: Cẩm nang văn hóa (Outline button, viền đỏ đậm, icon cuốn sách mở) */}
           <button
             type="button"
             onClick={onOpenKnowledge}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-[#EFE7DC] hover:bg-[#E5DACB] text-[#2C241E] border border-[#D8C7B0] text-sm font-bold shadow-xs transition-all hover:scale-[1.02] flex items-center justify-center gap-2.5 cursor-pointer group"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl border-2 border-[#8B1E1E] text-[#8B1E1E] hover:bg-[#8B1E1E]/5 bg-transparent text-sm font-bold shadow-xs transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer"
           >
-            <BookOpen className="w-4 h-4 text-[#8C7A6B] group-hover:text-[#9B2C2C] transition-colors" />
-            <span>Cẩm Nang Văn Hóa</span>
+            <BookOpen className="w-4 h-4 text-[#8B1E1E]" />
+            <span>Cẩm nang văn hóa</span>
           </button>
 
-          {/* Nút 2: Kho lưu trữ việt phục */}
+          {/* Nút 2: Kho lưu trữ việt phục (Outline button, viền nâu đất, icon kho lưu trữ/lookbook cá nhân) */}
           <button
             type="button"
             onClick={onOpenArchive}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-[#FAF7F2] hover:bg-white text-[#4A3B32] border border-[#D8C7B0] text-sm font-bold shadow-xs transition-all hover:scale-[1.02] flex items-center justify-center gap-2.5 cursor-pointer group"
+            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl border-2 border-[#4A3525] text-[#4A3525] hover:bg-[#4A3525]/5 bg-transparent text-sm font-bold shadow-xs transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer"
           >
-            <Archive className="w-4 h-4 text-[#B45309] group-hover:scale-110 transition-transform" />
-            <span>Kho Lưu Trữ Việt Phục</span>
+            <Archive className="w-4 h-4 text-[#4A3525]" />
+            <span>Kho lưu trữ việt phục</span>
           </button>
 
-          {/* Nút 3: Đi đến phòng phối đồ ngay */}
+          {/* Nút 3: Đi đến phòng phối đồ ngay (Primary CTA button, nền đỏ đậm #8B1E1E, chữ trắng ngà, hover nổi bật) */}
           <button
             type="button"
-            onClick={onGoToStudio}
-            className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-[#9B2C2C] hover:bg-[#7F1D1D] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all hover:scale-[1.03] flex items-center justify-center gap-2.5 cursor-pointer"
+            onClick={scrollToCuratedShowroom}
+            className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-[#8B1E1E] hover:bg-[#7A1C1C] text-[#FAF7F2] text-sm font-bold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer ring-2 ring-[#8B1E1E]/20"
           >
             <Sparkles className="w-4 h-4 text-[#FDE047]" />
-            <span>Đi Đến Phòng Phối Đồ Ngay</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>Đi đến phòng phối đồ ngay</span>
+            <ArrowDown className="w-4 h-4 text-[#FAF7F2]" />
           </button>
         </div>
 
         {/* GỢI Ý CUỘN XUỐNG DƯỚI ĐỂ KHÁM PHÁ CỬA HÀNG TRƯNG BÀY PHỐI SẴN */}
-        <div className="pt-6">
+        <div className="pt-4">
           <button
             type="button"
             onClick={scrollToCuratedShowroom}
-            className="group flex flex-col items-center gap-2 text-xs font-semibold text-[#8C7A6B] hover:text-[#9B2C2C] transition-colors cursor-pointer select-none"
+            className="group flex flex-col items-center gap-2 text-xs font-semibold text-[#8C7A6B] hover:text-[#8B1E1E] transition-colors cursor-pointer select-none"
           >
             <span className="tracking-wide">
-              Cuộn xuống khám phá Cửa Hàng Trưng Bày Phối Sẵn
+              Cuộn chuột xuống để khám phá Cửa Hàng Trưng Bày Phối Sẵn 3 Miền
             </span>
-            <div className="w-8 h-8 rounded-full bg-white border border-[#D8C7B0] flex items-center justify-center group-hover:border-[#9B2C2C] group-hover:translate-y-1 transition-all shadow-2xs">
-              <ArrowDown className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-full bg-white border border-[#D8C7B0] flex items-center justify-center group-hover:border-[#8B1E1E] group-hover:translate-y-1 transition-all shadow-2xs">
+              <ArrowDown className="w-4 h-4 text-[#8B1E1E]" />
             </div>
           </button>
         </div>

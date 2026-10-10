@@ -40,7 +40,7 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
                     isDone
                       ? 'bg-[#15803D] text-white'
                       : isCurrent
-                      ? 'bg-[#9B2C2C] text-white ring-2 ring-[#9B2C2C]/20'
+                      ? 'bg-[#8B1E1E] text-white ring-2 ring-[#8B1E1E]/20'
                       : 'bg-[#E5DACB] text-[#6B5A4B]'
                   }`}
                 >

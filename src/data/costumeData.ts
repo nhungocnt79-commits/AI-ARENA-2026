@@ -69,22 +69,22 @@ export const COSTUME_ROOTS: Record<CostumeRootId, CostumeRootInfo> = {
     defaultBottomColor: '#18181B',
     recommendedSilhouettes: [
       {
-        id: 'tu-than-truyen-thong',
-        name: 'Tứ Thân Buông Vạt Lễ Hội',
-        description: 'Vạt áo dài thướt tha chạm mắt cá chân, hai vạt trước buộc lơi thanh thoát, kết hợp thắt lưng bao kép.',
-        modernTwist: 'Lược bớt độ dày nặng bằng vải tơ tằm mềm rủ, phom gọn gàng di chuyển nhanh giữa biển người lễ hội.'
+        id: 'tu-than-buoc-vat-truoc',
+        name: 'Tứ Thân Buộc Thắt Vạt Trước Bụng',
+        description: 'Hai vạt trước không cài cúc mà được buộc thắt gọn gàng trước bụng duyên dáng, thân sau may liền ở sống lưng, dài chấm gót.',
+        modernTwist: 'Kiểu mặc chuẩn mực Kinh Bắc: thắt nơ vạt trước kết hợp áo yếm lót trong và dải bao lụa mềm buông thả ở eo.'
       },
       {
-        id: 'tu-than-cach-tan-lung',
-        name: 'Tứ Thân Vạt Lửng Năng Động',
-        description: 'Vạt trước ngắn ngang hông, tà sau dài vừa phải, phối cùng quần suông cạp cao hoặc chân váy.',
-        modernTwist: 'Phom dáng hiện đại dành cho học sinh - sinh viên GenZ thích chụp ảnh kỷ yếu, năng động leo đồi hội Lim.'
+        id: 'tu-than-buong-tha-mem',
+        name: 'Tứ Thân Buông Thả Mềm Mại',
+        description: 'Hai vạt trước buông lơi tự do thướt tha hai bên tà không cài cúc, khoe trọn vẹn áo yếm và dải lụa thắt eo bên trong.',
+        modernTwist: 'Phong thái thanh thoát, phóng khoáng, tà áo bay bổng khi bước đi.'
       },
       {
         id: 'tu-than-mo-ba-layer',
-        name: 'Tứ Thân Layer Đa Sắc (Mớ Ba)',
-        description: 'Phối 2-3 lớp vạt mỏng với các gam màu tương phản nhẹ ló ra ở viền cổ và vạt tà.',
-        modernTwist: 'Ứng dụng chất liệu voan tơ hoặc organza mềm cao cấp giúp tạo hiệu ứng thị giác chuyển sắc gradient trendy.'
+        name: 'Tứ Thân Mớ Ba Mớ Bảy Đa Lớp',
+        description: 'Phối nhiều lớp tơ mỏng lồng ghép tạo hiệu ứng chuyển sắc và chiều sâu huyền ảo.',
+        modernTwist: 'Ứng dụng chất liệu sa tơ hoặc lụa tơ tằm thượng hạng nhẹ như mây bay.'
       }
     ],
     necklines: [
@@ -110,44 +110,79 @@ export const COSTUME_ROOTS: Record<CostumeRootId, CostumeRootInfo> = {
     buttonTypes: [
       {
         id: 'btn-buoc-vat-lua',
-        name: 'Buộc Vạt Lụa & Dải Bao Tơ',
-        material: 'Tơ tằm tự nhiên',
-        description: 'Hai dải vạt trước buộc thắt lơi tự nhiên, kết hợp dải bao xanh hoặc hồng sen quấn ngang eo.'
+        name: 'Không Khuy Cài (Buộc Vạt Trước Bụng)',
+        material: 'Tự thắt vạt lụa tự nhiên',
+        description: 'Đặc trưng cốt lõi của Áo Tứ Thân: tuyệt đối không có khuy cài, hai vạt trước buộc thắt gọn gàng hoặc buông thả.'
       },
       {
         id: 'btn-cuc-ngoc-trai',
-        name: 'Cúc Ngọc Trai Nước Ngọt',
-        material: 'Xà cừ tự nhiên',
-        description: 'Điểm xuyết những hạt ngọc óng ánh giữ mép áo cố định thanh tao.'
-      },
-      {
-        id: 'btn-cuc-bam-an',
-        name: 'Khuy Bấm Tàng Hình Hiện Đại',
-        material: 'Hợp kim phủ bạc',
-        description: 'Tiện lợi, giúp vạt áo phẳng phiu tuyệt đối khi vận động mạnh.'
+        name: 'Dải Bao Lụa Mềm Thắt Eo',
+        material: 'Lụa tơ tằm ruột tượng',
+        description: 'Dải thắt lưng mềm mại quấn eo buông lơi hai đầu dải thướt tha.'
       }
     ],
     patterns: [
       {
-        id: 'pat-sen-theu-chim',
-        name: 'Hoa Sen Thêu Chìm Thủ Công',
-        description: 'Họa tiết búp sen và đài sen uốn lượn thêu tay tinh tế dọc theo mép vạt.',
-        symbolism: 'Biểu trưng cho cốt cách thanh bạch, gần bùn mà chẳng hôi tanh mùi bùn.'
+        id: 'pat-to-van-may',
+        name: 'Vải Tơ Vân Mây Cổ Truyền',
+        description: 'Vải lụa tơ dệt hoa văn vân mây Đại Việt cuộn tròn bồng bềnh, tạo chiều sâu thị giác thanh tao thoát tục.',
+        symbolism: 'Mây cuộn hanh thông, cầu chúc sự thanh nhã và bình an.'
       },
       {
-        id: 'pat-may-song-thuy-ba',
-        name: 'Mây Cuộn Thủy Ba Thần Thoại',
-        description: 'Vân mây bồng bềnh và sóng nước phong cách mỹ thuật cổ Đại Việt.',
-        symbolism: 'Cầu mong mưa thuận gió hòa, hanh thông may mắn trọn vẹn cả năm.'
+        id: 'pat-gam-det-chim',
+        name: 'Vải Gấm Dệt Họa Tiết Chìm',
+        description: 'Gấm dệt chìm hoa cúc chữ Vạn và thủy ba, hoa văn ẩn hiện quý phái dưới ánh sáng nghiêng.',
+        symbolism: 'Sự mực thước, thanh cao và quyền quý triều đình.'
       },
       {
-        id: 'pat-tron-dui-to',
-        name: 'Dệt Mộc Trơn Tối Giản',
-        description: 'Không họa tiết, tập trung hoàn toàn vào độ óng ả và vân sợi dệt tự nhiên của lụa.',
-        symbolism: 'Phong cách Quiet Luxury mộc mạc, tôn trọng chất liệu nguyên bản.'
+        id: 'pat-v-nhu-bong',
+        name: 'Vải Nhũ Bóng Kim Sa Lộng Lẫy',
+        description: 'Sợi dệt pha tinh thể bắt sáng nhũ bóng kiêu sa, phản xạ ánh sáng nổi bật trên nền trắng.',
+        symbolism: 'Hào quang tỏa sáng rực rỡ và sức sống thanh xuân.'
+      },
+      {
+        id: 'pat-sa-xuyen-thau',
+        name: 'Sa Tơ Xuyên Thấu 2 Lớp',
+        description: 'Sa tơ mỏng nhẹ như khói phủ lên lớp yếm và lớp lót bên trong, tạo chiều sâu huyền ảo.',
+        symbolism: 'Nét duyên thầm kín đáo, e ấp của thiếu nữ Kinh Bắc.'
+      },
+      {
+        id: 'pat-dui-tho-moc',
+        name: 'Vải Đũi Tơ Tằm Thô Mộc',
+        description: 'Chất vải đũi tơ tằm dệt tay thô mộc, nền nã, thấm hút mồ hôi và đậm hồn dân tộc.',
+        symbolism: 'Nét mộc mạc, chất phác và bình dị chốn làng quê.'
       }
     ],
     recommendedBottoms: [
+      {
+        id: 'bot-vay-dup-lua-trang-xoe-rong',
+        name: 'Váy Đụp Lụa Trắng Xòe Rộng Kinh Bắc',
+        category: 'chan-vay',
+        description: 'Phom dáng váy đụp xòe rộng thênh thang tròn tự nhiên từ hông xuống chấm gót Kinh Bắc xưa, chất lụa tơ tự nhiên màu trắng ngà bắt sáng dịu dàng, nhiều nếp sóng rủ mềm bay bổng, cạp quấn/quây cao phẳng phiu dồn nếp khéo léo dưới áo yếm.',
+        appropriateFor: 'Phối thướt tha kinh điển cùng Áo Tứ Thân Kinh Bắc và yếm lót'
+      },
+      {
+        id: 'bot-quan-ong-xeo-lua-trang-nga',
+        name: 'Quần Lụa Trắng Ngà Ống Xéo Cổ Phục',
+        category: 'quan-suong',
+        description: 'Ống rộng (ống xéo) xòe nhẹ tự nhiên ở gấu tạo bước đi uyển chuyển, lụa tự nhiên màu trắng ngà bóng mờ sang trọng, cạp cao phẳng phiu, dài chạm đất phủ qua mắt cá chân.',
+        appropriateFor: 'Phối chuẩn mực cùng áo Tứ Thân và áo Ngũ Thân'
+      },
+
+      {
+        id: 'bot-vay-xep-ly-dai',
+        name: 'Chân Váy Xếp Ly Dài Phom Chữ A Chạm Đất',
+        category: 'chan-vay',
+        description: 'Phong cách cổ điển tối giản hoàn toàn trơn màu trắng kem/trắng ngà mờ lì trang nhã. Chất vải dày dặn giữ phom phồng chữ A tự nhiên không rũ gãy. Cạp cao bản vừa phẳng phiu đứng dáng, dưới cạp là các nếp xếp ly bản lớn đối xứng mở rộng dần về phía gấu, chạy thẳng tắp kéo dài tỷ lệ cơ thể. Chân váy dài chạm đất, viền gấp mí phẳng chỉn chu, gấu lượn sóng mềm mại theo bước đi.',
+        appropriateFor: 'Phối mực thước thanh tao cùng Áo Tứ Thân, Áo Ngũ Thân, Áo Bà Ba'
+      },
+      {
+        id: 'bot-vay-lua-bong-cat-xeo',
+        name: 'Chân Váy Lụa Satin Cắt Xéo Bay Bổng',
+        category: 'chan-vay',
+        description: 'Phong cách tối giản thanh lịch trơn màu hoàn toàn, sắc trắng ngà trang nhã cùng độ bóng mờ sang trọng của lụa satin mượt mà. Cạp phẳng phiu ôm gọn eo kết hợp kỹ thuật cắt xéo vải (bias cut) ôm nhẹ phần hông rồi buông rủ thành những dải sóng mềm mại dọc thân, xòe nhẹ duyên dáng về phía gấu lượn sóng uyển chuyển.',
+        appropriateFor: 'Phối thanh lịch cùng Áo Tứ Thân, Áo Ngũ Thân, Áo Bà Ba'
+      },
       {
         id: 'bot-quan-den-truyen-thong',
         name: 'Quần Lụa Đen Ống Rộng Truyền Thống',
@@ -168,13 +203,6 @@ export const COSTUME_ROOTS: Record<CostumeRootId, CostumeRootInfo> = {
         category: 'quan-cach-tan',
         description: 'Thiết kế cạp cao tôn dáng cho học sinh sinh viên, chất lụa trắng ngà không nhăn, thoải mái di chuyển.',
         appropriateFor: 'Festival giới trẻ, chụp ảnh dạo xuân'
-      },
-      {
-        id: 'bot-chan-vay-midi-xep-ly',
-        name: 'Chân Váy Lụa Xếp Ly Midi Kín Đáo',
-        category: 'chan-vay',
-        description: 'Dài qua gối, xếp ly nhẹ nhàng thướt tha tạo phong cách học đường duyên dáng.',
-        appropriateFor: 'Giao lưu văn hóa trường học, dạo phố lễ hội'
       }
     ],
     colorRecommendations: [
@@ -212,6 +240,12 @@ export const COSTUME_ROOTS: Record<CostumeRootId, CostumeRootInfo> = {
     defaultPrimaryColor: '#0F766E',
     defaultBottomColor: '#F8FAFC',
     recommendedSilhouettes: [
+      {
+        id: 'ngu-than-cach-tan-hoa-3d',
+        name: 'Ngũ Thân Cách Tân Hoa 3D & Ombre Khúc Xạ',
+        description: 'Dải khuy hoa vải 3D đính nổi 5 cánh dọc vạt chéo, viền nẹp xanh ngọc định hình phom, chất tơ organza ánh sắc tím lavender phủ đầm hai dây hồng san hô khúc xạ màu huyền ảo, can ngang bắp tay.',
+        modernTwist: 'Đỉnh cao sáng tạo Haute Couture: kết hợp cấu trúc ngũ thân truyền thống với nghệ thuật chuyển màu khúc xạ và dải hoa vải đính nổi thủ công.'
+      },
       {
         id: 'ngu-than-tay-chen',
         name: 'Ngũ Thân Tay Chẽn Thanh Lịch',
@@ -253,6 +287,12 @@ export const COSTUME_ROOTS: Record<CostumeRootId, CostumeRootInfo> = {
     ],
     buttonTypes: [
       {
+        id: 'btn-hoa-vai-3d-dinh-noi',
+        name: 'Dải Khuy Hoa Vải 3D Đính Nổi & Nút Tết Xanh Ngọc',
+        material: 'Hoa vải trắng mờ 5 cánh thủ công & nút tết ngọc bích',
+        description: 'Dọc đường xẻ vạt chéo từ xương quai xanh xuống mạn sườn là hàng hoa trắng 5 cánh đính nổi 3D, đỉnh cổ có nút khuy tết bằng sợi vải màu xanh ngọc đồng bộ.'
+      },
+      {
         id: 'btn-5-khuy-ngoc-bich',
         name: 'Bộ 5 Khuy Ngọc Bích Xanh',
         material: 'Đá ngọc bích chạm khắc',
@@ -273,25 +313,60 @@ export const COSTUME_ROOTS: Record<CostumeRootId, CostumeRootInfo> = {
     ],
     patterns: [
       {
-        id: 'pat-gam-hoa-cung-dinh',
-        name: 'Gấm Hoa Cúc & Chữ Vạn Cung Đình',
-        description: 'Họa tiết hoa cúc đan chữ Vạn dệt chìm sang trọng theo phong cách triều Nguyễn.',
-        symbolism: 'Đại diện cho sự trường thọ, may mắn và phúc lộc dồi dào.'
+        id: 'pat-may-song-thuy-ba',
+        name: 'Vải Tơ Vân Mây Cổ Truyền',
+        description: 'Vải lụa tơ dệt hoa văn vân mây Đại Việt cuộn tròn bồng bềnh, tạo chiều sâu thị giác thanh thoát thoát tục.',
+        symbolism: 'Mây lành phúc khí, trường thọ và cầu mong thuận hòa thanh bạch.'
       },
       {
-        id: 'pat-gam-thuy-ba-phuong-hoang',
-        name: 'Thủy Ba Loan Phượng Thêu Tơ',
-        description: 'Hình tượng chim loan phượng múa lượn trên ngọn sóng bạc.',
-        symbolism: 'Sự duyên dáng uyển chuyển, đức hạnh và vẻ đẹp cao quý của người thiếu nữ.'
+        id: 'pat-gam-hoa-cung-dinh',
+        name: 'Vải Gấm Dệt Họa Tiết Chìm',
+        description: 'Gấm dệt chìm hoa cúc đan chữ Vạn theo chuẩn mực triều Nguyễn, sang trọng quý phái ẩn hiện theo góc nghiêng của ánh sáng.',
+        symbolism: 'Đại diện cho sự trường thọ, may mắn và phong thái tôn nghiêm mực thước.'
+      },
+      {
+        id: 'pat-v-nhu-bong',
+        name: 'Vải Nhũ Bóng Kim Sa Cao Cấp',
+        description: 'Sợi dệt xen tinh thể bắt sáng lóng lánh kiêu sa, tạo hiệu ứng nhũ phản quang lấp lánh như sương mai dưới ánh đèn.',
+        symbolism: 'Tôn vinh vẻ đẹp rạng rỡ, hiện đại mà kiêu sa của thiếu nữ tân thời.'
       },
       {
         id: 'pat-to-sen-mong-tron',
-        name: 'Lụa Tơ Sen Trơn Óng',
-        description: 'Bề mặt óng ánh ánh ngọc tự nhiên, mềm rủ như làn sương mỏng sớm mai.',
-        symbolism: 'Vẻ đẹp thanh tịnh, giản dị mà vô cùng sang trọng.'
+        name: 'Lụa Tơ Tằm Trắng Ngà Trơn Mịn',
+        description: 'Bề mặt óng ả ánh ngọc trai tự nhiên, dệt thủ công mềm rủ, nguyên bản vẻ đoan trang mực thước.',
+        symbolism: 'Vẻ đẹp thanh tịnh, mực thước, khiêm cung và trang nhã.'
       }
     ],
     recommendedBottoms: [
+      {
+        id: 'bot-quan-ong-xeo-lua-trang-nga',
+        name: 'Quần Lụa Trắng Ngà Ống Xéo Cổ Phục',
+        category: 'quan-suong',
+        description: 'Ống rộng (ống xéo) xòe nhẹ tự nhiên ở gấu tạo bước đi uyển chuyển, lụa tự nhiên màu trắng ngà bóng mờ sang trọng, cạp cao phẳng phiu, dài chạm đất phủ qua mắt cá chân.',
+        appropriateFor: 'Phối chuẩn mực đoan chính cùng Áo ngũ thân tay chẽn, tay thụng và ngũ thân cách tân'
+      },
+      {
+        id: 'bot-vay-dup-lua-trang-xoe-rong',
+        name: 'Váy Đụp Lụa Trắng Xòe Rộng Kinh Bắc',
+        category: 'chan-vay',
+        description: 'Phom dáng váy đụp xòe rộng thênh thang tròn tự nhiên từ hông xuống chấm gót, giữ nguyên nét xưa, lụa tơ mềm rủ bay bổng.',
+        appropriateFor: 'Phối cách tân bay bổng cùng Áo ngũ thân và áo tứ thân'
+      },
+
+      {
+        id: 'bot-vay-xep-ly-dai',
+        name: 'Chân Váy Xếp Ly Dài Phom Chữ A Chạm Đất',
+        category: 'chan-vay',
+        description: 'Phong cách cổ điển tối giản hoàn toàn trơn màu trắng kem/trắng ngà mờ lì trang nhã. Chất vải dày dặn giữ phom phồng chữ A tự nhiên không rũ gãy. Cạp cao bản vừa phẳng phiu đứng dáng, dưới cạp là các nếp xếp ly bản lớn đối xứng mở rộng dần về phía gấu, chạy thẳng tắp kéo dài tỷ lệ cơ thể. Chân váy dài chạm đất, viền gấp mí phẳng chỉn chu, gấu lượn sóng mềm mại theo bước đi.',
+        appropriateFor: 'Phối mực thước thanh tao cùng Áo Ngũ Thân tay chẽn, Áo Ngũ Thân tay thụng'
+      },
+      {
+        id: 'bot-vay-lua-bong-cat-xeo',
+        name: 'Chân Váy Lụa Satin Cắt Xéo Bay Bổng',
+        category: 'chan-vay',
+        description: 'Phong cách tối giản thanh lịch trơn màu hoàn toàn, sắc trắng ngà trang nhã cùng độ bóng mờ sang trọng của lụa satin mượt mà. Cạp phẳng phiu ôm gọn eo kết hợp kỹ thuật cắt xéo vải (bias cut) ôm nhẹ phần hông rồi buông rủ thành những dải sóng mềm mại dọc thân, xòe nhẹ duyên dáng về phía gấu lượn sóng uyển chuyển.',
+        appropriateFor: 'Phối thanh lịch cùng Áo Ngũ Thân cách tân, Áo Ngũ Thân tay chẽn'
+      },
       {
         id: 'bot-quan-lua-trang-ngoc',
         name: 'Quần Lụa Trắng Ngà Rủ Suông',
@@ -350,16 +425,16 @@ export const COSTUME_ROOTS: Record<CostumeRootId, CostumeRootInfo> = {
     defaultBottomColor: '#18181B',
     recommendedSilhouettes: [
       {
-        id: 'ba-ba-truyen-thong-xe-ta',
-        name: 'Bà Ba Thắt Eo Xẻ Tà Duyên Dáng',
-        description: 'Chiết eo nhẹ hai bên hông, tà áo dài ngang mông xẻ cao vừa vặn, hai túi vuông nhỏ phía trước.',
-        modernTwist: 'Sử dụng lụa satin co giãn nhẹ giúp nữ sinh viên cử động tự do suốt ngày dài năng động.'
+        id: 'ba-ba-nu-chit-eo',
+        name: 'Bà Ba Nữ Chít Eo Duyên Dáng',
+        description: 'Chít eo mềm mại tôn đường cong thắt đáy lưng ong, dài trùm mông, xẻ tà hai bên hông thanh thoát.',
+        modernTwist: 'Phom dáng may đo ôm nhẹ đường cong tôn dáng thiếu nữ, kết hợp túi nhỏ hoặc trơn thanh tao.'
       },
       {
-        id: 'ba-ba-dang-suong-hien-dai',
-        name: 'Bà Ba Suông Rộng Oversize Trẻ Trung',
-        description: 'Thân áo thả suông thoải mái, không chiết eo gò bó, mang hơi thở thời trang street-style GenZ.',
-        modernTwist: 'Có thể sơ vin vạt trước hoặc buông tự nhiên với quần ống rộng, phá cách nhưng không hở hang.'
+        id: 'ba-ba-nam-dang-suong',
+        name: 'Bà Ba Nam Dáng Suông Phóng Khoáng',
+        description: 'Dáng áo suông rộng rãi thoải mái, không chít eo, hai túi to ở vạt trước đặc trưng truyền thống.',
+        modernTwist: 'Phong thái đĩnh đạc, hào sảng, cử động cực kỳ dễ chịu trong mọi hoạt động.'
       },
       {
         id: 'ba-ba-tay-loe-cach-tan',
@@ -371,64 +446,104 @@ export const COSTUME_ROOTS: Record<CostumeRootId, CostumeRootInfo> = {
     necklines: [
       {
         id: 'neck-co-tron-ba-ba',
-        name: 'Cổ Tròn Đằm Thắm Nguyên Bản',
-        description: 'Cổ tròn ôm sát chân cổ, đơn giản mà mộc mạc, đậm chất dịu hiền gái miền Tây.',
+        name: 'Cổ Tròn Đằm Thắm (Không Cổ)',
+        description: 'Cổ áo không có chân cổ, khoét tròn ôm nhẹ chân cổ nền nã, mộc mạc dịu hiền.',
+        isModest: true
+      },
+      {
+        id: 'neck-co-tim-la-trau',
+        name: 'Cổ Tim (Cổ Lá Trầu) Duyên Dáng',
+        description: 'Biến tấu cổ tim khẽ uốn cong như cánh lá trầu, nét duyên trứ danh của phụ nữ Nam Bộ.',
+        isModest: true
+      },
+      {
+        id: 'neck-co-vuong-thanh-thoat',
+        name: 'Cổ Vuông Thanh Thoát',
+        description: 'Khoét vuông nhẹ góc mềm, khoe khéo bờ vai thon mà vẫn kín đáo đoan trang.',
         isModest: true
       },
       {
         id: 'neck-co-la-sen-retro',
         name: 'Cổ Lá Sen Retro Nữ Sinh',
-        description: 'Ve cổ bẻ tròn nhỏ như cánh sen, mang phong cách đồng phục nữ sinh Sài Gòn thập niên 60.',
-        isModest: true
-      },
-      {
-        id: 'neck-co-thuyen-xinh',
-        name: 'Cổ Thuyền Tôn Xương Quai Xanh',
-        description: 'Võng nhẹ sang hai vai, thoáng mát khi trẩy hội miền Tây mùa nắng ấm.',
+        description: 'Ve cổ bẻ tròn nhỏ như cánh sen, phong cách nữ sinh Sài Gòn thập niên 60.',
         isModest: true
       }
     ],
     buttonTypes: [
       {
         id: 'btn-cuc-boc-vai-cung-mau',
-        name: 'Hàng Cúc Bọc Vải Cùng Màu',
-        material: 'Vải lụa ép khung kim loại',
-        description: 'Chuỗi cúc dọc chính giữa thân áo tạo đường chỉ dọc ngay ngắn, nền nã.'
+        name: 'Dải Cúc Cài Dọc Giữa (Cùng Màu)',
+        material: 'Khuy bọc lụa cùng màu',
+        description: 'Dải khuy cài dọc chính giữa từ cổ xuống vạt áo thẳng tắp ngay ngắn.'
       },
       {
         id: 'btn-cuc-xa-cu-nam-bo',
-        name: 'Cúc Xà Cừ Ốc Biển Kiên Giang',
-        material: 'Vỏ xà cừ thiên nhiên',
-        description: 'Ánh lên bảy sắc cầu vồng lấp lánh khi có nắng rọi vào.'
+        name: 'Dải Cúc Xà Cừ Ánh Trai',
+        material: 'Xà cừ ốc biển Kiên Giang',
+        description: 'Chuỗi cúc dọc bắt sáng lấp lánh như giọt sương mai trên tà áo.'
       },
       {
-        id: 'btn-cuc-go-dua-ben-tre',
-        name: 'Cúc Gỗ Dừa Thủ Công Mỹ Nghệ',
-        material: 'Gỗ thân dừa lâu năm',
-        description: 'Mộc mạc, gần gũi, tôn vinh sản vật trù phú của miền Nam.'
+        id: 'btn-cuc-bam-an',
+        name: 'Dải Khuy Bấm Ẩn Hiện Đại',
+        material: 'Khuy bấm tàng hình',
+        description: 'Giữ hai tà áo phẳng phiu tuyệt đối, tiện lợi khi mặc.'
       }
     ],
     patterns: [
       {
-        id: 'pat-hoa-nhi-vintage',
-        name: 'Họa Tiết Hoa Nhí Đồng Nội',
-        description: 'Những cánh hoa li ti màu pastel tươi sáng trên nền vải tơ mềm mại.',
-        symbolism: 'Sự trẻ trung, tươi tắn như những vườn hoa trái trĩu quả Sa Đéc.'
+        id: 'pat-to-van-may',
+        name: 'Vải Tơ Vân Mây Cổ Truyền',
+        description: 'Lụa tơ dệt hoa văn vân mây uốn lượn bồng bềnh, tạo chiều sâu thị giác thanh tao.',
+        symbolism: 'Sự hanh thông, mềm mại như dòng phù sa sông Cửu Long.'
       },
       {
-        id: 'pat-ke-caro-khan-ran',
-        name: 'Họa Tiết Kẻ Ô Khăn Rằn Cách Điệu',
-        description: 'Biến tấu những đường kẻ caro đen trắng hoặc hồng phấn đặc trưng Nam Bộ.',
-        symbolism: 'Biểu tượng của tinh thần nghĩa khí và lòng can trường miền sông nước.'
+        id: 'pat-gam-det-chim',
+        name: 'Vải Gấm Dệt Họa Tiết Chìm',
+        description: 'Gấm dệt chìm hoa cúc chữ Vạn tinh xảo, hiện lên quý phái khi có ánh sáng rọi vào.',
+        symbolism: 'Nét quý phái, đài các ngầm của phụ nữ gia giáo.'
       },
       {
-        id: 'pat-lua-gam-tron-sang',
-        name: 'Lụa Tơ Tằm Trơn Dệt Gân',
-        description: 'Mặt vải dệt gân chìm tinh tế, mát rượi khi chạm vào da thịt.',
-        symbolism: 'Nét duyên ngầm sang trọng không phô trương.'
+        id: 'pat-v-nhu-bong',
+        name: 'Vải Nhũ Bóng Kim Sa Lộng Lẫy',
+        description: 'Sợi dệt kim sa bắt sáng lóng lánh kiêu sa dưới ánh đèn trình diễn thời trang.',
+        symbolism: 'Sức sống rực rỡ, tươi trẻ và kiêu sa.'
+      },
+      {
+        id: 'pat-dui-tho-moc',
+        name: 'Vải Đũi Tơ Tằm Thô Mộc',
+        description: 'Thớ sợi đũi dệt gân tự nhiên mộc mạc, thấm hút mồ hôi tối ưu trên nền vải trắng.',
+        symbolism: 'Tâm hồn chân chất, hào sảng, chịu thương chịu khó.'
+      },
+      {
+        id: 'pat-sa-xuyen-thau',
+        name: 'Sa Tơ Xuyên Thấu Mềm Mại',
+        description: 'Vải sa tơ mỏng rủ thướt tha, bay bổng theo từng bước đi.',
+        symbolism: 'Nét duyên thầm dịu ngọt miền sông nước.'
       }
     ],
     recommendedBottoms: [
+      {
+        id: 'bot-quan-ong-xeo-lua-trang-nga',
+        name: 'Quần Lụa Trắng Ngà Ống Xéo Cổ Phục',
+        category: 'quan-suong',
+        description: 'Ống rộng xòe nhẹ tự nhiên ở gấu, lụa tự nhiên màu trắng ngà rủ mềm mại, cạp phẳng phiu, dài chạm đất.',
+        appropriateFor: 'Phối thanh lịch cùng áo bà ba'
+      },
+
+      {
+        id: 'bot-vay-xep-ly-dai',
+        name: 'Chân Váy Xếp Ly Dài Phom Chữ A Chạm Đất',
+        category: 'chan-vay',
+        description: 'Phong cách cổ điển tối giản hoàn toàn trơn màu trắng kem/trắng ngà mờ lì trang nhã. Chất vải dày dặn giữ phom phồng chữ A tự nhiên không rũ gãy. Cạp cao bản vừa phẳng phiu đứng dáng, dưới cạp là các nếp xếp ly bản lớn đối xứng mở rộng dần về phía gấu, chạy thẳng tắp kéo dài tỷ lệ cơ thể. Chân váy dài chạm đất, viền gấp mí phẳng chỉn chu, gấu lượn sóng mềm mại theo bước đi.',
+        appropriateFor: 'Phối thanh tao quý phái cùng Áo Bà Ba truyền thống'
+      },
+      {
+        id: 'bot-vay-lua-bong-cat-xeo',
+        name: 'Chân Váy Lụa Satin Cắt Xéo Bay Bổng',
+        category: 'chan-vay',
+        description: 'Phong cách tối giản thanh lịch trơn màu hoàn toàn, sắc trắng ngà trang nhã cùng độ bóng mờ sang trọng của lụa satin mượt mà. Cạp phẳng phiu ôm gọn eo kết hợp kỹ thuật cắt xéo vải (bias cut) ôm nhẹ phần hông rồi buông rủ thành những dải sóng mềm mại dọc thân, xòe nhẹ duyên dáng về phía gấu lượn sóng uyển chuyển.',
+        appropriateFor: 'Phối thanh lịch cùng Áo Bà Ba dạo phố'
+      },
       {
         id: 'bot-quan-lua-den-ba-ba',
         name: 'Quần Lụa Đen Ống Suông Thẳng',

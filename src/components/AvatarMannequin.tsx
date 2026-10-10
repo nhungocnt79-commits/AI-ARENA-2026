@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CostumeOutfitState, Hairstyle, FaceShape, Gender } from '../types/costume';
 import { COSTUME_ROOTS } from '../data/costumeData';
-import { Smile, Sparkles, Ruler, RotateCcw, Palette, Sliders, SunMedium, User } from 'lucide-react';
+import { Smile, Sparkles, Ruler, RotateCcw, Palette, Sliders, SunMedium, User, Layers, Eye, EyeOff } from 'lucide-react';
 import { HairThumbnailCard } from './HairThumbnailCard';
 
 interface AvatarMannequinProps {
@@ -10,6 +10,8 @@ interface AvatarMannequinProps {
   onEditAvatar?: () => void;
   onQuickUpdateAvatar?: (updated: Partial<CostumeOutfitState['avatar']>) => void;
   heightClass?: string;
+  forceExplodedLayers?: boolean;
+  isThumbnail?: boolean;
 }
 
 export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
@@ -17,30 +19,39 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
   showDetailsOverlay = true,
   onEditAvatar,
   onQuickUpdateAvatar,
-  heightClass = 'h-[520px]'
+  heightClass = 'h-[520px]',
+  forceExplodedLayers = false,
+  isThumbnail = false,
 }) => {
   const root = COSTUME_ROOTS[outfit.rootId];
   const { top, bottom, accessories, avatar } = outfit;
-
-  // Studio Ghibli Natural Warm Porcelain & Soft Peach Skin Tone
-  const skinColor = avatar.skinTone === 'fair' ? '#FFF6EE' : avatar.skinTone === 'natural' ? '#FDF0E6' : '#F6DFCE';
-  const skinShade = avatar.skinTone === 'fair' ? '#F7C6B6' : avatar.skinTone === 'natural' ? '#ECA98D' : '#D88A60';
-
-  // Face shape: oval (trái xoan) or round (mặt tròn)
-  const faceShape = avatar.faceShape || 'oval';
 
   // Gender: 'female' (mặc định) hoặc 'male' (nhân vật nam)
   const gender: Gender = avatar.gender || 'female';
   const isMale = gender === 'male';
 
+  // Face shape: oval (trái xoan) or round (mặt tròn)
+  const faceShape = avatar.faceShape || 'oval';
+
+  // Skin Tone: Nữ tông sáng/hồng đào pastel, Nam tông da ấm/ngăm nhẹ tự nhiên (warm sand / sun-kissed)
+  const skinColor = isMale
+    ? (avatar.skinTone === 'fair' ? '#F7E7D7' : avatar.skinTone === 'natural' ? '#EED7C1' : '#DFBEA1')
+    : (avatar.skinTone === 'fair' ? '#FFF6EE' : avatar.skinTone === 'natural' ? '#FDF0E6' : '#F6DFCE');
+  const skinShade = isMale
+    ? (avatar.skinTone === 'fair' ? '#DEC0A7' : avatar.skinTone === 'natural' ? '#CFAB8D' : '#BF9473')
+    : (avatar.skinTone === 'fair' ? '#F7C6B6' : avatar.skinTone === 'natural' ? '#ECA98D' : '#D88A60');
+
   // User customized physique: Height (140 - 200 cm) and Weight (40 - 100 kg)
-  // Standard default values: Nữ (160 cm, 52 kg) | Nam (172 cm, 64 kg)
-  const defaultStandardHeight = isMale ? 172 : 160;
-  const defaultStandardWeight = isMale ? 64 : 52;
+  // Chuẩn nhân trắc học: Nam 7.5 - 8 đầu (178cm, 68kg), Nữ (160cm, 52kg)
+  const defaultStandardHeight = isMale ? 178 : 160;
+  const defaultStandardWeight = isMale ? 68 : 52;
 
   const height = avatar.height ?? defaultStandardHeight;
   const weight = avatar.weight ?? defaultStandardWeight;
   const [showPhysiqueControls, setShowPhysiqueControls] = useState(false);
+  const [showLayerExplodedView, setShowLayerExplodedView] = useState(forceExplodedLayers);
+  // Cầm quạt xếp truyền thống tua rua đỏ tương đương hình mẫu trong poster
+  const [isHoldingFan, setIsHoldingFan] = useState(false);
 
   // Studio Ghibli warm pastel anime filter state
   // Types: 'ghibli-warm' (default warm pastel film), 'ghibli-sunlit' (golden hour nostagia), 'ghibli-watercolor' (soft watercolor dream), 'natural' (crisp studio)
@@ -55,15 +66,20 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
     undefined;
 
   // Scale calculations relative to reference standard:
-  // Base standard reference: Female 160cm/52kg, Male has broader shoulder and taller baseline
-  const baseRefHeight = isMale ? 170 : 160;
-  const baseRefWeight = isMale ? 62 : 52;
-  const scaleY = (1 + (height - baseRefHeight) * 0.0034) * (isMale ? 1.04 : 1.0);
-  const scaleX = (1 + (weight - baseRefWeight) * 0.0052) * (isMale ? 1.07 : 1.0);
+  // Base standard reference: Female 160cm/52kg, Male 178cm/68kg (tỉ lệ 7.5 - 8 đầu)
+  // Biến thiên hình thể rõ rệt: chiều cao từ 140cm đến 200cm, cân nặng từ 40kg đến 100kg
+  const baseRefHeight = isMale ? 178 : 160;
+  const baseRefWeight = isMale ? 68 : 52;
+  const heightRatio = (height - baseRefHeight) / (height >= baseRefHeight ? 40 : 20);
+  const weightRatio = (weight - baseRefWeight) / (weight >= baseRefWeight ? 48 : 12);
+  // Nam có tỷ lệ cao ráo, vai ngang vững chãi (scale nhẹ theo nhân trắc học 7.8 đầu)
+  const scaleY = (1 + heightRatio * 0.16) * (isMale ? 1.05 : 1.0);
+  const scaleX = (1 + weightRatio * 0.22) * (isMale ? 1.05 : 1.0);
 
   // Center is x=180, vertical anchor is feet/ground at y=435
   const mannequinTransform = `translate(180, 435) scale(${scaleX.toFixed(4)}, ${scaleY.toFixed(4)}) translate(-180, -435)`;
 
+  // Công thức BMI: cân nặng (kg) chia cho chiều cao bình phương (m^2)
   const bmi = Number((weight / Math.pow(height / 100, 2)).toFixed(1));
   const getBmiStatus = (val: number) => {
     if (val < 18.5) return 'Mảnh mai';
@@ -88,12 +104,19 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
   const shoesId = accessories.shoesId;
   const hairstyle: Hairstyle = avatar.hairstyle;
 
-  // Studio Ghibli Hand-Drawn Hair Palette (Warm chestnut, roasted espresso & sunlit amber luster)
-  const hairDark = '#1E1612';     // Deep sepia base
-  const hairMid = '#2F231B';      // Warm chestnut body
-  const hairSoft = '#443327';     // Hand-drawn soft mid-tone
-  const hairSheen = '#634B3B';    // Subtle organic curve
-  const hairHalo = '#9A775C';     // Sunlit warm amber luster
+  // Dynamic Hair Color Palette & Clean Line-Art Tones
+  const hairColorHex = avatar.hairColor || '#1A1A1A';
+  const colorTone = 
+    hairColorHex === '#2E2E32' ? { dark: '#18181B', mid: '#2E2E32', soft: '#3F3F46', light: '#52525B', sheen: '#71717A', halo: '#A1A1AA' } :
+    hairColorHex === '#4A3728' ? { dark: '#24160E', mid: '#4A3728', soft: '#5E4532', light: '#785A41', sheen: '#967253', halo: '#C4A482' } :
+    hairColorHex === '#5C4033' ? { dark: '#2B1A13', mid: '#5C4033', soft: '#714F3F', light: '#8B624E', sheen: '#A97A63', halo: '#D2A68D' } :
+    { dark: '#141210', mid: '#1E1A17', soft: '#2D2723', light: '#443D37', sheen: '#5E544C', halo: '#9E9287' };
+
+  const hairDark = colorTone.dark;
+  const hairMid = colorTone.mid;
+  const hairSoft = colorTone.soft;
+  const hairSheen = colorTone.sheen;
+  const hairHalo = colorTone.halo;
 
   // Handle quick update
   const handleFaceShapeChange = (shape: FaceShape) => {
@@ -112,23 +135,150 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
     }
   };
 
+  // Dáng tay búp măng đoan trang & Cầm quạt xếp truyền thống tua rua đỏ (tương đương ảnh poster mẫu)
+  const renderHandsAndFan = () => {
+    if (isHoldingFan) {
+      return (
+        <g id="traditional-fan-and-hands" className="transition-all duration-300">
+          {/* Quạt xếp gỗ và tua rua đỏ truyền thống cầm chéo trước eo/ngực */}
+          <g id="wooden-folding-fan-cluster" transform="translate(180, 212) rotate(-28)">
+            {/* Thân nan quạt gỗ xếp (Folding fan ribs) */}
+            <rect x="-10" y="-38" width="20" height="74" rx="3.5" fill="url(#fanRibGrad)" stroke="#B89772" strokeWidth="1.2" />
+            <line x1="-5" y1="-32" x2="-5" y2="30" stroke="#D4AF37" strokeWidth="0.8" />
+            <line x1="0" y1="-34" x2="0" y2="32" stroke="#B89772" strokeWidth="1" />
+            <line x1="5" y1="-32" x2="5" y2="30" stroke="#D4AF37" strokeWidth="0.8" />
+            
+            {/* Viền vàng nẹp quạt */}
+            <path d="M-10,-35 Q0,-38 10,-35" stroke="#F59E0B" strokeWidth="1.5" fill="none" />
+
+            {/* Chốt tán quạt đồng thau */}
+            <circle cx="0" cy="33" r="3.2" fill="#D97706" stroke="#92400E" strokeWidth="0.8" />
+            <circle cx="0" cy="33" r="1.4" fill="#FEF08A" />
+
+            {/* Khuyên treo tua rua */}
+            <ellipse cx="0" cy="37.5" rx="2.5" ry="2" fill="none" stroke="#D97706" strokeWidth="1" />
+
+            {/* Nút thắt cát tường & hạt ngọc bích phong thủy */}
+            <circle cx="0" cy="41" r="2.2" fill="#10B981" stroke="#065F46" strokeWidth="0.6" />
+            <rect x="-3" y="44" width="6" height="3" rx="1" fill="#F59E0B" stroke="#B45309" strokeWidth="0.5" />
+
+            {/* Dải tua rua đỏ thướt tha buông rủ dài */}
+            <path
+              d="M-3.5,47 Q-5,68 -4,92 L4,92 Q5,68 3.5,47 Z"
+              fill="url(#tasselSilkGrad)"
+              stroke="#7F1D1D"
+              strokeWidth="0.6"
+            />
+            <line x1="-2" y1="50" x2="-2.5" y2="90" stroke="#EF4444" strokeWidth="0.6" />
+            <line x1="0" y1="50" x2="0" y2="91" stroke="#F87171" strokeWidth="0.7" />
+            <line x1="2" y1="50" x2="2.5" y2="90" stroke="#EF4444" strokeWidth="0.6" />
+          </g>
+
+          {/* Hai bàn tay búp măng cầm quạt duyên dáng */}
+          {/* Tay trái đỡ cạnh dưới quạt */}
+          <path
+            d="M166,212 Q173,207 179,211 Q182,216 177,222 Q170,224 165,218 Z"
+            fill={skinColor}
+            stroke={skinShade}
+            strokeWidth="0.8"
+          />
+          <path d="M170,214 Q176,217 180,214" stroke={skinShade} strokeWidth="0.75" fill="none" />
+          <path d="M171,217 Q177,220 180,217" stroke={skinShade} strokeWidth="0.75" fill="none" />
+
+          {/* Tay phải ôm chốt quạt */}
+          <path
+            d="M178,210 Q186,206 193,211 Q196,218 191,223 Q184,225 178,218 Z"
+            fill={skinColor}
+            stroke={skinShade}
+            strokeWidth="0.8"
+          />
+          <path d="M182,213 Q188,217 192,214" stroke={skinShade} strokeWidth="0.75" fill="none" />
+          <path d="M183,216 Q189,220 192,217" stroke={skinShade} strokeWidth="0.75" fill="none" />
+          <path d="M179,211 Q184,213 186,210" stroke={skinShade} strokeWidth="0.75" fill="none" />
+        </g>
+      );
+    }
+
+    // Khi mặc áo ngũ thân tay thụng, phần ống tay thụng đã may lồng chéo vào nhau ngang bụng (khoanh tay).
+    // Nếu không cầm quạt, bàn tay ẩn trang nhã bên trong ống tay áo thụng đúng chuẩn phong tục xưa.
+    if (outfit.rootId === 'ngu-than' && top.silhouetteId === 'ngu-than-tay-thung-trang-trong') {
+      return null;
+    }
+
+    if (isMale) {
+      return (
+        <g id="male-hands-firm" className="transition-all duration-300">
+          {/* Bàn tay nam: Khỏe khoắn, gân guốc, một tay nắm nhẹ đai áo/đặt hông đĩnh đạc */}
+          {/* Tay trái giữ nhẹ mép đai áo */}
+          <path
+            d="M152,212 Q160,208 168,210 Q170,218 162,224 Q154,222 152,212 Z"
+            fill={skinColor}
+            stroke={skinShade}
+            strokeWidth="1.1"
+          />
+          <path d="M156,214 L164,216" stroke={skinShade} strokeWidth="1" fill="none" />
+          <path d="M156,218 L163,220" stroke={skinShade} strokeWidth="0.9" fill="none" />
+
+          {/* Tay phải buông thẳng hoặc nắm nhẹ tự nhiên bên hông */}
+          <path
+            d="M208,212 Q200,208 192,210 Q190,218 198,224 Q206,222 208,212 Z"
+            fill={skinColor}
+            stroke={skinShade}
+            strokeWidth="1.1"
+          />
+          <path d="M204,214 L196,216" stroke={skinShade} strokeWidth="1" fill="none" />
+          <path d="M204,218 L197,220" stroke={skinShade} strokeWidth="0.9" fill="none" />
+        </g>
+      );
+    }
+
+    return (
+      <g id="clasped-hands-graceful" className="transition-all duration-300">
+        {/* Đôi bàn tay búp măng đan đoan trang trước eo */}
+        <path
+          d="M169,209 Q177,204 185,208 Q190,214 186,221 Q177,225 169,218 Z"
+          fill={skinColor}
+          stroke={skinShade}
+          strokeWidth="0.85"
+        />
+        {/* Các ngón tay thon thả đan xếp lớp thanh tao */}
+        <path d="M173,212 Q180,215 186,212" stroke={skinShade} strokeWidth="0.8" fill="none" />
+        <path d="M174,215 Q181,218 186,215" stroke={skinShade} strokeWidth="0.8" fill="none" />
+        <path d="M173,218 Q180,221 185,218" stroke={skinShade} strokeWidth="0.75" fill="none" />
+        <path d="M172,221 Q178,223 183,221" stroke={skinShade} strokeWidth="0.7" fill="none" />
+        <path d="M171,208 Q176,210 180,207" stroke={skinShade} strokeWidth="0.8" fill="none" />
+        {/* Ánh bóng móng tay nhẹ */}
+        <circle cx="185" cy="212" r="0.45" fill="#FFFFFF" fillOpacity="0.75" />
+        <circle cx="185" cy="215" r="0.45" fill="#FFFFFF" fillOpacity="0.75" />
+      </g>
+    );
+  };
+
+  const effectiveShowDetails = !isThumbnail && showDetailsOverlay;
+
   return (
-    <div className={`relative w-full ${heightClass} flex flex-col items-center justify-between overflow-hidden rounded-3xl bg-gradient-to-b from-[#FDF8F2] via-[#F6EDE1] to-[#EBE0D0] border border-[#D8C7B0]/90 shadow-inner select-none transition-all duration-300`}>
+    <div className={`relative w-full ${heightClass} flex flex-col items-center justify-between overflow-hidden select-none transition-all duration-300 ${
+      isThumbnail 
+        ? '!rounded-none !border-0 !shadow-none !bg-transparent p-0 justify-center'
+        : 'rounded-3xl bg-gradient-to-b from-[#FDF8F2] via-[#F6EDE1] to-[#EBE0D0] border border-[#D8C7B0]/90 shadow-inner'
+    }`}>
       {/* Subtle Ghibli sky & clouds / cultural architectural backdrop */}
-      <div className="absolute inset-0 pointer-events-none opacity-30 flex items-center justify-center">
-        <svg viewBox="0 0 400 500" className="w-full h-full object-cover">
-          <circle cx="200" cy="180" r="140" fill="none" stroke="#D2BBA0" strokeWidth="1.5" strokeDasharray="4 4" />
-          <circle cx="200" cy="180" r="170" fill="none" stroke="#D2BBA0" strokeWidth="0.8" />
-          {/* Gentle pastel clouds resembling Ghibli afternoon skies */}
-          <path d="M40,90 Q65,65 95,85 Q125,70 145,95 Q165,115 135,125 Q70,125 40,90 Z" fill="#FFF7ED" opacity="0.6" />
-          <path d="M260,110 Q285,85 315,100 Q345,90 365,115 Q375,135 345,140 Q290,140 260,110 Z" fill="#FFF7ED" opacity="0.55" />
-          <line x1="60" y1="20" x2="60" y2="480" stroke="#C8B39B" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="340" y1="20" x2="340" y2="480" stroke="#C8B39B" strokeWidth="1" strokeDasharray="3 3" />
-        </svg>
-      </div>
+      {!isThumbnail && (
+        <div className="absolute inset-0 pointer-events-none opacity-30 flex items-center justify-center">
+          <svg viewBox="0 0 400 500" className="w-full h-full object-cover">
+            <circle cx="200" cy="180" r="140" fill="none" stroke="#D2BBA0" strokeWidth="1.5" strokeDasharray="4 4" />
+            <circle cx="200" cy="180" r="170" fill="none" stroke="#D2BBA0" strokeWidth="0.8" />
+            {/* Gentle pastel clouds resembling Ghibli afternoon skies */}
+            <path d="M40,90 Q65,65 95,85 Q125,70 145,95 Q165,115 135,125 Q70,125 40,90 Z" fill="#FFF7ED" opacity="0.6" />
+            <path d="M260,110 Q285,85 315,100 Q345,90 365,115 Q375,135 345,140 Q290,140 260,110 Z" fill="#FFF7ED" opacity="0.55" />
+            <line x1="60" y1="20" x2="60" y2="480" stroke="#C8B39B" strokeWidth="1" strokeDasharray="3 3" />
+            <line x1="340" y1="20" x2="340" y2="480" stroke="#C8B39B" strokeWidth="1" strokeDasharray="3 3" />
+          </svg>
+        </div>
+      )}
 
       {/* Top Floating Info Bar */}
-      {showDetailsOverlay && (
+      {effectiveShowDetails && (
         <div className="w-full z-20 px-3.5 pt-3 space-y-2">
           <div className="flex items-center justify-between">
             <div className="bg-[#FAF7F2]/95 backdrop-blur-md px-3 py-1 rounded-xl border border-[#D8C7B0] shadow-2xs text-[11px] flex items-center gap-1.5">
@@ -137,8 +287,23 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
               <span className="text-[#8C7A6B]">{root.regionalTag}</span>
             </div>
 
-            {/* Quick Controls: Vóc Dáng (Chiều cao & Cân nặng) + Dáng Mặt */}
+            {/* Quick Controls: Tách Lớp + Vóc Dáng (Chiều cao & Cân nặng) + Dáng Mặt */}
             <div className="bg-white/95 backdrop-blur-md px-1.5 py-1 rounded-xl border border-[#D8C7B0] shadow-2xs flex items-center gap-1">
+              {/* Nút Bóc Tách Từng Lớp / Ẩn Lớp Hiển Thị theo yêu cầu */}
+              <button
+                type="button"
+                onClick={() => setShowLayerExplodedView(!showLayerExplodedView)}
+                title={showLayerExplodedView ? "Bấm để ẩn lớp hiển thị và khép trang phục lại đúng vị trí" : "Bóc tách từng lớp trang phục (Áo yếm lót trong, áo khoác ngoài, dải bao, quần lụa) hiển thị phía bên tay trái"}
+                className={`px-2 py-0.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+                  showLayerExplodedView
+                    ? 'bg-[#8B1E1E] text-white shadow-2xs ring-1 ring-[#8B1E1E]'
+                    : 'text-[#4A3525] bg-[#FAF7F2] hover:bg-white border border-[#D8C7B0]'
+                }`}
+              >
+                <Layers className="w-3 h-3 text-current" />
+                <span>{showLayerExplodedView ? 'Ẩn lớp hiển thị' : 'Tách lớp hiển thị'}</span>
+              </button>
+
               {/* Nút bật thanh trượt vóc dáng */}
               <button
                 type="button"
@@ -146,7 +311,7 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
                 title="Tùy chỉnh chiều cao (140-200cm) và cân nặng (40-100kg)"
                 className={`px-2 py-0.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
                   showPhysiqueControls || height !== 160 || weight !== 52
-                    ? 'bg-[#9B2C2C] text-white shadow-2xs'
+                    ? 'bg-[#8B1E1E] text-white shadow-2xs'
                     : 'text-[#6B5A4B] hover:bg-[#FAF7F2]'
                 }`}
               >
@@ -160,7 +325,7 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
                 title="Dáng Mặt Trái Xoan (Thanh Tú, V-Line)"
                 className={`px-2 py-0.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
                   faceShape === 'oval'
-                    ? 'bg-[#9B2C2C] text-white shadow-2xs'
+                    ? 'bg-[#8B1E1E] text-white shadow-2xs'
                     : 'text-[#6B5A4B] hover:bg-[#FAF7F2]'
                 }`}
               >
@@ -172,11 +337,25 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
                 title="Dáng Mặt Tròn (Bầu Bĩnh, Đáng Yêu)"
                 className={`px-2 py-0.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
                   faceShape === 'round'
-                    ? 'bg-[#9B2C2C] text-white shadow-2xs'
+                    ? 'bg-[#8B1E1E] text-white shadow-2xs'
                     : 'text-[#6B5A4B] hover:bg-[#FAF7F2]'
                 }`}
               >
                 ◯ Mặt Tròn
+              </button>
+
+              {/* Nút Cầm Quạt Xếp Truyền Thống Tua Rua Đỏ (tương đương ảnh poster mẫu) */}
+              <button
+                type="button"
+                onClick={() => setIsHoldingFan(!isHoldingFan)}
+                title="Cầm quạt xếp truyền thống tua rua đỏ (tương đương hình mẫu trong tranh poster)"
+                className={`px-2 py-0.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+                  isHoldingFan
+                    ? 'bg-[#8B1E1E] text-white shadow-2xs'
+                    : 'text-[#6B5A4B] hover:bg-[#FAF7F2]'
+                }`}
+              >
+                <span>🪭 {isHoldingFan ? 'Cầm quạt' : 'Quạt xếp'}</span>
               </button>
 
               {/* Nút tùy chọn Filter Hoạt Hình Ghibli Pastel */}
@@ -199,7 +378,7 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
                   type="button"
                   onClick={onEditAvatar}
                   title="Mở bảng tùy chọn chi tiết kiểu tóc & tải ảnh đại diện"
-                  className="ml-0.5 p-1 text-[#6B5A4B] hover:text-[#9B2C2C] hover:bg-[#FAF7F2] rounded-lg transition-colors cursor-pointer"
+                  className="ml-0.5 p-1 text-[#6B5A4B] hover:text-[#8B1E1E] hover:bg-[#FAF7F2] rounded-lg transition-colors cursor-pointer"
                 >
                   <Smile className="w-3.5 h-3.5" />
                 </button>
@@ -251,20 +430,20 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
             <div className="w-full p-3 bg-white/95 backdrop-blur-md rounded-2xl border border-[#D8C7B0] shadow-md space-y-2.5 animate-in fade-in slide-in-from-top-1 duration-150">
               <div className="flex items-center justify-between pb-1 border-b border-[#F0E6D8]">
                 <div className="flex items-center gap-1.5">
-                  <Ruler className="w-3.5 h-3.5 text-[#9B2C2C]" />
+                  <Ruler className="w-3.5 h-3.5 text-[#8B1E1E]" />
                   <span className="text-[11px] font-bold text-[#2C241E] uppercase tracking-wide">
                     Vóc Dáng Nhân Vật
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-semibold text-[#8C7A6B]">
-                    BMI: <strong className="text-[#9B2C2C]">{bmi}</strong> ({getBmiStatus(bmi)})
+                    BMI: <strong className="text-[#8B1E1E]">{bmi}</strong> ({getBmiStatus(bmi)})
                   </span>
                   {(height !== 160 || weight !== 52) && (
                     <button
                       type="button"
                       onClick={() => handlePhysiqueChange(160, 52)}
-                      className="text-[9px] text-[#9B2C2C] hover:underline font-bold flex items-center gap-0.5"
+                      className="text-[9px] text-[#8B1E1E] hover:underline font-bold flex items-center gap-0.5"
                       title="Đặt lại chuẩn 160 cm và 52 kg"
                     >
                       <RotateCcw className="w-2.5 h-2.5" />
@@ -278,7 +457,7 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="text-[#6B5A4B] font-medium">Chiều cao (140 - 200 cm):</span>
-                  <span className="font-bold text-[#9B2C2C] bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                  <span className="font-bold text-[#8B1E1E] bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
                     {height} cm
                   </span>
                 </div>
@@ -289,7 +468,7 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
                   step={1}
                   value={height}
                   onChange={(e) => handlePhysiqueChange(Number(e.target.value), weight)}
-                  className="w-full accent-[#9B2C2C] cursor-pointer h-1.5 bg-[#E8DEC8] rounded-lg"
+                  className="w-full accent-[#8B1E1E] cursor-pointer h-1.5 bg-[#E8DEC8] rounded-lg"
                 />
                 <div className="flex justify-between text-[9px] text-[#8C7A6B]">
                   <span>140 cm (Nhỏ nhắn)</span>
@@ -302,7 +481,7 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="text-[#6B5A4B] font-medium">Cân nặng (40 - 100 kg):</span>
-                  <span className="font-bold text-[#9B2C2C] bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                  <span className="font-bold text-[#8B1E1E] bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
                     {weight} kg
                   </span>
                 </div>
@@ -313,7 +492,7 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
                   step={1}
                   value={weight}
                   onChange={(e) => handlePhysiqueChange(height, Number(e.target.value))}
-                  className="w-full accent-[#9B2C2C] cursor-pointer h-1.5 bg-[#E8DEC8] rounded-lg"
+                  className="w-full accent-[#8B1E1E] cursor-pointer h-1.5 bg-[#E8DEC8] rounded-lg"
                 />
                 <div className="flex justify-between text-[9px] text-[#8C7A6B]">
                   <span>40 kg (Mảnh mai)</span>
@@ -337,7 +516,7 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
                     onClick={() => handlePhysiqueChange(preset.h, preset.w)}
                     className={`px-2 py-0.5 rounded-md text-[9px] font-medium whitespace-nowrap transition-colors cursor-pointer border ${
                       height === preset.h && weight === preset.w
-                        ? 'bg-[#9B2C2C] text-white border-[#9B2C2C]'
+                        ? 'bg-[#8B1E1E] text-white border-[#8B1E1E]'
                         : 'bg-[#FAF7F2] text-[#4A3B32] border-[#E8DEC8] hover:bg-white'
                     }`}
                   >
@@ -350,11 +529,107 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
         </div>
       )}
 
+      {/* Floating Exploded Layers Rack on Left of Character (Hiển thị các lớp trang phục phía bên tay trái nhân vật) */}
+      {showLayerExplodedView && (
+        <div className="absolute top-16 left-3 z-30 w-48 sm:w-56 bg-white/95 backdrop-blur-md rounded-2xl border-2 border-[#8B1E1E]/40 shadow-xl p-3 space-y-2 animate-in fade-in slide-in-from-left-2 duration-200">
+          <div className="flex items-center justify-between pb-1.5 border-b border-[#F0E6D8]">
+            <span className="text-[11px] font-bold text-[#8B1E1E] flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-[#8B1E1E]" />
+              Tách Lớp Trang Phục
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowLayerExplodedView(false)}
+              className="text-[10px] text-[#8C7A6B] hover:text-[#8B1E1E] font-bold px-1.5 py-0.5 rounded-md hover:bg-rose-50 cursor-pointer"
+              title="Ẩn lớp hiển thị và lồng ghép trang phục đúng chuẩn"
+            >
+              Ẩn ✕
+            </button>
+          </div>
+
+          <p className="text-[9px] text-[#6B5A4B] leading-tight">
+            Hiển thị riêng từng lớp để người dùng dễ cảm nhận độ hòa hợp màu sắc & phom dáng:
+          </p>
+
+          <div className="space-y-1.5 text-[10px]">
+            {/* Lớp 1: Yếm Lót Trong */}
+            <div className="p-1.5 rounded-xl bg-[#FFF1F2] border border-rose-200 flex items-center gap-2 shadow-2xs">
+              <span
+                className="w-4 h-4 rounded-full border border-black/15 shrink-0 shadow-2xs"
+                style={{ backgroundColor: top.innerYemColor || '#DB2777' }}
+              />
+              <div className="overflow-hidden">
+                <p className="font-bold text-rose-950 truncate">Lớp 1: Áo Yếm Lót Trong</p>
+                <p className="text-[9px] text-rose-700 truncate">Sắc yếm đào: {top.innerYemColor || '#DB2777'}</p>
+              </div>
+            </div>
+
+            {/* Lớp 2: Áo Khoác Ngoài */}
+            <div className="p-1.5 rounded-xl bg-[#FAF7F2] border border-[#E8DEC8] flex items-center gap-2 shadow-2xs">
+              <span
+                className="w-4 h-4 rounded-full border border-black/15 shrink-0 shadow-2xs"
+                style={{ backgroundColor: top.primaryColor }}
+              />
+              <div className="overflow-hidden">
+                <p className="font-bold text-[#2C241E] truncate">Lớp 2: {root.name}</p>
+                <p className="text-[9px] text-[#8C7A6B] truncate">Sắc áo: {top.primaryColor}</p>
+              </div>
+            </div>
+
+            {/* Lớp 3: Dải Thắt Lưng / Cúc */}
+            <div className="p-1.5 rounded-xl bg-teal-50 border border-teal-200 flex items-center gap-2 shadow-2xs">
+              <span
+                className="w-4 h-4 rounded-full border border-black/15 shrink-0 shadow-2xs"
+                style={{ backgroundColor: top.sashColor || '#0D9488' }}
+              />
+              <div className="overflow-hidden">
+                <p className="font-bold text-teal-950 truncate">Lớp 3: Dải Bao / Cúc Khuy</p>
+                <p className="text-[9px] text-teal-700 truncate">
+                  {outfit.rootId === 'tu-than' ? 'Dải bao thắt eo xanh' : 'Hàng khuy cài trang nhã'}
+                </p>
+              </div>
+            </div>
+
+            {/* Lớp 4: Quần Lụa Bên Dưới */}
+            <div className="p-1.5 rounded-xl bg-[#F4F4F5] border border-zinc-200 flex items-center gap-2 shadow-2xs">
+              <span
+                className="w-4 h-4 rounded-full border border-black/15 shrink-0 shadow-2xs"
+                style={{ backgroundColor: bottom.color }}
+              />
+              <div className="overflow-hidden">
+                <p className="font-bold text-zinc-950 truncate">Lớp 4: Quần Lụa Bên Dưới</p>
+                <p className="text-[9px] text-zinc-600 truncate">Màu quần: {bottom.color}</p>
+              </div>
+            </div>
+
+            {/* Lớp 5: Phụ Kiện Đi Kèm */}
+            <div className="p-1.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2 shadow-2xs">
+              <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+              <div className="overflow-hidden">
+                <p className="font-bold text-amber-950 truncate">Lớp 5: Phụ Kiện Đã Phối</p>
+                <p className="text-[9px] text-amber-700 truncate">
+                  {accessories.jewelryIds.length > 0 ? `${accessories.jewelryIds.length} món trang sức` : 'Giày & Điểm xuyết'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowLayerExplodedView(false)}
+            className="w-full py-1.5 text-[10px] font-bold text-white bg-[#8B1E1E] hover:bg-[#7A1C1C] rounded-xl transition-colors cursor-pointer text-center shadow-xs"
+          >
+            Ẩn lớp hiển thị (Khép lại chuẩn)
+          </button>
+        </div>
+      )}
+
       {/* SVG Canvas for Model + Fitted Clothing Layers */}
       <svg
         id="mannequin-svg-canvas"
-        viewBox="0 -25 360 515"
-        className="w-full flex-1 max-h-[460px] z-10 drop-shadow-md my-auto"
+        viewBox={isThumbnail ? "95 12 170 432" : "0 -25 360 515"}
+        preserveAspectRatio="xMidYMid meet"
+        className={isThumbnail ? "w-full h-full max-h-full object-contain z-10 drop-shadow-xs my-auto" : "w-full flex-1 max-h-[460px] z-10 drop-shadow-md my-auto"}
       >
         <defs>
           {/* Fabric Shading Gradients */}
@@ -368,6 +643,46 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
             <stop offset="0%" stopColor={bottom.color} stopOpacity="1" />
             <stop offset="50%" stopColor={bottom.color} stopOpacity="0.95" />
             <stop offset="100%" stopColor={bottom.color} stopOpacity="0.84" />
+          </linearGradient>
+
+          {/* Hiệu ứng khúc xạ màu Iridescent / Ombre (Ánh tím lavender - ánh xanh ngọc) */}
+          <linearGradient id="iridescentLavenderJadeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#C4B5FD" stopOpacity="0.82" />
+            <stop offset="45%" stopColor="#D8B4FE" stopOpacity="0.75" />
+            <stop offset="75%" stopColor="#A7F3D0" stopOpacity="0.78" />
+            <stop offset="100%" stopColor="#5EEAD4" stopOpacity="0.85" />
+          </linearGradient>
+
+          {/* Đầm hai dây màu hồng san hô bên trong */}
+          <linearGradient id="coralPinkSlipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FDA4AF" />
+            <stop offset="50%" stopColor="#FB7185" />
+            <stop offset="100%" stopColor="#F43F5E" />
+          </linearGradient>
+
+          {/* Porcelain & Peach Skin Tone Gradients (Chuẩn tranh vẽ poster) */}
+          <linearGradient id="skinToneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={avatar.skinTone === 'fair' ? '#FFF9F5' : avatar.skinTone === 'natural' ? '#FDF3EB' : '#F8E7D8'} />
+            <stop offset="100%" stopColor={skinColor} />
+          </linearGradient>
+
+          <linearGradient id="lipGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#BE185D" />
+            <stop offset="50%" stopColor="#E11D48" />
+            <stop offset="100%" stopColor="#F43F5E" />
+          </linearGradient>
+
+          {/* Traditional Wooden Folding Fan & Crimson Tassel Gradients */}
+          <linearGradient id="fanRibGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#FAF5EE" />
+            <stop offset="50%" stopColor="#EFE5D5" />
+            <stop offset="100%" stopColor="#E2D4BF" />
+          </linearGradient>
+
+          <linearGradient id="tasselSilkGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#DC2626" />
+            <stop offset="60%" stopColor="#B91C1C" />
+            <stop offset="100%" stopColor="#991B1B" />
           </linearGradient>
 
           {/* Premium Traditional Vietnamese Silver Kiềng Gradients */}
@@ -395,31 +710,31 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
 
           {/* Webtoon/Anime Hair Gradients */}
           <linearGradient id="hairBackGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#1C1714" />
-            <stop offset="30%" stopColor="#2A221D" />
-            <stop offset="75%" stopColor="#251E19" />
-            <stop offset="100%" stopColor="#16120F" />
+            <stop offset="0%" stopColor={hairDark} />
+            <stop offset="35%" stopColor={hairMid} />
+            <stop offset="75%" stopColor={hairSoft} />
+            <stop offset="100%" stopColor={hairDark} />
           </linearGradient>
 
           <linearGradient id="hairFrontGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#2F251E" />
-            <stop offset="25%" stopColor="#3A3028" />
-            <stop offset="60%" stopColor="#2A221D" />
-            <stop offset="100%" stopColor="#1A1512" />
+            <stop offset="0%" stopColor={colorTone.soft} />
+            <stop offset="30%" stopColor={hairMid} />
+            <stop offset="70%" stopColor={hairDark} />
+            <stop offset="100%" stopColor={hairDark} />
           </linearGradient>
 
           <linearGradient id="animeHalo" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#6E5C4E" stopOpacity="0" />
-            <stop offset="30%" stopColor="#8A7665" stopOpacity="0.45" />
-            <stop offset="50%" stopColor="#AA9380" stopOpacity="0.85" />
-            <stop offset="70%" stopColor="#8A7665" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#6E5C4E" stopOpacity="0" />
+            <stop offset="0%" stopColor={hairSheen} stopOpacity="0" />
+            <stop offset="30%" stopColor={hairHalo} stopOpacity="0.45" />
+            <stop offset="50%" stopColor={colorTone.light} stopOpacity="0.85" />
+            <stop offset="70%" stopColor={hairHalo} stopOpacity="0.45" />
+            <stop offset="100%" stopColor={hairSheen} stopOpacity="0" />
           </linearGradient>
 
           <linearGradient id="strandGloss" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#AA9380" stopOpacity="0.8" />
-            <stop offset="50%" stopColor="#5A4C40" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#2A221D" stopOpacity="0" />
+            <stop offset="0%" stopColor={hairHalo} stopOpacity="0.8" />
+            <stop offset="50%" stopColor={hairSheen} stopOpacity="0.5" />
+            <stop offset="100%" stopColor={hairDark} stopOpacity="0" />
           </linearGradient>
 
           {/* Studio Ghibli Soulful Amber Eyes and Watercolor Peach Blush */}
@@ -440,6 +755,53 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
           {/* Pattern filter/mask */}
           <pattern id="lotusPattern" width="20" height="20" patternUnits="userSpaceOnUse">
             <path d="M10,2 Q14,8 10,14 Q6,8 10,2 Z" fill="#FFFFFF" fillOpacity="0.14" />
+          </pattern>
+
+          {/* 1. Họa tiết Tơ Vân Mây Cổ Truyền (Cloud Jacquard Pattern) */}
+          <pattern id="mannequinCloudJacquard" width="44" height="44" patternUnits="userSpaceOnUse">
+            <path
+              d="M10,22 Q14,14 22,18 Q28,12 34,18 Q40,16 38,24 Q42,30 34,32 Q26,34 20,28 Q14,30 10,22 Z"
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="0.8"
+              strokeOpacity="0.3"
+            />
+            <path
+              d="M14,23 Q18,18 24,21 Q28,17 32,21"
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="0.5"
+              strokeOpacity="0.4"
+            />
+            <path
+              d="M26,38 Q32,34 38,38"
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="0.6"
+              strokeOpacity="0.25"
+            />
+          </pattern>
+
+          {/* 2. Họa tiết Gấm Dệt Chìm Cung Đình (Imperial Damask Brocade) */}
+          <pattern id="mannequinDamaskBrocade" width="36" height="36" patternUnits="userSpaceOnUse">
+            <path
+              d="M12,10 L24,10 L24,18 L12,18 L12,26 L24,26"
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="0.75"
+              strokeOpacity="0.28"
+            />
+            <circle cx="18" cy="18" r="4" fill="none" stroke="#FFFFFF" strokeWidth="0.65" strokeOpacity="0.32" />
+            <circle cx="18" cy="18" r="1.3" fill="#FFFFFF" fillOpacity="0.4" />
+            <path d="M18,11 L18,8 M18,25 L18,28 M11,18 L8,18 M25,18 L28,18" stroke="#FFFFFF" strokeWidth="0.6" strokeOpacity="0.28" />
+          </pattern>
+
+          {/* 3. Họa tiết Vải Nhũ Bóng Kim Sa (Glitter Luster Shimmer) */}
+          <pattern id="mannequinGlitterShimmer" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M8,8 L9,5 L10,8 L13,9 L10,10 L9,13 L8,10 L5,9 Z" fill="#FFFFFF" fillOpacity="0.5" />
+            <path d="M22,20 L22.8,17.5 L23.6,20 L26,20.8 L23.6,21.6 L22.8,24 L22,21.6 L19.6,20.8 Z" fill="#FEF08A" fillOpacity="0.65" />
+            <circle cx="16" cy="8" r="0.7" fill="#FFFFFF" fillOpacity="0.6" />
+            <circle cx="6" cy="22" r="0.6" fill="#FDE047" fillOpacity="0.5" />
           </pattern>
 
           {/* ============================================================== */}
@@ -520,43 +882,95 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
         {/* LAYER 1: BACK HAIR (Chiều sâu 2D Webtoon/Anime sau gáy & lưng) */}
         {/* ============================================================== */}
         <g id="back-hair-layer">
-          {/* Kiểu tóc Nam Cổ Trang: Búi Củ Tỏi / Đỉnh Đầu Nam */}
-          {hairstyle === 'male-topknot-bun' && (
-            <g id="back-hair-male-topknot">
-              <ellipse cx="180" cy="52" rx="14" ry="12" fill="url(#hairBackGrad)" />
-              {/* Búi tóc củ tỏi đỉnh đầu */}
-              <circle cx="180" cy="40" r="10" fill="url(#hairBackGrad)" stroke={hairDark} strokeWidth="1" />
-              <line x1="168" y1="38" x2="192" y2="42" stroke="#B45309" strokeWidth="2.5" strokeLinecap="round" />
-            </g>
-          )}
+          {/* ============================================================== */}
+          {/* HỆ TÓC NAM (6 KIỂU) - LAYER 1: BACK HAIR                       */}
+          {/* ============================================================== */}
 
-          {/* Kiểu tóc Nam Layer Ghibli rủ sau gáy */}
-          {hairstyle === 'male-curtain-layers' && (
-            <g id="back-hair-male-layers">
+          {/* 1. Nam: Rẽ ngôi 7/3 thư sinh (Classic 7/3 Side Part) */}
+          {(hairstyle === 'male-short-part' || hairstyle === 'classic-side-part-73') && (
+            <g id="back-hair-male-73">
               <path
-                d="M162,76 C155,95 152,112 152,126 Q166,132 180,132 Q194,132 208,126 C208,112 205,95 198,76 Z"
+                d="M165,78 C160,85 162,94 168,96 L192,96 C198,94 200,85 195,78 Z"
                 fill="url(#hairBackGrad)"
               />
-              <path d="M154,124 L158,132 L165,126 L172,133 L180,127 L188,133 L195,126 L202,132 L206,124" stroke={hairSoft} strokeWidth="1.2" fill="none" />
             </g>
           )}
 
-          {/* 1. DÀI THẲNG EO (Suôn mượt, tơi thành từng lọn mảnh so le ở đuôi) */}
-          {(hairstyle === 'long-straight-waist' || hairstyle === 'long-flowing') && (
+          {/* 2. Nam: Búi củ tỏi cổ trang cách tân (Heritage Topknot / Man Bun) */}
+          {(hairstyle === 'male-topknot-bun' || hairstyle === 'heritage-topknot-bun') && (
+            <g id="back-hair-male-topknot">
+              <ellipse cx="180" cy="52" rx="14" ry="12" fill="url(#hairBackGrad)" />
+              {/* Búi tóc củ tỏi đỉnh đầu tròn trịa */}
+              <circle cx="180" cy="36" r="11" fill="url(#hairBackGrad)" stroke={hairDark} strokeWidth="1.2" />
+              <ellipse cx="180" cy="35" rx="8" ry="4" fill={hairMid} />
+              {/* Trâm gỗ cổ trang cài ngang búi tóc */}
+              <line x1="164" y1="34" x2="196" y2="38" stroke="#92400E" strokeWidth="2.5" strokeLinecap="round" />
+              <circle cx="165" cy="34" r="2.2" fill="#D97706" />
+            </g>
+          )}
+
+          {/* 3. Nam: Layer mái rũ Ghibli (Shaggy Ghibli Flow) */}
+          {(hairstyle === 'male-curtain-layers' || hairstyle === 'shaggy-ghibli-flow') && (
+            <g id="back-hair-male-layers">
+              <path
+                d="M162,76 C155,95 152,110 150,122 Q165,128 180,128 Q195,128 210,122 C208,110 205,95 198,76 Z"
+                fill="url(#hairBackGrad)"
+              />
+              <path d="M152,120 L156,128 L163,122 L171,129 L180,123 L189,129 L197,122 L204,128 L208,120" stroke={hairSoft} strokeWidth="1.2" fill="none" />
+            </g>
+          )}
+
+          {/* 4. Nam: Tóc ngắn tân thời (Modern Short Taper / Crew Cut) */}
+          {(hairstyle === 'male-short-neat' || hairstyle === 'modern-short-taper') && (
+            <g id="back-hair-male-short-neat">
+              <path
+                d="M166,78 C162,84 164,94 170,95 L190,95 C196,94 198,84 194,78 Z"
+                fill="url(#hairBackGrad)"
+              />
+            </g>
+          )}
+
+          {/* 5. Nam: Bổ luống 5/5 lãng tử (Retro Middle Part Curtain) */}
+          {(hairstyle === 'male-middle-curtain-55' || hairstyle === 'retro-middle-part-55') && (
+            <g id="back-hair-male-middle-55">
+              <path
+                d="M163,78 C158,92 156,106 160,115 Q170,118 180,118 Q190,118 200,115 C204,106 202,92 197,78 Z"
+                fill="url(#hairBackGrad)"
+              />
+              <path d="M161,113 L166,118 L174,115 L180,118 L186,115 L194,118 L199,113" stroke={hairSoft} strokeWidth="1" fill="none" />
+            </g>
+          )}
+
+          {/* 6. Nam: Tóc vuốt Slicked-back Quiff thanh lịch (Slicked-Back Quiff) */}
+          {(hairstyle === 'male-textured-undercut' || hairstyle === 'male-slicked-back-quiff' || hairstyle === 'modern-textured-fade') && (
+            <g id="back-hair-male-quiff">
+              <path
+                d="M166,78 C162,84 163,94 170,95 L190,95 C197,94 198,84 194,78 Z"
+                fill="url(#hairBackGrad)"
+              />
+            </g>
+          )}
+
+          {/* ============================================================== */}
+          {/* HỆ TÓC NỮ (6 KIỂU) - LAYER 1: BACK HAIR                         */}
+          {/* ============================================================== */}
+
+          {/* 1. Nữ: Dài thẳng tự nhiên (Long Sleek Natural) */}
+          {(hairstyle === 'long-straight-waist' || hairstyle === 'long-straight-natural' || hairstyle === 'long-flowing') && (
             <g id="back-hair-long-straight">
-              {/* Lớp nền tối sau lưng */}
+              {/* Lớp suôn mượt phía sau lưng buông qua eo */}
               <path
                 d="M156,76 C144,105 138,160 137,240 C138,258 143,268 148,272 L154,264 L161,275 L169,267 L177,276 L183,276 L191,267 L199,275 L206,264 L212,272 C217,268 222,258 223,240 C222,160 216,105 204,76 Z"
                 fill="url(#hairBackGrad)"
               />
-              {/* Lớp lọn tóc tơi xen kẽ ở đuôi */}
+              {/* Đuôi tóc tỉa layer vát nhọn tự nhiên, không cứng đơ */}
               <path
                 d="M142,210 Q146,245 152,267 L158,260 Q164,250 168,270 L174,262 Q180,250 186,270 L192,262 Q196,250 202,267 L208,260 Q214,245 218,210"
                 stroke={hairSoft}
                 strokeWidth="1.2"
                 fill="none"
               />
-              {/* Các sợi tóc suôn mượt tơi ở đuôi (feathered wisps) */}
+              {/* Sợi suôn mượt thanh thoát */}
               <line x1="154" y1="240" x2="153" y2="271" stroke={hairSheen} strokeWidth="0.8" />
               <line x1="166" y1="235" x2="165" y2="272" stroke={hairSheen} strokeWidth="0.8" />
               <line x1="180" y1="230" x2="180" y2="274" stroke={hairSheen} strokeWidth="0.9" />
@@ -565,27 +979,27 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
             </g>
           )}
 
-          {/* 2. NGẮN NGANG VAI (Tóc lob cúp nhẹ, tỉa layer so le tự nhiên ở đuôi) */}
-          {(hairstyle === 'short-bob-straight' || hairstyle === 'short-shoulder-length' || hairstyle === 'short-modern') && (
+          {/* 2. Nữ: Ngắn ngang vai uốn cụp nhẹ (Soft Bob Collarbone) */}
+          {(hairstyle === 'short-bob-straight' || hairstyle === 'soft-bob-collarbone' || hairstyle === 'short-shoulder-length' || hairstyle === 'short-modern') && (
             <g id="back-hair-short-bob">
               <path
-                d="M154,76 C146,98 141,120 141,142 C146,150 156,152 165,148 L170,144 L180,146 L190,144 L195,148 C204,152 214,150 219,142 C219,120 214,98 206,76 Z"
+                d="M154,76 C146,98 141,118 141,138 C146,146 156,148 165,144 L170,140 L180,142 L190,140 L195,144 C204,148 214,146 219,138 C219,118 214,98 206,76 Z"
                 fill="url(#hairBackGrad)"
               />
-              {/* Tỉa layer so le ở đuôi tóc */}
+              {/* Tỉa layer đuôi cúp nhẹ */}
               <path
-                d="M143,135 Q152,148 162,144 Q172,149 180,144 Q188,149 198,144 Q208,148 217,135"
+                d="M143,132 Q152,144 162,140 Q172,145 180,140 Q188,145 198,140 Q208,144 217,132"
                 stroke={hairSoft}
                 strokeWidth="1.2"
                 fill="none"
               />
-              <path d="M152,125 Q156,145 160,147" stroke={hairSheen} strokeWidth="0.8" fill="none" />
-              <path d="M208,125 Q204,145 200,147" stroke={hairSheen} strokeWidth="0.8" fill="none" />
+              <path d="M152,122 Q156,140 160,142" stroke={hairSheen} strokeWidth="0.8" fill="none" />
+              <path d="M208,122 Q204,140 200,142" stroke={hairSheen} strokeWidth="0.8" fill="none" />
             </g>
           )}
 
-          {/* 3. TẾT 2 BÍM (Lớp chân tóc sau gáy chia ngôi giữa) */}
-          {(hairstyle === 'braided-twin-waist' || hairstyle === 'braided-twin') && (
+          {/* 3. Nữ: Tết hai bím năng động (Playful Twin Braids) */}
+          {(hairstyle === 'braided-twin-waist' || hairstyle === 'playful-twin-braids' || hairstyle === 'braided-twin') && (
             <g id="back-hair-twin-braids">
               <path
                 d="M158,78 C152,94 148,112 148,130 C160,132 176,128 178,118 L180,105 L182,118 C184,128 200,132 212,130 C212,112 208,94 202,78 Z"
@@ -595,45 +1009,45 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
             </g>
           )}
 
-          {/* 4. TẾT 1 BÍM VAI PHẢI (Tóc quét lệch từ sau gáy sang vai phải) */}
-          {hairstyle === 'braided-single-side' && (
+          {/* 4. Nữ: Tết 1 bím lệch vai phải (Side-Swept Braid - Right Shoulder) */}
+          {(hairstyle === 'braided-single-side' || hairstyle === 'side-swept-braid') && (
             <g id="back-hair-single-side-braid">
               <path
                 d="M156,76 C148,96 146,116 148,135 C156,140 170,136 182,130 C194,124 208,118 216,110 C218,98 214,86 204,76 Z"
                 fill="url(#hairBackGrad)"
               />
-              {/* Nét chải tóc xuôi từ trái qua phải */}
+              {/* Chải xuôi mềm từ gáy sang vai phải */}
               <path d="M152,105 Q174,128 204,118" stroke={hairSoft} strokeWidth="1.2" fill="none" />
               <path d="M156,90 Q178,115 208,105" stroke={hairSoft} strokeWidth="1.2" fill="none" />
             </g>
           )}
 
-          {/* 5. BÚI LỆCH PHẢI (Khối búi tròn phồng trễ sau tai phải & lọn mai sau gáy) */}
-          {hairstyle === 'side-bun-right' && (
+          {/* 5. Nữ: Búi lệch về phía bên phải (Asymmetrical Side Low Bun) */}
+          {(hairstyle === 'side-bun-right' || hairstyle === 'asymmetrical-side-bun') && (
             <g id="back-hair-side-bun">
               {/* Tóc sau đầu gom sang phải */}
               <ellipse cx="180" cy="74" rx="22" ry="20" fill="url(#hairBackGrad)" />
-              {/* Khối búi tròn lỏng to trễ lệch sang phải */}
+              {/* Khối búi tròn hoa thanh tú trễ sau tai phải */}
               <circle cx="216" cy="96" r="16" fill="url(#hairBackGrad)" />
               <ellipse cx="218" cy="94" rx="14" ry="14" fill={hairMid} />
-              {/* Nếp uốn xoắn mềm mại của búi tóc (swirl petal texture) */}
+              {/* Nếp xoắn tròn cánh hoa mềm mại */}
               <path d="M206,94 Q216,83 226,92 Q230,104 218,108 Q208,104 208,95" stroke={hairSheen} strokeWidth="1.8" fill="none" />
               <path d="M210,98 Q216,92 222,96 Q224,103 216,104" stroke={hairHalo} strokeWidth="1.2" fill="none" />
-              {/* Lọn tóc mai & gáy uốn lơi buông nhẹ sau vai */}
-              <path d="M208,106 Q218,140 216,175 Q220,198 215,214" stroke={hairDark} strokeWidth="3" strokeLinecap="round" fill="none" />
+              {/* Lọn tóc buông nhẹ sau vai */}
+              <path d="M208,106 Q218,140 216,175 Q220,198 215,214" stroke={hairDark} strokeWidth="2.5" strokeLinecap="round" fill="none" />
               <path d="M209,112 Q217,142 216,177" stroke={hairSoft} strokeWidth="1.4" strokeLinecap="round" fill="none" />
             </g>
           )}
 
-          {/* 6. NỬA ĐẦU TIỂU THƯ (Tóc dài uốn sóng lượn tự nhiên bồng bềnh) */}
-          {hairstyle === 'half-up-princess' && (
+          {/* 6. Nữ: Gợn sóng dài nửa lưng (Mid-Back Soft Mermaid Waves) */}
+          {(hairstyle === 'half-up-princess' || hairstyle === 'mid-back-mermaid-waves') && (
             <g id="back-hair-half-up">
-              {/* Lớp nền sóng tóc uốn lơi bồng bềnh */}
+              {/* Sóng nước lượn sóng mềm mại soft S-curl */}
               <path
                 d="M156,76 C144,105 136,150 142,190 Q136,225 142,255 L150,266 L158,258 L168,268 L176,259 L184,269 L192,260 L202,268 L210,258 Q218,225 214,190 C220,150 214,105 204,76 Z"
                 fill="url(#hairBackGrad)"
               />
-              {/* Đường uốn sóng S-wave bồng bềnh */}
+              {/* Đường uốn sóng mềm mại */}
               <path d="M142,120 Q135,160 146,195 Q138,230 152,262" stroke={hairSoft} strokeWidth="1.5" fill="none" />
               <path d="M216,120 Q223,160 212,195 Q220,230 206,262" stroke={hairSoft} strokeWidth="1.5" fill="none" />
               <path d="M160,140 Q152,190 166,230 L168,266" stroke={hairSheen} strokeWidth="1" fill="none" />
@@ -641,7 +1055,7 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
             </g>
           )}
 
-          {/* Các kiểu phụ: Sóng băng đô, Đuôi ngựa, Bob cụp, Búi cao */}
+          {/* Các kiểu phụ tương thích ngược */}
           {hairstyle === 'wavy-headband' && (
             <path
               d="M156,76 C144,110 138,165 138,248 C150,260 174,262 180,262 C186,262 210,260 222,248 C220,165 216,110 204,76 Z"
@@ -680,40 +1094,165 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
           <path d="M158,380 L174,380 L171,432 L159,432 Z" fill={skinColor} />
           <path d="M186,380 L202,380 L201,432 L189,432 Z" fill={skinColor} />
 
-          {/* Slender neck (centered at x=180, y=104 to 126) */}
-          <path d="M173,104 L187,104 L188,126 L172,126 Z" fill={skinColor} />
-          <path d="M176,120 Q180,123 184,120" stroke={skinShade} strokeWidth="1" fill="none" />
+          {/* Neck base: Nữ thon thả thanh tao, Nam cổ to dày thẳng vững chãi */}
+          {isMale ? (
+            <g id="male-neck-firm">
+              {/* Cổ nam to, dày, thẳng, vững chãi (x=166 đến 194) */}
+              <path d="M166,98 L164,126 L196,126 L194,98 Z" fill="url(#skinToneGrad)" />
+              {/* Bóng cơ ức đòn chũm và khối cổ nam cel-shaded */}
+              <path d="M168,102 Q180,111 192,102" stroke={skinShade} strokeWidth="1.8" strokeOpacity="0.45" fill="none" />
+              <line x1="174" y1="102" x2="178" y2="124" stroke={skinShade} strokeWidth="1.2" strokeOpacity="0.35" />
+              <line x1="186" y1="102" x2="182" y2="124" stroke={skinShade} strokeWidth="1.2" strokeOpacity="0.35" />
+              {/* Xương quai xanh nam ngang, rõ nét, góc cạnh */}
+              <path d="M162,125 Q178,127 180,126 Q182,127 198,125" stroke={skinShade} strokeWidth="1.6" strokeOpacity="0.6" strokeLinecap="round" fill="none" />
+            </g>
+          ) : (
+            <g id="female-neck-slender">
+              {/* Slender neck (centered at x=180, y=96 to 126) */}
+              <path d="M172,96 C172,108 170,118 168,126 L192,126 C190,118 188,108 188,96 Z" fill="url(#skinToneGrad)" />
+              {/* Neck shadow under chin */}
+              <path d="M172,103 Q180,113 188,103" stroke={skinShade} strokeWidth="1.6" strokeOpacity="0.35" fill="none" />
+              {/* Clavicle / Collarbone indentation */}
+              <path d="M171,124 Q180,128 189,124" stroke={skinShade} strokeWidth="1.1" strokeOpacity="0.5" fill="none" />
+            </g>
+          )}
 
-          {/* Shoulders & Feminine Arms: Hai tay cong nhẹ nhàng đan trước eo/bụng */}
+          {/* Shoulders & Arms:
+              - Nữ: Vai thon mềm, tay cong nhẹ nhàng đan trước bụng
+              - Nam: Khung vai rộng, ngang, vuông vức (boxy), bắp tay đanh thép, đứng đĩnh đạc
+          */}
           <path
-            d="M172,126 Q155,127 138,134 Q131,145 134,165 Q138,186 148,198 Q158,210 173,214 L174,206 Q158,202 150,188 Q144,175 144,152 L154,146 L172,126 Z"
+            d={isMale 
+              ? "M164,126 L136,127 Q118,131 116,146 Q114,166 122,192 Q132,208 152,216 L154,206 Q138,198 132,184 Q128,168 132,148 L146,140 L164,126 Z"
+              : "M168,126 Q150,128 135,136 Q128,148 132,168 Q136,190 148,204 Q158,214 172,217 L173,209 Q158,206 150,194 Q142,180 142,156 L152,148 L168,126 Z"
+            }
             fill={skinColor}
+            stroke={isMale ? skinShade : undefined}
+            strokeWidth={isMale ? 0.9 : 0}
           />
           <path
-            d="M188,126 Q205,127 222,134 Q229,145 226,165 Q222,186 212,198 Q202,210 187,214 L186,206 Q202,202 210,188 Q216,175 216,152 L206,146 L188,126 Z"
+            d={isMale
+              ? "M196,126 L224,127 Q242,131 244,146 Q246,166 238,192 Q228,208 208,216 L206,206 Q222,198 228,184 Q232,168 228,148 L214,140 L196,126 Z"
+              : "M192,126 Q210,128 225,136 Q232,148 228,168 Q224,190 212,204 Q202,214 188,217 L187,209 Q202,206 210,194 Q218,180 218,156 L208,148 L192,126 Z"
+            }
             fill={skinColor}
+            stroke={isMale ? skinShade : undefined}
+            strokeWidth={isMale ? 0.9 : 0}
           />
-
-          {/* Hai tay đan khéo léo trước eo/bụng theo phong thái trang nhã thiếu nữ Việt */}
-          <g id="clasped-hands-base">
-            <path
-              d="M171,210 Q178,206 186,209 Q190,214 186,220 Q178,223 171,217 Z"
-              fill={skinColor}
-              stroke={skinShade}
-              strokeWidth="0.8"
-            />
-            <path d="M174,213 Q181,216 186,213" stroke={skinShade} strokeWidth="0.75" fill="none" />
-            <path d="M175,216 Q181,219 185,216" stroke={skinShade} strokeWidth="0.75" fill="none" />
-            <path d="M173,217 Q180,221 187,218" stroke={skinShade} strokeWidth="0.75" fill="none" />
-          </g>
         </g>
 
         {/* ============================================================== */}
         {/* LAYER 3: BOTTOM GARMENT (Quần Lụa / Chân Váy - Vừa Khít Cạp Eo)*/}
         {/* ============================================================== */}
         <g id="model-bottom-garment">
-          {bottom.bottomId === 'bot-chan-vay-midi-xep-ly' ? (
-            <g>
+          {bottom.bottomId === 'bot-vay-dup-lua-trang-xoe-rong' ? (
+            /* Váy Đụp Lụa Trắng Xòe Rộng Kinh Bắc: Xòe tròn thênh thang từ hông xuống chấm gót, nếp rủ bay bổng */
+            <g id="vay-dup-xoe-rong-kinh-bac">
+              <path
+                d="M158,204 L202,204 L238,432 Q180,438 122,432 Z"
+                fill="url(#bottomGradient)"
+                stroke="#000000"
+                strokeOpacity="0.1"
+                strokeWidth="1.2"
+              />
+              {/* Nếp sóng lụa mềm xếp nếp tự nhiên xòe tròn */}
+              <path d="M166,204 Q154,320 142,432" stroke="#FFFFFF" strokeOpacity="0.35" strokeWidth="1.5" fill="none" />
+              <path d="M174,204 Q170,320 164,434" stroke="#000000" strokeOpacity="0.12" strokeWidth="1" fill="none" />
+              <path d="M180,204 Q180,320 180,436" stroke="#FFFFFF" strokeOpacity="0.4" strokeWidth="1.8" fill="none" />
+              <path d="M186,204 Q190,320 196,434" stroke="#000000" strokeOpacity="0.12" strokeWidth="1" fill="none" />
+              <path d="M194,204 Q206,320 218,432" stroke="#FFFFFF" strokeOpacity="0.35" strokeWidth="1.5" fill="none" />
+              {/* Gấu váy viền mềm mại */}
+              <path d="M122,432 Q180,438 238,432" stroke="#000000" strokeOpacity="0.15" strokeWidth="1.2" fill="none" />
+            </g>
+          ) : bottom.bottomId === 'bot-quan-ong-xeo-lua-trang-nga' ? (
+            /* Quần Lụa Trắng Ống Xéo Cổ Phục: Suông rộng từ hông, xòe nhẹ tự nhiên ở gấu, dài chạm đất phủ mắt cá */
+            <g id="quan-ong-xeo-co-phuc">
+              {/* Ống quần trái xòe xéo thướt tha */}
+              <path
+                d="M158,204 L180,204 L174,260 L168,432 L126,432 L146,260 Z"
+                fill="url(#bottomGradient)"
+                stroke="#000000"
+                strokeOpacity="0.08"
+                strokeWidth="1"
+              />
+              {/* Ống quần phải xòe xéo thướt tha */}
+              <path
+                d="M180,204 L202,204 L214,260 L234,432 L192,432 L186,260 Z"
+                fill="url(#bottomGradient)"
+                stroke="#000000"
+                strokeOpacity="0.08"
+                strokeWidth="1"
+              />
+              <line x1="180" y1="204" x2="180" y2="280" stroke="#000000" strokeOpacity="0.16" strokeWidth="1" />
+              {/* Nếp gấp rủ mềm mại tự nhiên của lụa tơ bóng mờ */}
+              <path d="M148,220 Q150,330 144,430" stroke="#FFFFFF" strokeOpacity="0.3" strokeWidth="1.6" fill="none" />
+              <path d="M162,260 Q160,340 156,430" stroke="#000000" strokeOpacity="0.1" strokeWidth="1" fill="none" />
+              <path d="M212,220 Q210,330 216,430" stroke="#FFFFFF" strokeOpacity="0.3" strokeWidth="1.6" fill="none" />
+              <path d="M198,260 Q200,340 204,430" stroke="#000000" strokeOpacity="0.1" strokeWidth="1" fill="none" />
+            </g>
+
+          ) : bottom.bottomId === 'bot-vay-xep-ly-dai' ? (
+            /* Chân Váy Xếp Ly Dài Phom Chữ A: Cạp cao phẳng đứng dáng, các nếp ly bản lớn đối xứng mở rộng dần về gấu, chạm đất, gấu lượn sóng */
+            <g id="vay-xep-ly-dai-a-line">
+              {/* Phom váy chữ A đứng dáng */}
+              <path
+                d="M160,204 L200,204 L244,435 Q180,442 116,435 Z"
+                fill="url(#bottomGradient)"
+                stroke="#000000"
+                strokeOpacity="0.12"
+                strokeWidth="1.2"
+              />
+              {/* Cạp cao bản vừa phẳng phiu đứng dáng */}
+              <rect x="160" y="200" width="40" height="10" rx="1.5" fill="url(#bottomGradient)" stroke="#000000" strokeOpacity="0.15" strokeWidth="1" />
+              <line x1="160" y1="210" x2="200" y2="210" stroke="#000000" strokeOpacity="0.2" strokeWidth="1" />
+
+              {/* Các đường xếp ly bản lớn đối xứng chạy thẳng tắp từ cạp mở rộng dần về gấu */}
+              <path d="M164,210 L134,435" stroke="#000000" strokeOpacity="0.18" strokeWidth="1.2" />
+              <path d="M166,210 L142,436" stroke="#FFFFFF" strokeOpacity="0.4" strokeWidth="1.5" />
+              <path d="M172,210 L156,437" stroke="#000000" strokeOpacity="0.18" strokeWidth="1.2" />
+              <path d="M174,210 L164,438" stroke="#FFFFFF" strokeOpacity="0.4" strokeWidth="1.5" />
+              <path d="M180,210 L180,439" stroke="#000000" strokeOpacity="0.22" strokeWidth="1.4" />
+              <path d="M181,210 L182,439" stroke="#FFFFFF" strokeOpacity="0.45" strokeWidth="1.6" />
+              <path d="M188,210 L196,438" stroke="#000000" strokeOpacity="0.18" strokeWidth="1.2" />
+              <path d="M186,210 L204,437" stroke="#FFFFFF" strokeOpacity="0.4" strokeWidth="1.5" />
+              <path d="M196,210 L226,435" stroke="#000000" strokeOpacity="0.18" strokeWidth="1.2" />
+              <path d="M194,210 L218,436" stroke="#FFFFFF" strokeOpacity="0.4" strokeWidth="1.5" />
+
+              {/* Gấu lượn sóng tự nhiên theo nếp gấp mí phẳng */}
+              <path
+                d="M116,435 Q125,438 134,435 Q145,438 156,437 Q168,440 180,439 Q192,440 204,437 Q215,438 226,435 Q235,438 244,435"
+                stroke="#000000"
+                strokeOpacity="0.2"
+                strokeWidth="1.4"
+                fill="none"
+              />
+            </g>
+          ) : bottom.bottomId === 'bot-vay-lua-bong-cat-xeo' ? (
+            /* Chân Váy Lụa Satin Cắt Xéo (Bias Cut): Cạp phẳng ôm eo, ôm nhẹ hông rồi buông rủ thành dải sóng mềm mại, xòe nhẹ ở gấu */
+            <g id="vay-lua-satin-cat-xeo">
+              {/* Phom váy cắt xéo bias cut ôm nhẹ hông và xòe gấu */}
+              <path
+                d="M160,204 L200,204 Q210,240 206,275 Q212,360 234,434 Q180,440 126,434 Q148,360 154,275 Q150,240 160,204 Z"
+                fill="url(#bottomGradient)"
+                stroke="#000000"
+                strokeOpacity="0.1"
+                strokeWidth="1.2"
+              />
+              {/* Cạp váy phẳng phiu ôm gọn vòng eo */}
+              <rect x="160" y="202" width="40" height="7" rx="1.5" fill="url(#bottomGradient)" stroke="#000000" strokeOpacity="0.12" strokeWidth="0.8" />
+
+              {/* Các dải sóng mềm mại dọc thân tạo bởi đường cắt xéo lụa satin */}
+              <path d="M166,225 Q158,320 148,434" stroke="#FFFFFF" strokeOpacity="0.45" strokeWidth="2.2" fill="none" />
+              <path d="M176,235 Q170,335 168,436" stroke="#000000" strokeOpacity="0.1" strokeWidth="1.2" fill="none" />
+              <path d="M186,225 Q192,320 204,435" stroke="#FFFFFF" strokeOpacity="0.45" strokeWidth="2.2" fill="none" />
+              <path d="M194,235 Q200,335 218,434" stroke="#000000" strokeOpacity="0.1" strokeWidth="1.2" fill="none" />
+
+              {/* Độ bóng mờ sang trọng của lụa satin */}
+              <path d="M178,212 Q180,310 182,438" stroke="#FFFFFF" strokeOpacity="0.5" strokeWidth="2.5" fill="none" />
+              <path d="M126,434 Q180,440 234,434" stroke="#000000" strokeOpacity="0.15" strokeWidth="1.2" fill="none" />
+            </g>
+          ) : bottom.bottomId === 'bot-chan-vay-midi-xep-ly' ? (
+            <g id="chan-vay-midi">
               <path
                 d="M160,204 L200,204 L226,388 L134,388 Z"
                 fill="url(#bottomGradient)"
@@ -728,7 +1267,7 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
               <line x1="194" y1="204" x2="210" y2="388" stroke="#000000" strokeOpacity="0.12" strokeWidth="1" />
             </g>
           ) : (
-            <g>
+            <g id="quan-suong-tieu-chuan">
               {/* Left leg */}
               <path
                 d="M160,204 L180,204 L176,260 L174,426 L144,426 L149,260 L160,204 Z"
@@ -823,37 +1362,93 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
         {/* 5A. ÁO TỨ THÂN (Fitted to female student proportions) */}
         {outfit.rootId === 'tu-than' && (
           <g id="ao-tu-than-fitted">
-            {/* Fitted Sleeves along arms curving towards clasped hands */}
-            <path d="M138,134 Q132,165 140,188 Q152,208 172,214" stroke="url(#topGradient)" strokeWidth="12" strokeLinecap="round" fill="none" />
-            <path d="M222,134 Q228,165 220,188 Q208,208 188,214" stroke="url(#topGradient)" strokeWidth="12" strokeLinecap="round" fill="none" />
-            <line x1="168" y1="210" x2="173" y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
-            <line x1="192" y1="210" x2="187" y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
+            {/* Exploded indicators when showLayerExplodedView is active */}
+            {showLayerExplodedView && (
+              <g id="exploded-tu-than-layers-svg" className="transition-all duration-300">
+                {/* 1. Exploded Yếm Indicator on Left */}
+                <line x1="168" y1="150" x2="68" y2="150" stroke={top.innerYemColor || '#DB2777'} strokeWidth="1.2" strokeDasharray="3 3" />
+                <circle cx="168" cy="150" r="2.5" fill={top.innerYemColor || '#DB2777'} />
+                <circle cx="68" cy="150" r="3" fill={top.innerYemColor || '#DB2777'} />
+                <path
+                  d="M58,126 Q68,130 78,126 L81,172 L55,172 Z"
+                  fill={top.innerYemColor || '#DB2777'}
+                  stroke="#9D174D"
+                  strokeWidth="0.8"
+                />
+                <text x="68" y="184" textAnchor="middle" fontSize="6.5" fill="#8B1E1E" fontWeight="bold">Lớp 1: Yếm Trong</text>
 
-            {/* Dây yếm đào luồn ôm cổ thon thả (Neck strap halter loop of Yếm Đào) */}
+                {/* 2. Exploded Outer Robe Indicator on Right */}
+                <line x1="222" y1="150" x2="295" y2="150" stroke={top.primaryColor} strokeWidth="1.2" strokeDasharray="3 3" />
+                <circle cx="222" cy="150" r="2.5" fill={top.primaryColor} />
+                <circle cx="295" cy="150" r="3" fill={top.primaryColor} />
+                <text x="295" y="165" textAnchor="middle" fontSize="6.5" fill="#8B1E1E" fontWeight="bold">Lớp 2: Áo Tứ Thân</text>
+              </g>
+            )}
+
+            {/* Fitted Sleeves along arms */}
             <path
-              d="M172,122 Q172,112 178,109 Q180,108.5 182,109 Q188,112 188,122"
-              stroke={top.innerYemColor || '#DB2777'}
-              strokeWidth="1.8"
+              d={isMale
+                ? "M136,128 Q120,155 128,184 Q138,206 156,214"
+                : "M138,134 Q132,165 140,188 Q152,208 172,214"
+              }
+              stroke="url(#topGradient)"
+              strokeWidth={isMale ? 14 : 12}
               strokeLinecap="round"
               fill="none"
             />
-
-            {/* Inner Yếm đào (Snug chest fit from collarbones down to waist, tucked into sash) */}
             <path
-              d="M168,122 L192,122 L198,206 L162,206 Z"
-              fill={top.innerYemColor || '#DB2777'}
+              d={isMale
+                ? "M224,128 Q240,155 232,184 Q222,206 204,214"
+                : "M222,134 Q228,165 220,188 Q208,208 188,214"
+              }
+              stroke="url(#topGradient)"
+              strokeWidth={isMale ? 14 : 12}
+              strokeLinecap="round"
+              fill="none"
             />
-            {/* Yếm sweetheart neck curve viền mềm mại */}
-            <path d="M168,122 Q180,126 192,122" stroke="#9D174D" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-            <path d="M172,160 Q180,166 188,160" stroke="#000000" strokeOpacity="0.1" strokeWidth="1" fill="none" />
+            <line x1={isMale ? "154" : "168"} y1="210" x2={isMale ? "159" : "173"} y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
+            <line x1={isMale ? "206" : "192"} y1="210" x2={isMale ? "201" : "187"} y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
 
-            {/* Hai thân áo tứ thân khoác ngoài ôm sát vai, ngực và sườn */}
+            {/* Lớp áo trong: Nữ mặc Yếm đào, Nam mặc áo lót/áo cánh nam cổ tròn/thẳng đĩnh đạc */}
+            {isMale ? (
+              <g id="male-inner-robe">
+                {/* Áo lót cánh nam mộc mạc bên trong tứ thân cách tân */}
+                <path d="M164,124 L196,124 L200,206 L160,206 Z" fill={top.innerYemColor || '#F5F5F4'} />
+                <path d="M164,124 Q180,128 196,124" stroke="#D6D3D1" strokeWidth="1.5" fill="none" />
+              </g>
+            ) : (
+              <g id="female-inner-yem">
+                {/* Dây yếm đào luồn ôm cổ thon thả (Neck strap halter loop of Yếm Đào) */}
+                <path
+                  d="M172,122 Q172,112 178,109 Q180,108.5 182,109 Q188,112 188,122"
+                  stroke={top.innerYemColor || '#DB2777'}
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                {/* Inner Yếm đào (Snug chest fit from collarbones down to waist, tucked into sash) */}
+                <path
+                  d="M168,122 L192,122 L198,206 L162,206 Z"
+                  fill={top.innerYemColor || '#DB2777'}
+                />
+                <path d="M168,122 Q180,126 192,122" stroke="#9D174D" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                <path d="M172,160 Q180,166 188,160" stroke="#000000" strokeOpacity="0.1" strokeWidth="1" fill="none" />
+              </g>
+            )}
+
+            {/* Hai thân áo tứ thân khoác ngoài */}
             <path
-              d="M138,134 Q155,127 168,122 L164,204 L152,285 L144,204 Q140,165 138,134 Z"
+              d={isMale
+                ? "M134,128 L164,124 L160,204 L148,295 L138,204 Z"
+                : "M138,134 Q155,127 168,122 L164,204 L152,285 L144,204 Q140,165 138,134 Z"
+              }
               fill="url(#topGradient)"
             />
             <path
-              d="M222,134 Q205,127 192,122 L196,204 L208,285 L216,204 Q220,165 222,134 Z"
+              d={isMale
+                ? "M226,128 L196,124 L200,204 L212,295 L222,204 Z"
+                : "M222,134 Q205,127 192,122 L196,204 L208,285 L216,204 Q220,165 222,134 Z"
+              }
               fill="url(#topGradient)"
             />
 
@@ -865,21 +1460,46 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
               </g>
             )}
 
-            {/* Buộc vạt trước (2 vạt buộc thắt mềm mại ngay chính giữa eo) */}
-            <path
-              d="M174,206 Q178,225 174,255 L168,285"
-              stroke={top.primaryColor}
-              strokeWidth="6.5"
-              strokeLinecap="round"
-              fill="none"
-            />
-            <path
-              d="M186,206 Q182,225 186,255 L192,285"
-              stroke={top.primaryColor}
-              strokeWidth="6.5"
-              strokeLinecap="round"
-              fill="none"
-            />
+            {/* Buộc vạt trước hoặc buông thả mềm mại theo phong cách may */}
+            {top.silhouetteId === 'tu-than-buong-tha-mem' ? (
+              /* Buông thả mềm mại: hai vạt trước buông tự do thướt tha hai bên tà */
+              <g id="tu-than-buong-tha-vat-hai-ben">
+                <path
+                  d="M164,204 Q156,250 150,335 Q148,355 142,370"
+                  stroke={top.primaryColor}
+                  strokeWidth="7"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <path
+                  d="M196,204 Q204,250 210,335 Q212,355 218,370"
+                  stroke={top.primaryColor}
+                  strokeWidth="7"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </g>
+            ) : (
+              /* Buộc thắt gọn gàng trước bụng duyên dáng */
+              <g id="tu-than-buoc-vat-truoc-bung">
+                <path
+                  d="M174,206 Q178,225 174,255 L168,285"
+                  stroke={top.primaryColor}
+                  strokeWidth="6.5"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <path
+                  d="M186,206 Q182,225 186,255 L192,285"
+                  stroke={top.primaryColor}
+                  strokeWidth="6.5"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                {/* Nút thắt nơ mềm mại giữa hai vạt áo */}
+                <ellipse cx="180" cy="207" rx="3.5" ry="2.5" fill={top.primaryColor} />
+              </g>
+            )}
 
             {/* Dải thắt lưng bao (Sash) */}
             <g id="sash-belt-fitted">
@@ -908,155 +1528,420 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
               />
             </g>
 
-            {/* Hai bàn tay búp măng đan đoan trang trước eo */}
-            <g id="tu-than-clasped-hands">
-              <path
-                d="M171,210 Q178,206 186,209 Q190,214 186,220 Q178,223 171,217 Z"
-                fill={skinColor}
-                stroke={skinShade}
-                strokeWidth="0.8"
-              />
-              <path d="M174,213 Q181,216 186,213" stroke={skinShade} strokeWidth="0.75" fill="none" />
-              <path d="M175,216 Q181,219 185,216" stroke={skinShade} strokeWidth="0.75" fill="none" />
-            </g>
           </g>
         )}
 
-        {/* 5B. ÁO NGŨ THÂN (May đo chữ A thanh nhã & cổ lập lĩnh ôm khít) */}
+        {/* 5B. ÁO NGŨ THÂN: Cấu trúc 5 thân, phom suông đoan chính KHÔNG CHIẾT EO */}
         {outfit.rootId === 'ngu-than' && (
-          <g id="ao-ngu-than-fitted">
-            {top.silhouetteId === 'ngu-than-tay-thung-trang-trong' ? (
-              <g>
-                <path d="M138,134 Q130,165 138,195 Q150,218 172,216" stroke="url(#topGradient)" strokeWidth="18" strokeLinecap="round" fill="none" />
-                <path d="M222,134 Q230,165 222,195 Q210,218 188,216" stroke="url(#topGradient)" strokeWidth="18" strokeLinecap="round" fill="none" />
+          <g id="ao-ngu-than-authentic">
+            {/* Lớp áo lót bên trong (Inner layer trắng ngà) - Lộ rõ khi mặc áo lớp Áo Ngũ Thân Tay Thụng */}
+            {top.silhouetteId === 'ngu-than-tay-thung-trang-trong' && (
+              <g id="ngu-than-inner-layer-robe">
+                {/* Thân áo lót trắng ngà bên trong phom suông */}
+                <path
+                  d="M138,135 L173,124 L187,124 L222,135 L215,195 L224,378 L136,378 L145,195 Z"
+                  fill="#FFFDF7"
+                  stroke="#E8DEC8"
+                  strokeWidth="1.2"
+                />
+                {/* Viền cổ áo lót bên trong trắng ngọc hé lộ thanh tao */}
+                <rect x="173" y="106" width="14" height="18" rx="2" fill="#FFFDF7" stroke="#D8C7B0" strokeWidth="0.8" />
+              </g>
+            )}
+
+            {/* ============================================================== */}
+            {/* THIẾT KẾ CÁCH TÂN ĐẶC BIỆT: NGŨ THÂN HOA 3D & OMBRE KHÚC XẠ     */}
+            {/* ============================================================== */}
+            {top.silhouetteId === 'ngu-than-cach-tan-hoa-3d' ? (
+              <g id="ngu-than-cach-tan-couture">
+                {/* 1. Đầm hai dây màu hồng san hô bên trong (Coral Pink Slip Dress) */}
+                <g id="coral-pink-inner-slip">
+                  {/* Hai dây vai mảnh */}
+                  <line x1="164" y1="126" x2="164" y2="140" stroke="#FB7185" strokeWidth="1.8" />
+                  <line x1="196" y1="126" x2="196" y2="140" stroke="#FB7185" strokeWidth="1.8" />
+                  {/* Cổ tim nhẹ của đầm hai dây */}
+                  <path d="M160,138 Q180,146 200,138 L206,285 L154,285 Z" fill="url(#coralPinkSlipGrad)" stroke="#F43F5E" strokeWidth="0.8" />
+                </g>
+
+                {/* 2. Lớp tơ ngoài khúc xạ màu (Iridescent Lavender & Jade Green Ombre) */}
+                {/* Tay áo lỡ / rộng với đường may can ngang nhẹ ở bắp tay */}
+                <g id="cach-tan-sleeves">
+                  <path
+                    d="M138,134 Q128,165 132,192 Q138,214 162,222 L166,212 Q148,206 144,188 Q140,165 148,142 Z"
+                    fill="url(#iridescentLavenderJadeGrad)"
+                    stroke="#0D9488"
+                    strokeWidth="1.4"
+                  />
+                  {/* Can ngang nhẹ ở bắp tay trái */}
+                  <line x1="133" y1="168" x2="147" y2="171" stroke="#0D9488" strokeWidth="1.2" strokeDasharray="1 1" />
+                  {/* Viền cửa tay màu xanh ngọc */}
+                  <ellipse cx="164" cy="217" rx="3.5" ry="5.5" fill="none" stroke="#0D9488" strokeWidth="1.8" />
+
+                  <path
+                    d="M222,134 Q232,165 228,192 Q222,214 198,222 L194,212 Q212,206 216,188 Q220,165 212,142 Z"
+                    fill="url(#iridescentLavenderJadeGrad)"
+                    stroke="#0D9488"
+                    strokeWidth="1.4"
+                  />
+                  {/* Can ngang nhẹ ở bắp tay phải */}
+                  <line x1="227" y1="168" x2="213" y2="171" stroke="#0D9488" strokeWidth="1.2" strokeDasharray="1 1" />
+                  {/* Viền cửa tay màu xanh ngọc */}
+                  <ellipse cx="196" cy="217" rx="3.5" ry="5.5" fill="none" stroke="#0D9488" strokeWidth="1.8" />
+                </g>
+
+                {/* Thân áo ngũ thân dáng suông phom đoan chính tơ mỏng khúc xạ */}
+                <path
+                  d="M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L215,190 L222,355 L138,355 L145,190 Z"
+                  fill="url(#iridescentLavenderJadeGrad)"
+                  stroke="#0D9488"
+                  strokeWidth="1.5"
+                />
+
+                {/* Đường Trung Phùng chính giữa viền xanh ngọc thanh thoát */}
+                <line x1="180" y1="124" x2="180" y2="355" stroke="#0D9488" strokeWidth="1.3" opacity="0.8" />
+
+                {/* Mép vạt chéo từ xương quai xanh xuống mạn sườn viền xanh ngọc */}
+                <path
+                  d="M180,124 Q194,136 198,160 L197,204 L196,355"
+                  stroke="#0D9488"
+                  strokeWidth="1.8"
+                  fill="none"
+                />
+
+                {/* Đường viền nẹp màu xanh ngọc ở gấu áo và xẻ tà */}
+                <line x1="138" y1="355" x2="222" y2="355" stroke="#0D9488" strokeWidth="2.2" />
+                <line x1="145" y1="190" x2="138" y2="355" stroke="#0D9488" strokeWidth="1.5" />
+                <line x1="215" y1="190" x2="222" y2="355" stroke="#0D9488" strokeWidth="1.5" />
+
+                {/* Cổ áo viền nẹp màu xanh ngọc & Nút khuy tết bằng sợi vải xanh ngọc tại đỉnh cổ */}
+                <g id="cach-tan-collar">
+                  <rect x="173" y="108" width="14" height="16" rx="2" fill="url(#iridescentLavenderJadeGrad)" stroke="#0D9488" strokeWidth="1.8" />
+                  {/* Nút khuy tết bằng sợi vải màu xanh ngọc ở đỉnh cổ áo */}
+                  <circle cx="180" cy="114" r="2.8" fill="#0D9488" stroke="#042F2E" strokeWidth="0.8" />
+                  <circle cx="179.3" cy="113.3" r="1" fill="#A7F3D0" />
+                </g>
+
+                {/* DẢI KHUY HOA VẢI 3D ĐÍNH NỔI (ĐIỂM NHẤN CHÍNH): Hàng hoa trắng 5 cánh đính nổi */}
+                <g id="dai-khuy-hoa-vai-3d">
+                  {[
+                    { cx: 184, cy: 126 },
+                    { cx: 191, cy: 140 },
+                    { cx: 196, cy: 156 },
+                    { cx: 198, cy: 173 },
+                    { cx: 197, cy: 190 },
+                    { cx: 196, cy: 206 },
+                  ].map((pos, idx) => (
+                    <g key={idx} transform={`translate(${pos.cx}, ${pos.cy})`}>
+                      {/* 5 cánh hoa vải trắng mờ 3D */}
+                      {[0, 72, 144, 216, 288].map((deg) => (
+                        <ellipse
+                          key={deg}
+                          cx="0"
+                          cy="-3.2"
+                          rx="1.6"
+                          ry="2.4"
+                          fill="#FFFFFF"
+                          fillOpacity="0.95"
+                          stroke="#E2E8F0"
+                          strokeWidth="0.4"
+                          transform={`rotate(${deg})`}
+                        />
+                      ))}
+                      {/* Nhụy hoa ngọc xanh ngọc tâm điểm */}
+                      <circle cx="0" cy="0" r="1.1" fill="#0D9488" stroke="#042F2E" strokeWidth="0.4" />
+                      <circle cx="-0.3" cy="-0.3" r="0.4" fill="#A7F3D0" />
+                    </g>
+                  ))}
+                </g>
               </g>
             ) : (
-              <g>
-                <path d="M138,134 Q132,165 140,188 Q152,208 172,214" stroke="url(#topGradient)" strokeWidth="13" strokeLinecap="round" fill="none" />
-                <path d="M222,134 Q228,165 220,188 Q208,208 188,214" stroke="url(#topGradient)" strokeWidth="13" strokeLinecap="round" fill="none" />
-                <line x1="168" y1="210" x2="173" y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
-                <line x1="192" y1="210" x2="187" y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
+              /* ÁO NGŨ THÂN NGUYÊN BẢN (TAY CHẼN HOẶC TAY THỤNG KHOANH TAY) */
+              <g id="ngu-than-traditional-cuts">
+                {/* Tay áo: Tay Chẽn vs Tay Thụng Khoanh Tay */}
+                {top.silhouetteId === 'ngu-than-tay-thung-trang-trong' ? (
+                  <g id="ngu-than-tay-thung-khoanh-tay">
+                    <path
+                      d="M138,134 Q116,165 112,205 Q110,248 136,260 L224,260 Q250,248 248,205 Q244,165 222,134 L210,140 Q226,170 220,205 L140,205 Q134,170 150,140 Z"
+                      fill="url(#topGradient)"
+                      opacity="0.92"
+                      stroke="#000000"
+                      strokeOpacity="0.18"
+                      strokeWidth="1.2"
+                    />
+                    <path
+                      d="M125,216 Q180,230 235,216 L232,246 Q180,258 128,246 Z"
+                      fill="url(#topGradient)"
+                      stroke="#000000"
+                      strokeOpacity="0.22"
+                      strokeWidth="1.2"
+                    />
+                    <path d="M130,230 Q180,242 230,230" stroke="#000000" strokeOpacity="0.2" strokeWidth="1.4" fill="none" />
+                    <path d="M112,205 Q106,230 118,255" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.5" fill="none" />
+                    <path d="M248,205 Q254,230 242,255" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.5" fill="none" />
+                  </g>
+                ) : (
+                  <g id="ngu-than-tay-chen-om-gon">
+                    <path d="M138,134 Q132,165 140,188 Q152,208 172,214" stroke="url(#topGradient)" strokeWidth="12" strokeLinecap="round" fill="none" />
+                    <path d="M222,134 Q228,165 220,188 Q208,208 188,214" stroke="url(#topGradient)" strokeWidth="12" strokeLinecap="round" fill="none" />
+                    <line x1="168" y1="210" x2="173" y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
+                    <line x1="192" y1="210" x2="187" y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
+                  </g>
+                )}
+
+                {/* Thân áo chính: Phom suông thẳng từ nách xuống gấu (không có bất kỳ chi tiết chiết eo hay bó sát nào) */}
+                <path
+                  id="ngu-than-main-body"
+                  d={top.silhouetteId === 'ngu-than-tay-thung-trang-trong'
+                    ? (isMale 
+                        ? "M134,128 L170,122 L190,122 L226,128 L222,195 L234,375 L126,375 L138,195 Z"
+                        : "M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L216,195 L226,375 L134,375 L144,195 Z")
+                    : (isMale
+                        ? "M134,128 L170,122 L190,122 L226,128 L220,190 L228,350 L132,350 L140,190 Z"
+                        : "M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L214,190 L220,350 L140,350 L146,190 Z")
+                  }
+                  fill="url(#topGradient)"
+                  opacity={top.silhouetteId === 'ngu-than-tay-thung-trang-trong' ? 0.94 : 1}
+                  stroke="#000000"
+                  strokeOpacity="0.25"
+                  strokeWidth={isMale ? 1.5 : 1.2}
+                />
+
+                {/* Hoa văn dệt chìm / vân mây / nhũ bóng / tơ sen trên nền vải áo ngũ thân */}
+                {top.patternId === 'pat-may-song-thuy-ba' && (
+                  <path
+                    d={top.silhouetteId === 'ngu-than-tay-thung-trang-trong'
+                      ? "M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L216,195 L226,375 L134,375 L144,195 Z"
+                      : "M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L214,190 L220,350 L140,350 L146,190 Z"
+                    }
+                    fill="url(#mannequinCloudJacquard)"
+                  />
+                )}
+                {top.patternId === 'pat-gam-hoa-cung-dinh' && (
+                  <path
+                    d={top.silhouetteId === 'ngu-than-tay-thung-trang-trong'
+                      ? "M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L216,195 L226,375 L134,375 L144,195 Z"
+                      : "M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L214,190 L220,350 L140,350 L146,190 Z"
+                    }
+                    fill="url(#mannequinDamaskBrocade)"
+                  />
+                )}
+                {(top.patternId === 'pat-v-nhu-bong' || top.patternId === 'pat-sen-theu-chim') && (
+                  <path
+                    d={top.silhouetteId === 'ngu-than-tay-thung-trang-trong'
+                      ? "M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L216,195 L226,375 L134,375 L144,195 Z"
+                      : "M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L214,190 L220,350 L140,350 L146,190 Z"
+                    }
+                    fill="url(#mannequinGlitterShimmer)"
+                  />
+                )}
+
+                {/* Đường "Trung Phùng" ở chính giữa - Dấu ấn đặc trưng bất biến của Áo Ngũ Thân */}
+                <line
+                  x1="180"
+                  y1={isMale ? "120" : "124"}
+                  x2="180"
+                  y2={top.silhouetteId === 'ngu-than-tay-thung-trang-trong' ? "375" : "350"}
+                  stroke="#000000"
+                  strokeOpacity="0.28"
+                  strokeWidth={isMale ? 1.6 : 1.4}
+                />
+
+                {/* Đường cắt vạt hò */}
+                <path
+                  d={top.silhouetteId === 'ngu-than-tay-thung-trang-trong'
+                    ? "M180,124 Q194,136 198,160 L196,195 L196,375"
+                    : "M180,124 Q194,136 198,160 L196,195 L196,350"
+                  }
+                  stroke="#000000"
+                  strokeOpacity="0.25"
+                  strokeWidth={isMale ? 1.8 : 1.5}
+                  fill="none"
+                />
+
+                {/* Cổ Lập Lĩnh: Cổ đứng của áo ngũ thân nam to, cao, ôm sát cổ nam tính */}
+                <rect
+                  x={isMale ? "170" : "173"}
+                  y={isMale ? "102" : "108"}
+                  width={isMale ? "20" : "14"}
+                  height={isMale ? "22" : "16"}
+                  rx="2"
+                  fill="url(#topGradient)"
+                  stroke="#000000"
+                  strokeOpacity="0.28"
+                  strokeWidth={isMale ? 1.4 : 1}
+                />
+                <line
+                  x1={isMale ? "170" : "173"}
+                  y1={isMale ? "112" : "116"}
+                  x2={isMale ? "190" : "187"}
+                  y2={isMale ? "112" : "116"}
+                  stroke="#FFFFFF"
+                  strokeOpacity="0.3"
+                  strokeWidth="1"
+                />
+
+                {/* 5 Khuy Cài Lệch Phải: To bản, đanh thép, cúc gỗ/đồng/bạc chắc chắn */}
+                {top.silhouetteId !== 'ngu-than-tay-thung-trang-trong' && (
+                  <g id="ngu-than-5-buttons-tay-chen">
+                    <circle cx="180" cy={isMale ? 112 : 116} r={isMale ? 2.8 : 2.2} fill={top.buttonId === 'btn-5-khuy-bac-cham' ? '#E2E8F0' : '#10B981'} stroke="#000000" strokeWidth={isMale ? 0.8 : 0.5} />
+                    <circle cx={isMale ? 193 : 192} cy={isMale ? 132 : 134} r={isMale ? 2.8 : 2.2} fill={top.buttonId === 'btn-5-khuy-bac-cham' ? '#E2E8F0' : '#10B981'} stroke="#000000" strokeWidth={isMale ? 0.8 : 0.5} />
+                    <circle cx={isMale ? 198 : 197} cy={isMale ? 154 : 156} r={isMale ? 2.8 : 2.2} fill={top.buttonId === 'btn-5-khuy-bac-cham' ? '#E2E8F0' : '#10B981'} stroke="#000000" strokeWidth={isMale ? 0.8 : 0.5} />
+                    <circle cx={isMale ? 197 : 196} cy={isMale ? 178 : 180} r={isMale ? 2.8 : 2.2} fill={top.buttonId === 'btn-5-khuy-bac-cham' ? '#E2E8F0' : '#10B981'} stroke="#000000" strokeWidth={isMale ? 0.8 : 0.5} />
+                    <circle cx={isMale ? 195 : 194} cy={isMale ? 202 : 204} r={isMale ? 2.8 : 2.2} fill={top.buttonId === 'btn-5-khuy-bac-cham' ? '#E2E8F0' : '#10B981'} stroke="#000000" strokeWidth={isMale ? 0.8 : 0.5} />
+                  </g>
+                )}
+
+                {/* Nếp rủ tà áo thẳng thớm đoan chính */}
+                <line x1="158" y1="215" x2="146" y2={top.silhouetteId === 'ngu-than-tay-thung-trang-trong' ? "375" : "350"} stroke="#000000" strokeOpacity="0.15" strokeWidth="1" />
+                <line x1="202" y1="215" x2="214" y2={top.silhouetteId === 'ngu-than-tay-thung-trang-trong' ? "375" : "350"} stroke="#000000" strokeOpacity="0.15" strokeWidth="1" />
               </g>
             )}
-
-            <path
-              d="M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L214,185 L201,206 L216,345 L144,345 L159,206 L146,185 Z"
-              fill="url(#topGradient)"
-            />
-
-            {top.patternId !== 'pat-to-sen-mong-tron' && (
-              <path
-                d="M138,134 Q155,127 173,124 L187,124 Q205,127 222,134 L214,185 L201,206 L216,345 L144,345 L159,206 L146,185 Z"
-                fill="url(#lotusPattern)"
-              />
-            )}
-
-            <path
-              d="M180,124 Q193,136 197,155 L195,180 L194,206 L194,345"
-              stroke="#000000"
-              strokeOpacity="0.22"
-              strokeWidth="1.5"
-              fill="none"
-            />
-
-            {/* Cổ Lập Lĩnh */}
-            <rect
-              x="173"
-              y="108"
-              width="14"
-              height="16"
-              rx="2"
-              fill="url(#topGradient)"
-              stroke="#000000"
-              strokeOpacity="0.2"
-              strokeWidth="1"
-            />
-            <line x1="173" y1="116" x2="187" y2="116" stroke="#FFFFFF" strokeOpacity="0.3" strokeWidth="1" />
-
-            {/* Bộ 5 Khuy Áo Ngũ Thân chuẩn mực */}
-            <g id="ngu-than-5-buttons-fitted">
-              <circle cx="180" cy="116" r="2.2" fill={top.buttonId === 'btn-5-khuy-bac-cham' ? '#E2E8F0' : '#10B981'} stroke="#000000" strokeWidth="0.5" />
-              <circle cx="192" cy="134" r="2.2" fill={top.buttonId === 'btn-5-khuy-bac-cham' ? '#E2E8F0' : '#10B981'} stroke="#000000" strokeWidth="0.5" />
-              <circle cx="197" cy="156" r="2.2" fill={top.buttonId === 'btn-5-khuy-bac-cham' ? '#E2E8F0' : '#10B981'} stroke="#000000" strokeWidth="0.5" />
-              <circle cx="196" cy="180" r="2.2" fill={top.buttonId === 'btn-5-khuy-bac-cham' ? '#E2E8F0' : '#10B981'} stroke="#000000" strokeWidth="0.5" />
-              <circle cx="194" cy="204" r="2.2" fill={top.buttonId === 'btn-5-khuy-bac-cham' ? '#E2E8F0' : '#10B981'} stroke="#000000" strokeWidth="0.5" />
-            </g>
-
-            <line x1="158" y1="215" x2="146" y2="345" stroke="#000000" strokeOpacity="0.15" strokeWidth="1" />
-            <line x1="202" y1="215" x2="214" y2="345" stroke="#000000" strokeOpacity="0.15" strokeWidth="1" />
-
-            {/* Đôi bàn tay đan trước tà áo ngũ thân */}
-            <g id="ngu-than-clasped-hands">
-              <path
-                d="M171,210 Q178,206 186,209 Q190,214 186,220 Q178,223 171,217 Z"
-                fill={skinColor}
-                stroke={skinShade}
-                strokeWidth="0.8"
-              />
-              <path d="M174,213 Q181,216 186,213" stroke={skinShade} strokeWidth="0.75" fill="none" />
-              <path d="M175,216 Q181,219 185,216" stroke={skinShade} strokeWidth="0.75" fill="none" />
-            </g>
           </g>
         )}
 
         {/* 5C. ÁO BÀ BA (Chiết eo thắt đáy lưng ong & xẻ tà hông duyên dáng) */}
         {outfit.rootId === 'ba-ba' && (
           <g id="ao-ba-ba-fitted">
-            <path d="M138,134 Q132,165 140,188 Q152,208 172,214" stroke="url(#topGradient)" strokeWidth="12" strokeLinecap="round" fill="none" />
-            <path d="M222,134 Q228,165 220,188 Q208,208 188,214" stroke="url(#topGradient)" strokeWidth="12" strokeLinecap="round" fill="none" />
-            <line x1="168" y1="210" x2="173" y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
-            <line x1="192" y1="210" x2="187" y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
-
+            {/* Tay áo Bà Ba: Nam tay rộng rãi can thẳng, Nữ tay ôm duyên dáng */}
             <path
-              d="M138,134 Q155,127 172,124 L188,124 Q205,127 222,134 L212,180 Q200,202 214,248 Q197,254 180,250 Q163,254 146,248 Q160,202 148,180 Z"
-              fill="url(#topGradient)"
+              d={isMale
+                ? "M136,128 Q120,155 128,184 Q138,206 156,214"
+                : "M138,134 Q132,165 140,188 Q152,208 172,214"
+              }
+              stroke="url(#topGradient)"
+              strokeWidth={isMale ? 14 : 12}
+              strokeLinecap="round"
+              fill="none"
             />
+            <path
+              d={isMale
+                ? "M224,128 Q240,155 232,184 Q222,206 204,214"
+                : "M222,134 Q228,165 220,188 Q208,208 188,214"
+              }
+              stroke="url(#topGradient)"
+              strokeWidth={isMale ? 14 : 12}
+              strokeLinecap="round"
+              fill="none"
+            />
+            <line x1={isMale ? "154" : "168"} y1="210" x2={isMale ? "159" : "173"} y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
+            <line x1={isMale ? "206" : "192"} y1="210" x2={isMale ? "201" : "187"} y2="216" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
 
-            {top.patternId !== 'pat-lua-gam-tron-sang' && (
+            {/* Thân áo Bà Ba:
+                - Nam (hoặc silhouette ba-ba-nam-dang-suong): BẮT BUỘC phom dáng suông thẳng từ nách xuống gấu (không có bất kỳ chi tiết chiết eo hay bó sát nào)
+                - Nữ: Dáng chít eo thắt đáy lưng ong uốn lượn
+            */}
+            {(isMale || top.silhouetteId === 'ba-ba-nam-dang-suong') ? (
+              /* Dáng nam suông rộng rãi phóng khoáng, đường cắt thẳng đĩnh đạc */
               <path
-                d="M138,134 Q155,127 172,124 L188,124 Q205,127 222,134 L212,180 Q200,202 214,248 Q197,254 180,250 Q163,254 146,248 Q160,202 148,180 Z"
-                fill="url(#lotusPattern)"
+                d="M134,128 L170,122 L190,122 L226,128 L220,180 L224,250 Q180,252 136,250 L140,180 Z"
+                fill="url(#topGradient)"
+                stroke="#000000"
+                strokeOpacity="0.25"
+                strokeWidth="1.3"
+              />
+            ) : (
+              /* Dáng nữ chít eo uốn lượn tôn đường cong duyên dáng */
+              <path
+                d="M138,134 Q155,127 172,124 L188,124 Q205,127 222,134 L212,180 Q198,202 214,248 Q197,254 180,250 Q163,254 146,248 Q162,202 148,180 Z"
+                fill="url(#topGradient)"
               />
             )}
 
+            {/* Pattern Overlay cho vải cao cấp */}
+            {top.patternId === 'pat-to-van-may' && (
+              <path
+                d={top.silhouetteId === 'ba-ba-nam-dang-suong'
+                  ? "M136,134 Q155,127 172,124 L188,124 Q205,127 224,134 L216,180 L220,250 Q180,252 140,250 L144,180 Z"
+                  : "M138,134 Q155,127 172,124 L188,124 Q205,127 222,134 L212,180 Q198,202 214,248 Q197,254 180,250 Q163,254 146,248 Q162,202 148,180 Z"
+                }
+                fill="url(#patternCloudJacquard)"
+              />
+            )}
+            {top.patternId === 'pat-gam-det-chim' && (
+              <path
+                d={top.silhouetteId === 'ba-ba-nam-dang-suong'
+                  ? "M136,134 Q155,127 172,124 L188,124 Q205,127 224,134 L216,180 L220,250 Q180,252 140,250 L144,180 Z"
+                  : "M138,134 Q155,127 172,124 L188,124 Q205,127 222,134 L212,180 Q198,202 214,248 Q197,254 180,250 Q163,254 146,248 Q162,202 148,180 Z"
+                }
+                fill="url(#patternDamaskBrocade)"
+              />
+            )}
+            {top.patternId === 'pat-v-nhu-bong' && (
+              <path
+                d={top.silhouetteId === 'ba-ba-nam-dang-suong'
+                  ? "M136,134 Q155,127 172,124 L188,124 Q205,127 224,134 L216,180 L220,250 Q180,252 140,250 L144,180 Z"
+                  : "M138,134 Q155,127 172,124 L188,124 Q205,127 222,134 L212,180 Q198,202 214,248 Q197,254 180,250 Q163,254 146,248 Q162,202 148,180 Z"
+                }
+                fill="url(#patternGlitterShimmer)"
+              />
+            )}
+            {top.patternId === 'pat-dui-tho-moc' && (
+              <path
+                d={top.silhouetteId === 'ba-ba-nam-dang-suong'
+                  ? "M136,134 Q155,127 172,124 L188,124 Q205,127 224,134 L216,180 L220,250 Q180,252 140,250 L144,180 Z"
+                  : "M138,134 Q155,127 172,124 L188,124 Q205,127 222,134 L212,180 Q198,202 214,248 Q197,254 180,250 Q163,254 146,248 Q162,202 148,180 Z"
+                }
+                fill="url(#patternRawDupioni)"
+              />
+            )}
+
+            {/* Xẻ tà hai bên hông */}
+            <line x1="148" y1="225" x2="144" y2="250" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
+            <line x1="212" y1="225" x2="216" y2="250" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.2" />
+
+            {/* Đường nẹp ráp vai raglan tinh tế */}
             <line x1="172" y1="124" x2="146" y2="152" stroke="#000000" strokeOpacity="0.15" strokeWidth="1" />
             <line x1="188" y1="124" x2="214" y2="152" stroke="#000000" strokeOpacity="0.15" strokeWidth="1" />
 
-            {top.necklineId === 'neck-co-la-sen-retro' ? (
+            {/* Cổ áo Bà Ba biến tấu: Cổ tròn / Cổ tim lá trầu / Cổ vuông / Cổ lá sen */}
+            {top.necklineId === 'neck-co-tim-la-trau' ? (
+              /* Cổ tim lá trầu trứ danh Nam Bộ */
+              <path d="M171,122 Q177,132 180,136 Q183,132 189,122" fill="none" stroke="#000000" strokeOpacity="0.3" strokeWidth="1.5" />
+            ) : top.necklineId === 'neck-co-vuong-thanh-thoat' ? (
+              /* Cổ vuông thanh thoát */
+              <path d="M172,122 L172,130 L188,130 L188,122" fill="none" stroke="#000000" strokeOpacity="0.3" strokeWidth="1.5" />
+            ) : top.necklineId === 'neck-co-la-sen-retro' ? (
+              /* Cổ lá sen retro */
               <g>
                 <path d="M166,124 Q173,134 180,126 Q174,120 166,124 Z" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="0.8" />
                 <path d="M194,124 Q187,134 180,126 Q186,120 194,124 Z" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="0.8" />
               </g>
-            ) : top.necklineId === 'neck-co-thuyen-xinh' ? (
-              <path d="M164,123 Q180,132 196,123" fill="none" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.5" />
             ) : (
+              /* Cổ tròn đằm thắm (không cổ) */
               <path d="M170,122 Q180,130 190,122" fill="none" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.5" />
             )}
 
-            <line x1="180" y1="126" x2="180" y2="248" stroke="#000000" strokeOpacity="0.18" strokeWidth="1" />
-            <circle cx="180" cy="136" r="1.8" fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth="0.5" />
-            <circle cx="180" cy="158" r="1.8" fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth="0.5" />
-            <circle cx="180" cy="180" r="1.8" fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth="0.5" />
-            <circle cx="180" cy="202" r="1.8" fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth="0.5" />
-            <circle cx="180" cy="224" r="1.8" fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth="0.5" />
-            <circle cx="180" cy="242" r="1.8" fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth="0.5" />
+            {/* Dải khuy cúc cài dọc ở chính giữa áo: Cúc áo nam to bản, đanh thép */}
+            <line x1="180" y1="128" x2="180" y2="248" stroke="#000000" strokeOpacity="0.25" strokeWidth={isMale ? 1.5 : 1.2} />
+            <circle cx="180" cy="136" r={isMale ? 2.5 : 1.8} fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth={isMale ? 0.7 : 0.5} />
+            <circle cx="180" cy="158" r={isMale ? 2.5 : 1.8} fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth={isMale ? 0.7 : 0.5} />
+            <circle cx="180" cy="180" r={isMale ? 2.5 : 1.8} fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth={isMale ? 0.7 : 0.5} />
+            <circle cx="180" cy="202" r={isMale ? 2.5 : 1.8} fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth={isMale ? 0.7 : 0.5} />
+            <circle cx="180" cy="224" r={isMale ? 2.5 : 1.8} fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth={isMale ? 0.7 : 0.5} />
+            <circle cx="180" cy="242" r={isMale ? 2.5 : 1.8} fill={top.buttonId === 'btn-cuc-xa-cu-nam-bo' ? '#F8FAFC' : '#78350F'} stroke="#000000" strokeWidth={isMale ? 0.7 : 0.5} />
 
-            <rect x="156" y="218" width="16" height="18" rx="2" fill="none" stroke="#000000" strokeOpacity="0.18" strokeWidth="1" />
-            <rect x="188" y="218" width="16" height="18" rx="2" fill="none" stroke="#000000" strokeOpacity="0.18" strokeWidth="1" />
+            {/* Túi áo: Dáng nam có hai túi to đĩnh đạc, dáng nữ có hai túi nhỏ thanh nhã */}
+            {(isMale || top.silhouetteId === 'ba-ba-nam-dang-suong') ? (
+              /* Hai túi to phía trước đặc trưng áo nam */
+              <g id="tui-ao-ba-ba-nam">
+                <rect x="150" y="214" width="22" height="24" rx="2.5" fill="none" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.3" />
+                <rect x="188" y="214" width="22" height="24" rx="2.5" fill="none" stroke="#000000" strokeOpacity="0.25" strokeWidth="1.3" />
+              </g>
+            ) : (
+              /* Túi nhỏ tinh tế của áo nữ */
+              <g id="tui-ao-ba-ba-nu">
+                <rect x="157" y="218" width="15" height="17" rx="2" fill="none" stroke="#000000" strokeOpacity="0.2" strokeWidth="1" />
+                <rect x="188" y="218" width="15" height="17" rx="2" fill="none" stroke="#000000" strokeOpacity="0.2" strokeWidth="1" />
+              </g>
+            )}
 
-            {/* Đôi bàn tay đan dịu dàng trước vạt áo bà ba */}
-            <g id="ba-ba-clasped-hands">
-              <path
-                d="M171,210 Q178,206 186,209 Q190,214 186,220 Q178,223 171,217 Z"
-                fill={skinColor}
-                stroke={skinShade}
-                strokeWidth="0.8"
-              />
-              <path d="M174,213 Q181,216 186,213" stroke={skinShade} strokeWidth="0.75" fill="none" />
-              <path d="M175,216 Q181,219 185,216" stroke={skinShade} strokeWidth="0.75" fill="none" />
-            </g>
           </g>
         )}
+
+        {/* ============================================================== */}
+        {/* LAYER 5.5: HANDS & ACCESSORY (Đôi Bàn Tay Búp Măng & Quạt Xếp) */}
+        {/* ============================================================== */}
+        {renderHandsAndFan()}
 
         {/* Kiềng Bạc Ta Chạm Khắc Hoa Sen Truyền Thống Đeo Cổ */}
         {hasKiengBac && (
@@ -1153,141 +2038,223 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
               <circle cx="180" cy="80" r="24" fill="none" stroke="#C8B39B" strokeWidth="2" />
             </g>
           ) : (
-            <g>
-              {faceShape === 'round' ? (
-                // MẶT TRÒN STUDIO GHIBLI (Dáng mặt tròn hồn hậu, trong trẻo như Chihiro / Kiki)
-                <g id="face-round-ghibli">
+            <g id="anatomical-anime-face-poster-grade">
+              {/* Vành tai hai bên ôm sát đầu tự nhiên */}
+              {/* Tai trái */}
+              <path
+                d="M161,72 C158,72 155.5,76 156,82 C156.5,87 159.5,90.5 162.5,90.5"
+                fill={skinColor}
+                stroke={skinShade}
+                strokeWidth="0.8"
+              />
+              <path d="M158,76 Q156.5,81 158.5,85" stroke={skinShade} strokeWidth="0.75" fill="none" />
+
+              {/* Tai phải */}
+              <path
+                d="M199,72 C202,72 204.5,76 204,82 C203.5,87 200.5,90.5 197.5,90.5"
+                fill={skinColor}
+                stroke={skinShade}
+                strokeWidth="0.8"
+              />
+              <path d="M202,76 Q203.5,81 201.5,85" stroke={skinShade} strokeWidth="0.75" fill="none" />
+
+              {/* KHUÔN MẶT:
+                  - Nữ (Trái xoan / Tròn): V-line mềm mại hoặc trăng rằm, má hồng đào duyên dáng
+                  - Nam: Xương quai hàm góc cạnh, cằm vuông nam tính, gò má đanh thép, tuyệt đối không vạt nhọn V-line, không má hồng phấn
+              */}
+              {faceShape === 'round' && !isMale ? (
+                // 1. MẶT TRÒN NỮ (Trăng rằm hồn hậu, bầu bĩnh ngây thơ)
+                <path
+                  id="face-contour-round"
+                  d="M180,54 C199,54 203.5,67 202.5,84 C201.5,96 193,103 180,103.5 C167,103 158.5,96 157.5,84 C156.5,67 161,54 180,54 Z"
+                  fill="url(#skinToneGrad)"
+                  stroke={skinShade}
+                  strokeWidth="0.9"
+                />
+              ) : isMale ? (
+                // 2. MẶT NAM THẬT SỰ NAM TÍNH: Quai hàm vuông góc cạnh, cằm phẳng đĩnh đạc, xương gò má rõ
+                <g id="male-head-sculpt">
+                  {/* Đường nét khuôn mặt nam: Trán rộng, gò má góc cạnh, xương hàm bạnh nam tính, cằm vuông */}
                   <path
-                    d="M180,56 C198,56 203,68 203,83 C203,98 194,103.5 180,103.5 C166,103.5 157,98 157,83 C157,68 162,56 180,56 Z"
-                    fill={skinColor}
+                    id="face-contour-male"
+                    d="M180,50 C201,50 205,62 203.5,78 L201,89 L194,99 L186,104.5 L174,104.5 L166,99 L159,89 L156.5,78 C155,62 159,50 180,50 Z"
+                    fill="url(#skinToneGrad)"
+                    stroke="#5A4333"
+                    strokeWidth="1.2"
                   />
+                  {/* Đổ bóng Cel-shading mảng khối xương hàm & cằm dưới nam */}
+                  <path
+                    d="M166,99 L174,104.5 L186,104.5 L194,99 L188,103 L172,103 Z"
+                    fill={skinShade}
+                    opacity="0.75"
+                  />
+                  {/* Khối đổ bóng nhẹ góc hàm trái & phải */}
+                  <path d="M159,89 L166,99 L163,94 Z" fill={skinShade} opacity="0.6" />
+                  <path d="M201,89 L194,99 L197,94 Z" fill={skinShade} opacity="0.6" />
+                  {/* Đường line góc hàm nam tính dứt khoát */}
+                  <path d="M159,88 L166,99 L174,104.5" stroke="#6B4C38" strokeWidth="1" fill="none" opacity="0.7" />
+                  <path d="M201,88 L194,99 L186,104.5" stroke="#6B4C38" strokeWidth="1" fill="none" opacity="0.7" />
+                </g>
+              ) : (
+                // 3. MẶT TRÁI XOAN NỮ (Thanh tú, cằm V-line đoan trang như hoa khôi áo dài)
+                <path
+                  id="face-contour-oval"
+                  d="M180,54 C198,54 201,66 200,82 C199,94 191,104.5 180,105 C169,104.5 161,94 160,82 C159,66 162,54 180,54 Z"
+                  fill="url(#skinToneGrad)"
+                  stroke={skinShade}
+                  strokeWidth="0.9"
+                />
+              )}
 
-                  {/* Má hồng màu nước Ghibli & nét phết cọ mộc mạc */}
-                  <circle cx="167" cy="87" r="6.5" fill="url(#animeBlushGrad)" />
-                  <circle cx="193" cy="87" r="6.5" fill="url(#animeBlushGrad)" />
-                  <line x1="164" y1="88" x2="168" y2="86" stroke="#F43F5E" strokeWidth="0.65" strokeOpacity="0.4" strokeLinecap="round" />
-                  <line x1="166" y1="90" x2="170" y2="88" stroke="#F43F5E" strokeWidth="0.65" strokeOpacity="0.4" strokeLinecap="round" />
-                  <line x1="190" y1="88" x2="194" y2="86" stroke="#F43F5E" strokeWidth="0.65" strokeOpacity="0.4" strokeLinecap="round" />
-                  <line x1="192" y1="90" x2="196" y2="88" stroke="#F43F5E" strokeWidth="0.65" strokeOpacity="0.4" strokeLinecap="round" />
+              {/* Phấn má: CHỈ DÀNH CHO NỮ (Tuyệt đối không trang điểm má hồng cho nhân vật nam) */}
+              {!isMale && (
+                <g id="female-makeup-blush">
+                  <circle cx="167" cy="85" r="7.5" fill="url(#animeBlushGrad)" />
+                  <circle cx="193" cy="85" r="7.5" fill="url(#animeBlushGrad)" />
+                  <line x1="163" y1="86" x2="167" y2="84" stroke="#F43F5E" strokeWidth="0.7" strokeOpacity="0.45" strokeLinecap="round" />
+                  <line x1="165" y1="88" x2="169" y2="86" stroke="#F43F5E" strokeWidth="0.7" strokeOpacity="0.45" strokeLinecap="round" />
+                  <line x1="191" y1="86" x2="195" y2="84" stroke="#F43F5E" strokeWidth="0.7" strokeOpacity="0.45" strokeLinecap="round" />
+                  <line x1="193" y1="88" x2="197" y2="86" stroke="#F43F5E" strokeWidth="0.7" strokeOpacity="0.45" strokeLinecap="round" />
+                </g>
+              )}
 
-                  {/* Chân mày Ghibli nét vẽ tay hiền hòa */}
-                  <path d="M165.5,70.5 Q171.5,67 177,70.5" stroke="#3A281D" strokeWidth="1.25" strokeLinecap="round" fill="none" />
-                  <path d="M183,70.5 Q188.5,67 194.5,70.5" stroke="#3A281D" strokeWidth="1.25" strokeLinecap="round" fill="none" />
+              {/* CHÂN MÀY:
+                  - Nữ: Chân mày lá liễu thanh mảnh, cong vút nhẹ nhàng
+                  - Nam: Chân mày kiếm dày, sẫm màu, rậm tự nhiên, hơi dốc nhẹ nam tính, nằm gần mắt
+              */}
+              {isMale ? (
+                <g id="male-sword-eyebrows">
+                  {/* Mày kiếm rậm bên trái: Đậm, góc cạnh, đuôi xếch nhẹ */}
+                  <polygon points="163,69 171,64 179,66 179,68.5 171,67 163,71" fill="#1C140E" />
+                  {/* Mày kiếm rậm bên phải: Đối xứng đanh thép */}
+                  <polygon points="197,69 189,64 181,66 181,68.5 189,67 197,71" fill="#1C140E" />
+                </g>
+              ) : (
+                <g id="female-eyebrows">
+                  <path d="M165,68 Q171.5,64 177.5,67.5" stroke="#3A281D" strokeWidth="1.3" strokeLinecap="round" fill="none" />
+                  <path d="M182.5,67.5 Q188.5,64 195,68" stroke="#3A281D" strokeWidth="1.3" strokeLinecap="round" fill="none" />
+                </g>
+              )}
 
-                  {/* Mắt trái Ghibli tròn to, hổ phách ấm, trong veo */}
-                  <g id="ghibli-round-left-eye">
-                    {/* Nếp mí đôi tự nhiên đặc trưng Ghibli */}
-                    <path d="M168,72 Q173,70 177.5,72.5" stroke="#78553F" strokeWidth="0.75" strokeOpacity="0.6" strokeLinecap="round" fill="none" />
-                    {/* Tròng mắt màu nâu trà hổ phách ấm */}
-                    <ellipse cx="172.8" cy="76.8" rx="3.3" ry="3.7" fill="url(#animeIrisGrad)" />
-                    {/* Con ngươi đen sâu thẳm */}
-                    <circle cx="172.8" cy="76.5" r="1.6" fill="#140D08" />
-                    {/* Vầng sáng hổ phách dưới đáy mắt */}
-                    <path d="M170.8,78.5 Q172.8,79.8 174.8,78.5" stroke="#C48E60" strokeWidth="0.8" strokeLinecap="round" fill="none" />
-                    {/* Đốm sáng tinh khôi tròn trắng đặc trưng Ghibli */}
-                    <circle cx="171.3" cy="74.5" r="1.25" fill="#FFFFFF" />
-                    <circle cx="174.4" cy="78" r="0.6" fill="#FFFFFF" fillOpacity="0.85" />
-                    {/* Mí trên nét mực vẽ tay mực sepia */}
-                    <path d="M167,76 Q173,71.5 178.5,75.8" stroke="#261A13" strokeWidth="1.65" strokeLinecap="round" fill="none" />
-                    {/* Mí dưới mềm mại */}
-                    <path d="M169.5,79.5 Q173,80.5 176.5,79.5" stroke="#5A3E2D" strokeWidth="0.7" strokeLinecap="round" fill="none" />
+              {/* ======================================================= */}
+              {/* ĐÔI MẮT:
+                  - Nữ: To tròn, long lanh, hai mí cong vút, đốm sáng lấp lánh poster
+                  - Nam: Dáng mắt kiếm ngang, hẹp và nhỏ hơn nữ, không mi cong dài, không lấp lánh nhũ, ánh nhìn tự tin đĩnh đạc
+              */}
+              {/* ======================================================= */}
+              {isMale ? (
+                <g id="male-eyes-confident">
+                  {/* MẮT TRÁI NAM (Mắt kiếm hẹp, cương nghị) */}
+                  <g id="male-left-eye">
+                    {/* Tròng trắng mắt ngang thanh lịch */}
+                    <path d="M166,76.5 Q172.5,73.5 178.5,76.5 Q172.5,80 166,76.5 Z" fill="#F8FAFC" />
+                    {/* Tròng đen/nâu hổ phách trầm lắng */}
+                    <ellipse cx="172.5" cy="76.6" rx="3.0" ry="3.2" fill="#201610" />
+                    <ellipse cx="172.5" cy="76.6" rx="1.6" ry="1.8" fill="#0C0704" />
+                    {/* Điểm sáng tự nhiên tối giản (không lấp lánh như nữ) */}
+                    <circle cx="171.6" cy="75.6" r="0.75" fill="#FFFFFF" fillOpacity="0.85" />
+                    {/* Mí trên dứt khoát, góc cạnh */}
+                    <path d="M165.5,76.2 Q172,73.2 179,76" stroke="#1C140E" strokeWidth="2.0" strokeLinecap="round" fill="none" />
+                    {/* Mí dưới mảnh nam tính */}
+                    <path d="M167,77.5 Q172.5,80.2 178,77.5" stroke="#5A3E2D" strokeWidth="0.85" strokeOpacity="0.7" strokeLinecap="round" fill="none" />
+                    {/* Nếp mí gấp nhẹ nam tính */}
+                    <path d="M167.5,73.8 Q172.5,72.2 177,73.8" stroke="#7A5641" strokeWidth="0.75" strokeOpacity="0.5" fill="none" />
                   </g>
 
-                  {/* Mắt phải Ghibli tròn to, hổ phách ấm, trong veo */}
-                  <g id="ghibli-round-right-eye">
-                    {/* Nếp mí đôi tự nhiên */}
-                    <path d="M182.5,72.5 Q187,70 192,72" stroke="#78553F" strokeWidth="0.75" strokeOpacity="0.6" strokeLinecap="round" fill="none" />
-                    {/* Tròng mắt màu nâu trà hổ phách ấm */}
-                    <ellipse cx="187.2" cy="76.8" rx="3.3" ry="3.7" fill="url(#animeIrisGrad)" />
-                    {/* Con ngươi đen sâu thẳm */}
-                    <circle cx="187.2" cy="76.5" r="1.6" fill="#140D08" />
-                    {/* Vầng sáng hổ phách dưới đáy mắt */}
-                    <path d="M185.2,78.5 Q187.2,79.8 189.2,78.5" stroke="#C48E60" strokeWidth="0.8" strokeLinecap="round" fill="none" />
-                    {/* Đốm sáng tinh khôi tròn trắng */}
-                    <circle cx="185.7" cy="74.5" r="1.25" fill="#FFFFFF" />
-                    <circle cx="188.8" cy="78" r="0.6" fill="#FFFFFF" fillOpacity="0.85" />
-                    {/* Mí trên nét mực vẽ tay mực sepia */}
-                    <path d="M181.5,75.8 Q187,71.5 193,76" stroke="#261A13" strokeWidth="1.65" strokeLinecap="round" fill="none" />
-                    {/* Mí dưới mềm mại */}
-                    <path d="M183.5,79.5 Q187,80.5 190.5,79.5" stroke="#5A3E2D" strokeWidth="0.7" strokeLinecap="round" fill="none" />
-                  </g>
-
-                  {/* Sống mũi Ghibli thanh tú mộc mạc */}
-                  <path d="M180,78.5 L180,81.5 Q180.8,82.8 181.6,82.2" stroke="#BA7A54" strokeWidth="0.85" fill="none" />
-
-                  {/* Nụ cười Ghibli hiền hậu, đáng yêu */}
-                  <g id="ghibli-round-smile">
-                    <path d="M176.5,89 Q180,92.5 183.5,89" stroke="#D93856" strokeWidth="1.65" strokeLinecap="round" fill="none" />
-                    <circle cx="180" cy="90" r="0.8" fill="#FDA4AF" fillOpacity="0.7" />
+                  {/* MẮT PHẢI NAM */}
+                  <g id="male-right-eye">
+                    {/* Tròng trắng mắt */}
+                    <path d="M181.5,76.5 Q187.5,73.5 194,76.5 Q187.5,80 181.5,76.5 Z" fill="#F8FAFC" />
+                    {/* Tròng mắt */}
+                    <ellipse cx="187.5" cy="76.6" rx="3.0" ry="3.2" fill="#201610" />
+                    <ellipse cx="187.5" cy="76.6" rx="1.6" ry="1.8" fill="#0C0704" />
+                    {/* Điểm sáng tự nhiên */}
+                    <circle cx="186.6" cy="75.6" r="0.75" fill="#FFFFFF" fillOpacity="0.85" />
+                    {/* Mí trên dứt khoát */}
+                    <path d="M181,76 Q188,73.2 194.5,76.2" stroke="#1C140E" strokeWidth="2.0" strokeLinecap="round" fill="none" />
+                    {/* Mí dưới */}
+                    <path d="M182,77.5 Q187.5,80.2 193,77.5" stroke="#5A3E2D" strokeWidth="0.85" strokeOpacity="0.7" strokeLinecap="round" fill="none" />
+                    {/* Nếp mí */}
+                    <path d="M183,73.8 Q187.5,72.2 192.5,73.8" stroke="#7A5641" strokeWidth="0.75" strokeOpacity="0.5" fill="none" />
                   </g>
                 </g>
               ) : (
-                // MẶT TRÁI XOAN STUDIO GHIBLI (Thanh tú, đoan trang, dịu dàng như Sophie / Sheeta)
-                <g id="face-oval-ghibli">
-                  {/* Khuôn mặt trái xoan thanh tú, đường cong mềm mại tự nhiên */}
-                  <path
-                    d="M180,55 C195,55 199.5,67 199.5,82 C199.5,96 190,105 180,105.5 C170,105 160.5,96 160.5,82 C160.5,67 165,55 180,55 Z"
-                    fill={skinColor}
-                  />
-
-                  {/* Phấn má màu nước Ghibli phớt hồng đào */}
-                  <circle cx="168" cy="85" r="6.5" fill="url(#animeBlushGrad)" />
-                  <circle cx="192" cy="85" r="6.5" fill="url(#animeBlushGrad)" />
-                  <line x1="165" y1="86" x2="169" y2="84" stroke="#F43F5E" strokeWidth="0.65" strokeOpacity="0.4" strokeLinecap="round" />
-                  <line x1="167" y1="88" x2="171" y2="86" stroke="#F43F5E" strokeWidth="0.65" strokeOpacity="0.4" strokeLinecap="round" />
-                  <line x1="189" y1="86" x2="193" y2="84" stroke="#F43F5E" strokeWidth="0.65" strokeOpacity="0.4" strokeLinecap="round" />
-                  <line x1="191" y1="88" x2="195" y2="86" stroke="#F43F5E" strokeWidth="0.65" strokeOpacity="0.4" strokeLinecap="round" />
-
-                  {/* Chân mày thanh tú nét vẽ tay mềm */}
-                  <path d="M166,68 Q171.5,64.5 177,68" stroke="#3A281D" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-                  <path d="M183,68 Q188.5,64.5 194,68" stroke="#3A281D" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-
-                  {/* MẮT TRÁI GHIBLI HẠNH NHÂN TO TRÒN, ẤM ÁP & CÓ HỒN */}
-                  <g id="ghibli-oval-left-eye">
-                    {/* Nếp mí đôi tự nhiên */}
-                    <path d="M168,71 Q173,69 178,71.5" stroke="#78553F" strokeWidth="0.75" strokeOpacity="0.6" strokeLinecap="round" fill="none" />
-                    {/* Tròng mắt màu hổ phách ấm */}
-                    <ellipse cx="173" cy="76" rx="3.3" ry="3.7" fill="url(#animeIrisGrad)" />
-                    {/* Con ngươi đen sâu */}
-                    <circle cx="173" cy="75.8" r="1.6" fill="#140D08" />
-                    {/* Vầng sáng hổ phách đáy mắt */}
-                    <path d="M171,77.8 Q173,79.2 175,77.8" stroke="#C48E60" strokeWidth="0.8" strokeLinecap="round" fill="none" />
-                    {/* Đốm sáng tinh khôi tròn trắng Ghibli */}
-                    <circle cx="171.5" cy="73.8" r="1.3" fill="#FFFFFF" />
-                    <circle cx="174.6" cy="77.3" r="0.6" fill="#FFFFFF" fillOpacity="0.85" />
-                    {/* Đường mí trên vẽ tay mực sepia sắc nét mà mềm mại */}
-                    <path d="M167,75.5 Q173,70.8 179,75" stroke="#261A13" strokeWidth="1.7" strokeLinecap="round" fill="none" />
-                    {/* Mí dưới mềm nhẹ */}
-                    <path d="M169.5,78.8 Q173,80 176.5,78.8" stroke="#5A3E2D" strokeWidth="0.7" strokeLinecap="round" fill="none" />
+                <g id="female-eyes-anime">
+                  {/* MẮT TRÁI NỮ */}
+                  <g id="poster-left-eye">
+                    <ellipse cx="172.5" cy="76.5" rx="5.2" ry="4.5" fill="#FFFDFB" />
+                    <path d="M167.5,71.5 Q172.5,69.5 177.5,71.8" stroke="#7A5641" strokeWidth="0.85" strokeOpacity="0.65" strokeLinecap="round" fill="none" />
+                    <ellipse cx="172.5" cy="76.5" rx="4.0" ry="4.8" fill="url(#animeIrisGrad)" />
+                    <ellipse cx="172.5" cy="75.8" rx="2.2" ry="2.6" fill="#120B07" />
+                    <path d="M170,78.5 Q172.5,80.5 175,78.5" stroke="#D97706" strokeWidth="1" strokeOpacity="0.75" fill="none" strokeLinecap="round" />
+                    <circle cx="170.8" cy="74.4" r="1.55" fill="#FFFFFF" />
+                    <circle cx="174.2" cy="78.2" r="0.85" fill="#FFFFFF" fillOpacity="0.9" />
+                    <circle cx="169.8" cy="77.8" r="0.45" fill="#FFFFFF" fillOpacity="0.75" />
+                    <path d="M166.5,75.8 Q172.5,70.5 178.5,75.2" stroke="#140D09" strokeWidth="2.3" strokeLinecap="round" fill="none" />
+                    <path d="M166.8,75.6 Q165.2,74.6 164.2,75.2" stroke="#140D09" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+                    <path d="M168.5,79.5 Q172.5,81.2 176.5,79.5" stroke="#5A3E2D" strokeWidth="0.75" strokeOpacity="0.6" strokeLinecap="round" fill="none" />
                   </g>
 
-                  {/* MẮT PHẢI GHIBLI HẠNH NHÂN TO TRÒN, ẤM ÁP & CÓ HỒN */}
-                  <g id="ghibli-oval-right-eye">
-                    {/* Nếp mí đôi tự nhiên */}
-                    <path d="M182,71.5 Q187,69 192,71" stroke="#78553F" strokeWidth="0.75" strokeOpacity="0.6" strokeLinecap="round" fill="none" />
-                    {/* Tròng mắt màu hổ phách ấm */}
-                    <ellipse cx="187" cy="76" rx="3.3" ry="3.7" fill="url(#animeIrisGrad)" />
-                    {/* Con ngươi đen sâu */}
-                    <circle cx="187" cy="75.8" r="1.6" fill="#140D08" />
-                    {/* Vầng sáng hổ phách đáy mắt */}
-                    <path d="M185,77.8 Q187,79.2 189,77.8" stroke="#C48E60" strokeWidth="0.8" strokeLinecap="round" fill="none" />
-                    {/* Đốm sáng tinh khôi tròn trắng Ghibli */}
-                    <circle cx="185.5" cy="73.8" r="1.3" fill="#FFFFFF" />
-                    <circle cx="188.6" cy="77.3" r="0.6" fill="#FFFFFF" fillOpacity="0.85" />
-                    {/* Đường mí trên vẽ tay mực sepia */}
-                    <path d="M181,75 Q187,70.8 193,75.5" stroke="#261A13" strokeWidth="1.7" strokeLinecap="round" fill="none" />
-                    {/* Mí dưới mềm nhẹ */}
-                    <path d="M183.5,78.8 Q187,80 190.5,78.8" stroke="#5A3E2D" strokeWidth="0.7" strokeLinecap="round" fill="none" />
+                  {/* MẮT PHẢI NỮ */}
+                  <g id="poster-right-eye">
+                    <ellipse cx="187.5" cy="76.5" rx="5.2" ry="4.5" fill="#FFFDFB" />
+                    <path d="M182.5,71.8 Q187.5,69.5 192.5,71.5" stroke="#7A5641" strokeWidth="0.85" strokeOpacity="0.65" strokeLinecap="round" fill="none" />
+                    <ellipse cx="187.5" cy="76.5" rx="4.0" ry="4.8" fill="url(#animeIrisGrad)" />
+                    <ellipse cx="187.5" cy="75.8" rx="2.2" ry="2.6" fill="#120B07" />
+                    <path d="M185,78.5 Q187.5,80.5 190,78.5" stroke="#D97706" strokeWidth="1" strokeOpacity="0.75" fill="none" strokeLinecap="round" />
+                    <circle cx="185.8" cy="74.4" r="1.55" fill="#FFFFFF" />
+                    <circle cx="189.2" cy="78.2" r="0.85" fill="#FFFFFF" fillOpacity="0.9" />
+                    <circle cx="184.8" cy="77.8" r="0.45" fill="#FFFFFF" fillOpacity="0.75" />
+                    <path d="M181.5,75.2 Q187.5,70.5 193.5,75.8" stroke="#140D09" strokeWidth="2.3" strokeLinecap="round" fill="none" />
+                    <path d="M193.2,75.6 Q194.8,74.6 195.8,75.2" stroke="#140D09" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+                    <path d="M183.5,79.5 Q187.5,81.2 191.5,79.5" stroke="#5A3E2D" strokeWidth="0.75" strokeOpacity="0.6" strokeLinecap="round" fill="none" />
                   </g>
+                </g>
+              )}
 
-                  {/* Sống mũi thanh thoát chuẩn Ghibli */}
-                  <path d="M180,78 L180,81.5 Q180.8,82.8 181.6,82" stroke="#BA7A54" strokeWidth="0.85" fill="none" />
+              {/* SỐNG MŨI:
+                  - Nữ: Nhỏ gọn, thanh tú, có chấm sáng giọt nước
+                  - Nam: Sống mũi cao, thẳng tắp, có góc cạnh nam tính, cánh mũi rõ nét
+              */}
+              {isMale ? (
+                <g id="male-nose-sharp">
+                  {/* Sống mũi cao thẳng dứt khoát */}
+                  <line x1="180" y1="72" x2="180" y2="84.5" stroke="#7A5641" strokeWidth="1.3" />
+                  {/* Đổ bóng góc cạnh sống mũi */}
+                  <path d="M178.5,74 L180,72 L180,84.5 L177.5,85.5 Z" fill={skinShade} opacity="0.45" />
+                  {/* Cánh mũi và chóp mũi nam rõ ràng */}
+                  <path d="M176.5,85.5 Q180,86.8 183.5,85.5" stroke="#5C3B27" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+                  <path d="M175.5,84.5 Q176.5,86 178,86" stroke="#7A5641" strokeWidth="0.9" fill="none" />
+                  <path d="M184.5,84.5 Q183.5,86 182,86" stroke="#7A5641" strokeWidth="0.9" fill="none" />
+                </g>
+              ) : (
+                <g id="female-nose-delicate">
+                  <path d="M180,77 L180,81.5 Q181,83.2 182,82.4" stroke="#BA7A54" strokeWidth="0.95" fill="none" />
+                  <circle cx="179.6" cy="80.6" r="0.65" fill="#FFFFFF" fillOpacity="0.6" />
+                </g>
+              )}
 
-                  {/* Bờ môi chúm chím phớt hồng đào duyên dáng */}
-                  <g id="ghibli-oval-smile">
-                    <path d="M176.5,88.5 Q180,91.8 183.5,88.5" stroke="#D93856" strokeWidth="1.65" strokeLinecap="round" fill="none" />
-                    <circle cx="180" cy="89.5" r="0.8" fill="#FDA4AF" fillOpacity="0.7" />
-                  </g>
+              {/* BỜ MÔI:
+                  - Nữ: Cánh cung Cupid, căng mọng, phớt hồng đào, bắt sáng lip gloss
+                  - Nam: Môi mỏng vừa, dáng ngang tự nhiên hoặc hơi mím nhẹ, màu da khỏe khoắn (không hồng đào nữ tính, không bóng son)
+              */}
+              {isMale ? (
+                <g id="male-lips-natural">
+                  {/* Đường phân môi ngang kiên nghị, tự tin */}
+                  <path d="M174,92.5 Q180,92.8 186,92.5" stroke="#633C29" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+                  {/* Môi dưới tự nhiên, màu da ấm nhẹ */}
+                  <path d="M176,93 Q180,95.5 184,93" stroke="#8C5E45" strokeWidth="1.1" strokeLinecap="round" fill="none" />
+                  {/* Khối đổ bóng dưới môi dưới tạo cằm nam tính */}
+                  <path d="M177,96.5 Q180,97.5 183,96.5" stroke={skinShade} strokeWidth="1.2" strokeOpacity="0.55" fill="none" strokeLinecap="round" />
+                </g>
+              ) : (
+                <g id="poster-cherry-smile">
+                  {/* Môi dưới phớt hồng đào */}
+                  <path d="M176.2,88.2 Q180,92.6 183.8,88.2" fill="url(#lipGrad)" />
+                  {/* Đường viền môi cánh cung Cupid tươi cười */}
+                  <path d="M175.5,87.8 Q180,90.2 184.5,87.8" stroke="#BE185D" strokeWidth="1.9" strokeLinecap="round" fill="none" />
+                  {/* Điểm bắt sáng lip gloss */}
+                  <ellipse cx="180" cy="89.8" rx="1.3" ry="0.6" fill="#FFFFFF" fillOpacity="0.8" />
                 </g>
               )}
             </g>
@@ -1296,17 +2263,17 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
           {/* Retro Glasses */}
           {hasGlasses && (
             <g id="retro-glasses">
-              <ellipse cx="171" cy="76" rx="6.5" ry="5" fill="none" stroke="#D4AF37" strokeWidth="1.2" />
-              <ellipse cx="189" cy="76" rx="6.5" ry="5" fill="none" stroke="#D4AF37" strokeWidth="1.2" />
-              <line x1="177.5" y1="76" x2="182.5" y2="76" stroke="#D4AF37" strokeWidth="1.2" />
+              <ellipse cx="171" cy="76.5" rx="6.5" ry="5" fill="none" stroke="#D4AF37" strokeWidth="1.2" />
+              <ellipse cx="189" cy="76.5" rx="6.5" ry="5" fill="none" stroke="#D4AF37" strokeWidth="1.2" />
+              <line x1="177.5" y1="76.5" x2="182.5" y2="76.5" stroke="#D4AF37" strokeWidth="1.2" />
             </g>
           )}
 
-          {/* Pearl earrings */}
+          {/* Pearl earrings (Treo đúng dái tai tự nhiên) */}
           {hasPearlEarring && (
             <g id="pearl-earrings">
-              <circle cx="158.5" cy="84" r="2.5" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="0.8" />
-              <circle cx="201.5" cy="84" r="2.5" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="0.8" />
+              <circle cx="157.5" cy="86" r="2.5" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="0.8" />
+              <circle cx="202.5" cy="86" r="2.5" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="0.8" />
             </g>
           )}
         </g>
@@ -1315,226 +2282,164 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
         {/* LAYER 7: 6 KIỂU TÓC NGHỆ THUẬT 2D ANIME/WEBTOON TẢ CHI TIẾT    */}
         {/* ============================================================== */}
         <g id="front-hair-layer">
+          {/* ============================================================== */}
+          {/* HỆ TÓC NỮ (6 KIỂU CHÍNH THỨC)                                  */}
+          {/* ============================================================== */}
 
-          {/* ------------------------------------------------------------ */}
-          {/* 1. DÀI THẲNG EO                                              */}
-          {/* Suôn mượt qua eo, tơi thành từng lọn mảnh nhỏ ở đuôi,        */}
-          {/* mái ôm nhẹ gò má, sợi tóc con lơ thơ (wispy strands) trước   */}
-          {/* trán và mai, rẽ ngôi tự nhiên ở đỉnh đầu.                    */}
-          {/* ------------------------------------------------------------ */}
-          {(hairstyle === 'long-straight-waist' || hairstyle === 'long-flowing') && (
-            <g id="hair-model-1-long-straight">
-              {/* Khối tóc đỉnh đầu & nếp rẽ ngôi tự nhiên */}
+          {/* 1. Nữ: Dài thẳng tự nhiên (Long Sleek Natural) */}
+          {(hairstyle === 'long-straight-waist' || hairstyle === 'long-straight-natural' || hairstyle === 'long-flowing') && (
+            <g id="front-hair-female-long-straight">
+              {/* Crown volume overhead & nếp rẽ ngôi nhẹ */}
               <path
-                d="M161,74 C160,52 173,46 179,46 C182,46 198,50 199,74 C193,60 185,55 181,55 L178,55 C173,55 166,60 161,74 Z"
+                d="M160,74 C158,50 172,44 179,44 C182,44 198,48 200,74 C194,58 186,52 181,52 L179,52 C174,52 166,58 160,74 Z"
                 fill="url(#hairFrontGrad)"
               />
-              <path d="M179,46 Q180,50 179,55" stroke={hairDark} strokeWidth="1" fill="none" />
-              <ellipse cx="180" cy="53" rx="16" ry="2.2" fill="url(#animeHalo)" />
+              <path d="M179,44 Q180,48 179,52" stroke={hairDark} strokeWidth="1.2" fill="none" />
+              <ellipse cx="180" cy="50" rx="16" ry="2.2" fill="url(#animeHalo)" />
 
-              {/* Sợi tóc con lơ thơ (wispy strands) trước trán */}
-              <path d="M178,54 Q175,65 177,74" stroke={hairDark} strokeWidth="0.85" strokeLinecap="round" fill="none" />
-              <path d="M182,54 Q185,64 183,73" stroke={hairDark} strokeWidth="0.85" strokeLinecap="round" fill="none" />
-              <path d="M176,57 Q173,66 175,71" stroke={hairSoft} strokeWidth="0.65" strokeLinecap="round" fill="none" />
+              {/* Sợi tóc con lơ thơ (wisps) bay nhẹ trước trán */}
+              <path d="M178,52 Q175,60 177,68" stroke={hairDark} strokeWidth="0.8" strokeLinecap="round" fill="none" />
+              <path d="M182,52 Q185,59 183,67" stroke={hairDark} strokeWidth="0.8" strokeLinecap="round" fill="none" />
 
-              {/* Tóc mai hai bên dài ôm nhẹ lấy gò má */}
-              {/* Mái trái */}
+              {/* Mái vén hờ sau tai, vài sợi tóc mai mảnh buông dọc gò má, lộ rõ khuyên tai & kiềng */}
+              <path d="M178,50 Q168,58 164,74 Q162,88 164,102" stroke={hairDark} strokeWidth="1.2" strokeLinecap="round" fill="none" />
+              <path d="M161,76 Q159,90 162,106" stroke={hairSoft} strokeWidth="0.8" strokeLinecap="round" fill="none" />
+
+              <path d="M182,50 Q192,58 196,74 Q198,88 196,102" stroke={hairDark} strokeWidth="1.2" strokeLinecap="round" fill="none" />
+              <path d="M199,76 Q201,90 198,106" stroke={hairSoft} strokeWidth="0.8" strokeLinecap="round" fill="none" />
+
+              {/* Dải tóc suôn mượt buông ngoài bờ vai (không che cổ áo hay kiềng bạc) */}
               <path
-                d="M179,48 Q171,60 165,78 Q163,90 165,104 C166,104 167,96 168,88 Q171,68 178,55 Z"
-                fill={hairMid}
-              />
-              <path d="M179,48 Q171,60 165,78 Q163,90 165,104" stroke={hairDark} strokeWidth="0.9" fill="none" />
-              {/* Sợi tóc mai lơ thơ bay bên má trái */}
-              <path d="M162,78 Q159,92 162,108" stroke={hairDark} strokeWidth="0.8" strokeLinecap="round" fill="none" />
-
-              {/* Mái phải */}
-              <path
-                d="M180,48 Q189,60 195,78 Q197,90 195,104 C194,104 193,96 192,88 Q189,68 181,55 Z"
-                fill={hairMid}
-              />
-              <path d="M180,48 Q189,60 195,78 Q197,90 195,104" stroke={hairDark} strokeWidth="0.9" fill="none" />
-              {/* Sợi tóc mai lơ thơ bay bên má phải */}
-              <path d="M198,78 Q201,92 198,108" stroke={hairDark} strokeWidth="0.8" strokeLinecap="round" fill="none" />
-
-              {/* Hai dải tóc trước suôn mượt buông qua vai xuống eo */}
-              {/* Dải tóc trái trước ngực */}
-              <path
-                d="M164,80 C159,105 152,150 150,205 C149,235 151,255 153,266 L156,260 L158,268 L160,258 C158,245 157,215 158,185 C160,150 166,108 168,85 Z"
+                d="M158,82 C154,108 148,155 146,205 C145,235 147,255 149,266 L152,260 L154,268 L156,258 C154,245 153,215 154,185 C156,150 162,108 164,85 Z"
                 fill="url(#hairFrontGrad)"
               />
-              <path d="M164,80 C159,105 152,150 150,205 C149,235 151,255 153,266" stroke={hairDark} strokeWidth="0.9" fill="none" />
-              <path d="M153,105 Q151,165 153,225" stroke={hairSheen} strokeWidth="1.2" fill="none" />
-              <line x1="156" y1="230" x2="157" y2="265" stroke={hairHalo} strokeWidth="0.8" />
+              <path d="M158,82 C154,108 148,155 146,205 C145,235 147,255 149,266" stroke={hairDark} strokeWidth="1.2" fill="none" />
+              <path d="M149,105 Q147,165 149,225" stroke={hairSheen} strokeWidth="1" fill="none" />
 
-              {/* Dải tóc phải trước ngực */}
               <path
-                d="M196,80 C201,105 208,150 210,205 C211,235 209,255 207,266 L204,260 L202,268 L200,258 C202,245 203,215 202,185 C200,150 194,108 192,85 Z"
+                d="M202,82 C206,108 212,155 214,205 C215,235 213,255 211,266 L208,260 L206,268 L204,258 C206,245 207,215 206,185 C204,150 198,108 196,85 Z"
                 fill="url(#hairFrontGrad)"
               />
-              <path d="M196,80 C201,105 208,150 210,205 C211,235 209,255 207,266" stroke={hairDark} strokeWidth="0.9" fill="none" />
-              <path d="M207,105 Q209,165 207,225" stroke={hairSheen} strokeWidth="1.2" fill="none" />
-              <line x1="204" y1="230" x2="203" y2="265" stroke={hairHalo} strokeWidth="0.8" />
+              <path d="M202,82 C206,108 212,155 214,205 C215,235 213,255 211,266" stroke={hairDark} strokeWidth="1.2" fill="none" />
+              <path d="M211,105 Q213,165 211,225" stroke={hairSheen} strokeWidth="1" fill="none" />
             </g>
           )}
 
-          {/* ------------------------------------------------------------ */}
-          {/* 2. NGẮN NGANG VAI                                            */}
-          {/* Tóc lob chạm ngang vai, cúp nhẹ ôm mặt. Mái bay chia ngôi    */}
-          {/* giữa, phồng chân tóc uốn nhẹ ra sau, đuôi tỉa layer so le.  */}
-          {/* ------------------------------------------------------------ */}
-          {(hairstyle === 'short-bob-straight' || hairstyle === 'short-shoulder-length' || hairstyle === 'short-modern') && (
-            <g id="hair-model-2-short-bob">
-              {/* Đỉnh đầu bồng bềnh rẽ ngôi giữa */}
+          {/* 2. Nữ: Ngắn ngang vai uốn cụp nhẹ (Soft Bob Collarbone) */}
+          {(hairstyle === 'short-bob-straight' || hairstyle === 'soft-bob-collarbone' || hairstyle === 'short-shoulder-length' || hairstyle === 'short-modern') && (
+            <g id="front-hair-female-short-bob">
+              {/* Đỉnh đầu bồng bềnh tự nhiên */}
               <path
-                d="M160,74 C158,50 172,45 180,45 C188,45 202,50 200,74 C194,60 186,54 180,54 C174,54 166,60 160,74 Z"
+                d="M160,74 C158,48 172,44 180,44 C188,44 202,48 200,74 C194,58 186,52 180,52 C174,52 166,58 160,74 Z"
                 fill="url(#hairFrontGrad)"
               />
-              <line x1="180" y1="45" x2="180" y2="54" stroke={hairDark} strokeWidth="1" />
-              <ellipse cx="180" cy="51" rx="16" ry="2.2" fill="url(#animeHalo)" />
+              <line x1="180" y1="44" x2="180" y2="52" stroke={hairDark} strokeWidth="1.2" />
+              <ellipse cx="180" cy="50" rx="16" ry="2.2" fill="url(#animeHalo)" />
 
-              {/* Mái bay (Curtain bangs) uốn nhẹ ra sau hai bên thái dương */}
-              {/* Mái bay trái */}
-              <path
-                d="M180,47 Q170,55 164,72 Q160,86 166,98 C166,96 167,88 168,80 Q172,62 179,52 Z"
-                fill={hairMid}
-              />
-              <path d="M180,47 Q170,55 164,72 Q160,86 166,98" stroke={hairDark} strokeWidth="0.9" fill="none" />
-              <path d="M162,75 Q164,88 169,96" stroke={hairSheen} strokeWidth="1" fill="none" />
+              {/* Mái thưa kiểu Hàn nhẹ nhàng (Air bangs) */}
+              <path d="M174,52 Q173,60 174,68" stroke={hairDark} strokeWidth="1" strokeLinecap="round" fill="none" />
+              <path d="M178,52 Q178,61 178,70" stroke={hairDark} strokeWidth="1.1" strokeLinecap="round" fill="none" />
+              <path d="M182,52 Q182,61 182,70" stroke={hairDark} strokeWidth="1.1" strokeLinecap="round" fill="none" />
+              <path d="M186,52 Q187,60 186,68" stroke={hairDark} strokeWidth="1" strokeLinecap="round" fill="none" />
 
-              {/* Mái bay phải */}
+              {/* Mái ôm nhẹ lấy xương hàm giúp khuôn mặt thon gọn, đuôi cúp nhẹ chạm xương quai xanh */}
               <path
-                d="M180,47 Q190,55 196,72 Q200,86 194,98 C194,96 193,88 192,80 Q188,62 181,52 Z"
-                fill={hairMid}
-              />
-              <path d="M180,47 Q190,55 196,72 Q200,86 194,98" stroke={hairDark} strokeWidth="0.9" fill="none" />
-              <path d="M198,75 Q196,88 191,96" stroke={hairSheen} strokeWidth="1" fill="none" />
-
-              {/* Lọn tóc cúp nhẹ ôm cằm & xương quai xanh (layer so le ở đuôi) */}
-              {/* Cúp trái */}
-              <path
-                d="M162,74 C156,92 148,116 150,144 C154,148 160,144 164,138 L166,144 L170,136 C168,124 164,104 166,84 Z"
+                d="M162,74 C156,92 152,112 154,134 C158,138 163,134 165,128 C163,116 161,98 165,80 Z"
                 fill="url(#hairFrontGrad)"
               />
-              <path d="M162,74 C156,92 148,116 150,144" stroke={hairDark} strokeWidth="1" fill="none" />
-              <path d="M153,92 Q150,120 158,140" stroke={hairSheen} strokeWidth="1.2" fill="none" />
+              <path d="M162,74 C156,92 152,112 154,134" stroke={hairDark} strokeWidth="1.2" fill="none" />
+              <path d="M156,92 Q154,115 160,130" stroke={hairSheen} strokeWidth="1.1" fill="none" />
 
-              {/* Cúp phải */}
               <path
-                d="M198,74 C204,92 212,116 210,144 C206,148 200,144 196,138 L194,144 L190,136 C192,124 196,104 194,84 Z"
+                d="M198,74 C204,92 208,112 206,134 C202,138 197,134 195,128 C197,116 199,98 195,80 Z"
                 fill="url(#hairFrontGrad)"
               />
-              <path d="M198,74 C204,92 212,116 210,144" stroke={hairDark} strokeWidth="1" fill="none" />
-              <path d="M207,92 Q210,120 202,140" stroke={hairSheen} strokeWidth="1.2" fill="none" />
-
-              {/* Sợi tóc tơ lơ thơ trước trán */}
-              <path d="M178,54 Q177,63 179,70" stroke={hairDark} strokeWidth="0.75" strokeLinecap="round" fill="none" />
-              <path d="M182,54 Q183,63 181,70" stroke={hairDark} strokeWidth="0.75" strokeLinecap="round" fill="none" />
+              <path d="M198,74 C204,92 208,112 206,134" stroke={hairDark} strokeWidth="1.2" fill="none" />
+              <path d="M204,92 Q206,115 200,130" stroke={hairSheen} strokeWidth="1.1" fill="none" />
             </g>
           )}
 
-          {/* ------------------------------------------------------------ */}
-          {/* 3. TẾT 2 BÍM                                                 */}
-          {/* Chia ngôi giữa tự nhiên ở đỉnh đầu, 2 bên tết gọn gàng lỏng  */}
-          {/* tay buông dài xuống ngực, chun nhỏ, thừa đoạn thẳng tự nhiên */}
-          {/* ------------------------------------------------------------ */}
-          {(hairstyle === 'braided-twin-waist' || hairstyle === 'braided-twin') && (
-            <g id="hair-model-3-twin-braids">
-              {/* Đỉnh đầu chia ngôi giữa tự nhiên */}
+          {/* 3. Nữ: Tết hai bím năng động (Playful Twin Braids) */}
+          {(hairstyle === 'braided-twin-waist' || hairstyle === 'playful-twin-braids' || hairstyle === 'braided-twin') && (
+            <g id="front-hair-female-twin-braids">
+              {/* Đỉnh đầu chia ngôi giữa tự nhiên & volume overhead */}
               <path
-                d="M161,74 C160,50 172,46 179,46 C182,46 198,50 199,74 C193,60 185,55 181,55 L178,55 C173,55 166,60 161,74 Z"
+                d="M160,74 C159,48 172,44 179,44 C182,44 198,48 200,74 C194,58 186,52 181,52 L179,52 C174,52 166,58 160,74 Z"
                 fill="url(#hairFrontGrad)"
               />
-              <line x1="179.5" y1="46" x2="180" y2="55" stroke={hairDark} strokeWidth="1" />
-              <ellipse cx="180" cy="52" rx="16" ry="2.2" fill="url(#animeHalo)" />
+              <line x1="179.5" y1="44" x2="180" y2="52" stroke={hairDark} strokeWidth="1.2" />
+              <ellipse cx="180" cy="50" rx="16" ry="2.2" fill="url(#animeHalo)" />
 
-              {/* Tóc mai nhẹ nhàng ôm hai bên má */}
-              <path d="M179,50 Q168,60 162,78 Q158,94 161,110" stroke={hairDark} strokeWidth="2.2" strokeLinecap="round" fill="none" />
-              <path d="M181,50 Q192,60 198,78 Q202,94 199,110" stroke={hairDark} strokeWidth="2.2" strokeLinecap="round" fill="none" />
-              <path d="M160,82 Q157,96 160,114" stroke={hairSheen} strokeWidth="0.8" strokeLinecap="round" fill="none" />
-              <path d="M200,82 Q203,96 200,114" stroke={hairSheen} strokeWidth="0.8" strokeLinecap="round" fill="none" />
+              {/* Mái rẽ nhẹ, hai dải tóc mai uốn lơi buông trước tai */}
+              <path d="M178,50 Q168,58 162,72 Q158,88 161,104" stroke={hairDark} strokeWidth="1.4" strokeLinecap="round" fill="none" />
+              <path d="M182,50 Q192,58 198,72 Q202,88 199,104" stroke={hairDark} strokeWidth="1.4" strokeLinecap="round" fill="none" />
+              <path d="M160,78 Q157,92 160,108" stroke={hairSheen} strokeWidth="0.8" strokeLinecap="round" fill="none" />
+              <path d="M200,78 Q203,92 200,108" stroke={hairSheen} strokeWidth="0.8" strokeLinecap="round" fill="none" />
 
-              {/* Bím tết trái: Lỏng tay vừa phải, có độ phồng buông xuống ngực */}
+              {/* Bím tết đuôi sam trái buông thả trước ngực (độ nới lỏng kiểu Gen Z, ngoài cổ áo) */}
               <g id="left-braid-clumps">
-                <path d="M162,80 Q150,96 153,114 Q146,128 152,142 Q147,156 151,170 Q146,184 150,198 Q146,212 149,226 Q146,238 148,248" stroke={hairDark} strokeWidth="1" fill="none" />
-                {/* Các mắt bím lồng đan 3D mềm mại */}
-                <ellipse cx="154" cy="98" rx="6" ry="7" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="152" cy="112" rx="6.5" ry="7.5" fill={hairSoft} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="153" cy="127" rx="6.2" ry="7.5" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="151" cy="142" rx="5.8" ry="7.2" fill={hairSoft} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="152" cy="157" rx="5.5" ry="7" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="150" cy="172" rx="5.2" ry="6.8" fill={hairSoft} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="151" cy="187" rx="4.8" ry="6.5" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="149" cy="202" rx="4.5" ry="6.2" fill={hairSoft} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="150" cy="216" rx="4.2" ry="6" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="148" cy="230" rx="3.8" ry="5.5" fill={hairSoft} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="149" cy="242" rx="3.4" ry="5" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                {/* Chun buộc nhỏ */}
-                <rect x="146" y="246" width="6" height="3" rx="1.5" fill="#D4AF37" stroke="#78350F" strokeWidth="0.6" />
-                {/* Đoạn tóc thẳng tự nhiên nhỏ ở đuôi */}
-                <path d="M148,249 L146,263 L149,261 L151,264 L150,249 Z" fill="url(#hairFrontGrad)" stroke={hairDark} strokeWidth="0.7" />
-                <line x1="148" y1="250" x2="148" y2="262" stroke={hairSheen} strokeWidth="0.8" />
+                <path d="M158,80 Q148,96 150,114 Q144,128 149,142 Q144,156 148,170 Q143,184 147,198 Q143,212 146,226 Q143,238 145,248" stroke={hairDark} strokeWidth="1.2" fill="none" />
+                <ellipse cx="151" cy="98" rx="6" ry="7" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="149" cy="112" rx="6.5" ry="7.5" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="150" cy="127" rx="6.2" ry="7.5" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="148" cy="142" rx="5.8" ry="7.2" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="149" cy="157" rx="5.5" ry="7" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="147" cy="172" rx="5.2" ry="6.8" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="148" cy="187" rx="4.8" ry="6.5" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="146" cy="202" rx="4.5" ry="6.2" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="147" cy="216" rx="4.2" ry="6" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="145" cy="230" rx="3.8" ry="5.5" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="146" cy="242" rx="3.4" ry="5" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                {/* Nơ vải mảnh buộc đuôi bím */}
+                <ellipse cx="145" cy="248" rx="5" ry="2.5" fill="#E11D48" stroke="#9F1239" strokeWidth="0.6" />
+                <circle cx="145" cy="248" r="1.5" fill="#FFE4E6" />
+                <path d="M145,250 L143,263 L146,261 L148,264 L147,250 Z" fill="url(#hairFrontGrad)" stroke={hairDark} strokeWidth="0.8" />
               </g>
 
-              {/* Bím tết phải: Lỏng tay vừa phải, có độ phồng buông xuống ngực */}
+              {/* Bím tết đuôi sam phải buông thả trước ngực (độ nới lỏng kiểu Gen Z, ngoài cổ áo) */}
               <g id="right-braid-clumps">
-                <path d="M198,80 Q210,96 207,114 Q214,128 208,142 Q213,156 209,170 Q214,184 210,198 Q214,212 211,226 Q214,238 212,248" stroke={hairDark} strokeWidth="1" fill="none" />
-                {/* Các mắt bím lồng đan 3D mềm mại */}
-                <ellipse cx="206" cy="98" rx="6" ry="7" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="208" cy="112" rx="6.5" ry="7.5" fill={hairSoft} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="207" cy="127" rx="6.2" ry="7.5" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="209" cy="142" rx="5.8" ry="7.2" fill={hairSoft} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="208" cy="157" rx="5.5" ry="7" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="210" cy="172" rx="5.2" ry="6.8" fill={hairSoft} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="209" cy="187" rx="4.8" ry="6.5" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="211" cy="202" rx="4.5" ry="6.2" fill={hairSoft} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="210" cy="216" rx="4.2" ry="6" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="212" cy="230" rx="3.8" ry="5.5" fill={hairSoft} stroke={hairDark} strokeWidth="0.8" />
-                <ellipse cx="211" cy="242" rx="3.4" ry="5" fill={hairMid} stroke={hairDark} strokeWidth="0.8" />
-                {/* Chun buộc nhỏ */}
-                <rect x="208" y="246" width="6" height="3" rx="1.5" fill="#D4AF37" stroke="#78350F" strokeWidth="0.6" />
-                {/* Đoạn tóc thẳng tự nhiên nhỏ ở đuôi */}
-                <path d="M211,249 L209,263 L212,261 L214,264 L213,249 Z" fill="url(#hairFrontGrad)" stroke={hairDark} strokeWidth="0.7" />
-                <line x1="211" y1="250" x2="211" y2="262" stroke={hairSheen} strokeWidth="0.8" />
+                <path d="M202,80 Q212,96 210,114 Q216,128 211,142 Q216,156 212,170 Q217,184 213,198 Q217,212 214,226 Q217,238 215,248" stroke={hairDark} strokeWidth="1.2" fill="none" />
+                <ellipse cx="209" cy="98" rx="6" ry="7" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="211" cy="112" rx="6.5" ry="7.5" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="210" cy="127" rx="6.2" ry="7.5" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="212" cy="142" rx="5.8" ry="7.2" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="211" cy="157" rx="5.5" ry="7" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="213" cy="172" rx="5.2" ry="6.8" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="212" cy="187" rx="4.8" ry="6.5" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="214" cy="202" rx="4.5" ry="6.2" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="213" cy="216" rx="4.2" ry="6" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="215" cy="230" rx="3.8" ry="5.5" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+                <ellipse cx="214" cy="242" rx="3.4" ry="5" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
+                {/* Nơ vải mảnh buộc đuôi bím */}
+                <ellipse cx="215" cy="248" rx="5" ry="2.5" fill="#E11D48" stroke="#9F1239" strokeWidth="0.6" />
+                <circle cx="215" cy="248" r="1.5" fill="#FFE4E6" />
+                <path d="M215,250 L213,263 L216,261 L218,264 L217,250 Z" fill="url(#hairFrontGrad)" stroke={hairDark} strokeWidth="0.8" />
               </g>
             </g>
           )}
 
-          {/* ------------------------------------------------------------ */}
-          {/* 4. TẾT 1 BÍM VAI PHẢI                                        */}
-          {/* Mái xéo/mái thưa nhẹ nhàng che một phần trán, ôm gọn má      */}
-          {/* trái. Bím tết dày, phồng nhẹ buông lơi lệch sang vai phải.   */}
-          {/* ------------------------------------------------------------ */}
-          {hairstyle === 'braided-single-side' && (
-            <g id="hair-model-4-single-side-braid">
+          {/* 4. Nữ: Tết 1 bím lệch vai phải (Side-Swept Braid - Right Shoulder) */}
+          {(hairstyle === 'braided-single-side' || hairstyle === 'side-swept-braid') && (
+            <g id="front-hair-female-side-braid">
               {/* Đỉnh đầu gạt tóc mềm sang phải */}
               <path
-                d="M161,74 C160,50 174,45 182,45 C190,45 202,50 200,74 C193,58 185,53 178,54 C172,55 166,62 161,74 Z"
+                d="M160,74 C159,48 174,44 182,44 C190,44 202,48 200,74 C193,58 185,52 178,53 C172,54 166,60 160,74 Z"
                 fill="url(#hairFrontGrad)"
               />
-              <ellipse cx="182" cy="52" rx="16" ry="2.2" fill="url(#animeHalo)" />
+              <ellipse cx="182" cy="50" rx="16" ry="2.2" fill="url(#animeHalo)" />
 
-              {/* Mái thưa búp bê nhẹ nhàng trước trán */}
-              <path d="M174,54 L174,68" stroke={hairDark} strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M178,54 L178,70" stroke={hairDark} strokeWidth="1.6" strokeLinecap="round" />
-              <path d="M182,53 L182,71" stroke={hairDark} strokeWidth="1.6" strokeLinecap="round" />
-              <path d="M186,54 L186,69" stroke={hairDark} strokeWidth="1.5" strokeLinecap="round" />
+              {/* Vài sợi buông lơi tự nhiên bên vai trái tạo nét e ấp duyên dáng */}
+              <path d="M165,58 Q161,72 162,90 Q160,105 164,118" stroke={hairDark} strokeWidth="1.3" strokeLinecap="round" fill="none" />
+              <path d="M168,64 Q164,80 166,96" stroke={hairSoft} strokeWidth="0.9" strokeLinecap="round" fill="none" />
 
-              {/* Mái xéo ôm gọn gò má bên trái */}
+              {/* Tóc gom lệch vắt sang vai phải */}
               <path
-                d="M170,52 Q164,66 163,85 Q162,100 166,112 C167,112 168,102 167,92 Q167,72 174,58 Z"
+                d="M182,45 Q198,56 208,74 Q215,90 216,108 C214,104 208,86 198,70 Q188,58 182,45 Z"
                 fill={hairMid}
               />
-              <path d="M170,52 Q164,66 163,85 Q162,100 166,112" stroke={hairDark} strokeWidth="0.9" fill="none" />
-              <path d="M161,84 Q159,98 162,115" stroke={hairSheen} strokeWidth="0.8" strokeLinecap="round" fill="none" />
+              <path d="M182,45 Q198,56 208,74 Q215,90 216,108" stroke={hairDark} strokeWidth="1.2" fill="none" />
 
-              {/* Tóc gạt cuộn mềm mại từ đỉnh đầu qua vai phải */}
-              <path
-                d="M182,46 Q198,58 208,76 Q215,92 216,110 C214,106 208,88 198,72 Q188,60 182,46 Z"
-                fill={hairMid}
-              />
-              <path d="M182,46 Q198,58 208,76 Q215,92 216,110" stroke={hairDark} strokeWidth="1" fill="none" />
-
-              {/* Bím tết dày, phồng nhẹ tự nhiên buông lơi lệch vai phải */}
+              {/* Bím tết lơi kiểu đuôi cá mềm mại bên vai phải */}
               <g id="thick-right-side-braid">
                 <ellipse cx="214" cy="114" rx="7.5" ry="8.5" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
                 <ellipse cx="216" cy="128" rx="8" ry="9" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
@@ -1546,171 +2451,279 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
                 <ellipse cx="218" cy="227" rx="5.8" ry="7.2" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
                 <ellipse cx="217" cy="242" rx="5.2" ry="6.6" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
                 <ellipse cx="218" cy="254" rx="4.5" ry="6" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
-
-                {/* Sợi tóc nhỏ hơi buông lơi ở rìa bím (flyaway wisps) */}
-                <path d="M222,126 Q227,136 223,148" stroke={hairDark} strokeWidth="0.8" fill="none" />
-                <path d="M208,142 Q205,152 208,162" stroke={hairDark} strokeWidth="0.8" fill="none" />
-                <path d="M223,174 Q228,184 224,196" stroke={hairDark} strokeWidth="0.8" fill="none" />
-
-                {/* Chun cột nhỏ xinh */}
-                <rect x="215" y="258" width="6.5" height="3.2" rx="1.6" fill="#B91C1C" stroke="#7F1D1D" strokeWidth="0.6" />
-                {/* Phần đuôi bím để xõa tự nhiên */}
-                <path d="M218,261 L215,274 L218,272 L221,275 L220,261 Z" fill="url(#hairFrontGrad)" stroke={hairDark} strokeWidth="0.7" />
-                <line x1="218" y1="262" x2="218" y2="274" stroke={hairHalo} strokeWidth="0.8" />
+                {/* Sợi tóc flyaways */}
+                <path d="M223,126 Q228,136 224,148" stroke={hairDark} strokeWidth="0.8" fill="none" />
+                <path d="M207,142 Q204,152 207,162" stroke={hairDark} strokeWidth="0.8" fill="none" />
+                {/* Nơ vải mảnh đuôi bím */}
+                <ellipse cx="218" cy="258" rx="5.5" ry="2.6" fill="#B91C1C" stroke="#7F1D1D" strokeWidth="0.6" />
+                <circle cx="218" cy="258" r="1.5" fill="#FCA5A5" />
+                <path d="M218,261 L215,274 L218,272 L221,275 L220,261 Z" fill="url(#hairFrontGrad)" stroke={hairDark} strokeWidth="0.8" />
               </g>
             </g>
           )}
 
-          {/* ------------------------------------------------------------ */}
-          {/* 5. BÚI LỆCH PHẢI                                             */}
-          {/* Búi lớn tròn có độ phồng và nếp uốn mềm mại (búi lỏng trễ    */}
-          {/* tự nhiên) lệch nhẹ sang phải. Mai và gáy có lọn xoăn nhẹ lơi */}
-          {/* ------------------------------------------------------------ */}
-          {hairstyle === 'side-bun-right' && (
-            <g id="hair-model-5-side-bun-right">
+          {/* 5. Nữ: Búi lệch về phía bên phải (Asymmetrical Side Low Bun) */}
+          {(hairstyle === 'side-bun-right' || hairstyle === 'asymmetrical-side-bun') && (
+            <g id="front-hair-female-side-bun">
               {/* Đỉnh đầu bồng bềnh gom chéo nhẹ sang phải */}
               <path
-                d="M161,74 C160,48 174,44 182,44 C192,44 202,48 200,74 C194,58 186,52 178,54 C172,55 166,62 161,74 Z"
+                d="M160,74 C159,48 174,44 182,44 C192,44 202,48 200,74 C194,58 186,52 178,53 C172,54 166,60 160,74 Z"
                 fill="url(#hairFrontGrad)"
               />
-              <ellipse cx="182" cy="51" rx="16" ry="2.2" fill="url(#animeHalo)" />
+              <ellipse cx="182" cy="50" rx="16" ry="2.2" fill="url(#animeHalo)" />
 
-              {/* Mái bay mềm mại rẽ lệch sang hai bên */}
-              <path
-                d="M176,52 Q168,64 164,82 Q162,96 166,108 C167,108 168,98 167,88 Q169,70 178,56 Z"
-                fill={hairMid}
-              />
-              <path d="M176,52 Q168,64 164,82 Q162,96 166,108" stroke={hairDark} strokeWidth="0.9" fill="none" />
-              <path d="M161,86 Q158,102 162,118" stroke={hairDark} strokeWidth="0.8" strokeLinecap="round" fill="none" />
+              {/* Để rủ một lọn tóc mai uốn nhẹ bên tai đối diện (tai trái) */}
+              <path d="M164,68 Q158,84 162,102 Q159,118 163,128" stroke={hairDark} strokeWidth="1.4" strokeLinecap="round" fill="none" />
+              <path d="M166,74 Q162,90 164,106" stroke={hairSoft} strokeWidth="0.9" strokeLinecap="round" fill="none" />
 
               {/* Lọn tóc mái phải lượn mềm vào khối búi */}
-              <path
-                d="M182,50 Q194,62 206,78 Q214,90 216,98"
-                stroke={hairDark}
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                fill="none"
-              />
+              <path d="M182,50 Q194,62 206,78 Q214,90 216,98" stroke={hairDark} strokeWidth="2.2" strokeLinecap="round" fill="none" />
               <path d="M182,50 Q194,62 206,78" stroke={hairSheen} strokeWidth="1.2" fill="none" />
 
-              {/* Mặt trước của khối búi to tròn lỏng trễ */}
-              <g id="side-bun-front-accent">
-                {/* Các cánh hoa tóc xếp nếp xoắn ốc phồng tự nhiên */}
-                <path d="M208,86 Q220,80 228,88 Q234,100 226,108 Q214,112 208,102 Z" fill={hairMid} stroke={hairDark} strokeWidth="0.9" />
-                <path d="M212,90 Q222,86 226,94 Q228,104 218,106" stroke={hairSheen} strokeWidth="1.8" fill="none" />
+              {/* Khối búi cuộn hình hoa tròn thanh tú */}
+              <g id="side-bun-front-flower">
+                <path d="M208,86 Q220,80 228,88 Q234,100 226,108 Q214,112 208,102 Z" fill={hairMid} stroke={hairDark} strokeWidth="1" />
+                <path d="M212,90 Q222,86 226,94 Q228,104 218,106" stroke={hairSheen} strokeWidth="1.6" fill="none" />
                 <path d="M214,94 Q220,90 224,96" stroke={hairHalo} strokeWidth="1.2" fill="none" />
-                {/* Trâm cài ngọc / kẹp hoa nhỏ xinh xắn */}
+                {/* Khe cài trâm gỗ hoặc hoa cài nhỏ thanh nhã */}
+                <line x1="206" y1="84" x2="228" y2="108" stroke="#92400E" strokeWidth="2" strokeLinecap="round" />
                 <circle cx="217" cy="95" r="3.2" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="0.8" />
                 <circle cx="217" cy="95" r="1.4" fill="#F43F5E" />
               </g>
+            </g>
+          )}
 
-              {/* Lọn tóc mai & gáy uốn xoăn nhẹ lơi buông lơi trước vai phải */}
+          {/* 6. Nữ: Gợn sóng dài nửa lưng (Mid-Back Soft Mermaid Waves) */}
+          {(hairstyle === 'half-up-princess' || hairstyle === 'mid-back-mermaid-waves') && (
+            <g id="front-hair-female-mermaid-waves">
+              {/* Đỉnh đầu bồng bềnh volume overhead, không dính bết */}
               <path
-                d="M214,106 Q222,130 216,155 Q212,180 218,205 Q220,218 215,225"
+                d="M160,74 C158,46 172,42 180,42 C188,42 202,46 200,74 C194,58 186,52 180,52 C174,52 166,58 160,74 Z"
+                fill="url(#hairFrontGrad)"
+              />
+              <line x1="180" y1="42" x2="180" y2="52" stroke={hairDark} strokeWidth="1" />
+              <ellipse cx="180" cy="48" rx="16" ry="2.2" fill="url(#animeHalo)" />
+
+              {/* Lọn mái bay uốn sóng mềm mại ôm hai bên gò má */}
+              <path d="M174,52 Q166,64 164,80 Q162,96 166,110" stroke={hairDark} strokeWidth="1.3" strokeLinecap="round" fill="none" />
+              <path d="M186,52 Q194,64 196,80 Q198,96 194,110" stroke={hairDark} strokeWidth="1.3" strokeLinecap="round" fill="none" />
+
+              {/* Các lọn sóng ôm lấy bờ vai mà không che mất cổ áo hay kiềng bạc (nằm ở rìa ngoài) */}
+              <path
+                d="M160,82 Q152,115 158,150 Q150,185 156,220 Q152,245 154,258"
                 stroke={hairDark}
-                strokeWidth="2.8"
+                strokeWidth="3.5"
                 strokeLinecap="round"
                 fill="none"
               />
               <path
-                d="M215,110 Q222,132 217,157 Q213,182 218,207"
+                d="M160,82 Q152,115 158,150 Q150,185 156,220"
                 stroke={hairSheen}
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                fill="none"
+              />
+
+              <path
+                d="M200,82 Q208,115 202,150 Q210,185 204,220 Q208,245 206,258"
+                stroke={hairDark}
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <path
+                d="M200,82 Q208,115 202,150 Q210,185 204,220"
+                stroke={hairSheen}
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                fill="none"
+              />
+            </g>
+          )}
+
+          {/* ============================================================== */}
+          {/* HỆ TÓC NAM (6 KIỂU CHÍNH THỨC)                                  */}
+          {/* ============================================================== */}
+
+          {/* 1. Nam: Rẽ ngôi 7/3 thư sinh (Classic 7/3 Side Part) */}
+          {(hairstyle === 'male-short-part' || hairstyle === 'classic-side-part-73') && (
+            <g id="front-hair-male-73">
+              {/* Đỉnh đầu & khối tóc sấy phồng rẽ ngôi 7/3 (ngôi tại x=173) */}
+              <path
+                d="M161,72 C160,50 170,44 173,44 C174,44 199,46 200,72 C196,56 188,52 174,52 L172,52 C168,52 163,58 161,72 Z"
+                fill="url(#hairFrontGrad)"
+              />
+              <ellipse cx="186" cy="49" rx="10" ry="2" fill="url(#animeHalo)" />
+
+              {/* Đường ngôi 7/3 sắc nét */}
+              <line x1="173" y1="44" x2="173" y2="53" stroke={hairDark} strokeWidth="1.5" />
+
+              {/* Phần mái 7 sấy phồng vuốt cong hình dấu phẩy (comma hair) */}
+              <path
+                d="M174,46 Q186,52 195,62 Q194,70 186,68 Q182,65 184,56 Z"
+                fill={hairMid}
+                stroke={hairDark}
                 strokeWidth="1.2"
-                strokeLinecap="round"
-                fill="none"
               />
-              {/* Sợi tóc tơ bay lơ thơ ở cằm trái */}
-              <path d="M165,95 Q168,110 166,124" stroke={hairSoft} strokeWidth="0.75" strokeLinecap="round" fill="none" />
-            </g>
-          )}
+              <path d="M175,50 Q186,57 194,64" stroke={hairSheen} strokeWidth="1.2" fill="none" />
+              <path d="M178,54 Q186,60 190,66" stroke={hairHalo} strokeWidth="0.9" fill="none" />
 
-          {/* ------------------------------------------------------------ */}
-          {/* 6. NỬA ĐẦU TIỂU THƯ                                          */}
-          {/* Tóc dài uốn sóng lượn bồng bềnh. Đỉnh đầu kẹp/cột nửa đầu    */}
-          {/* phồng nhẹ, băng đô nhỏ tối màu tự nhiên, lọn mái bay dài     */}
-          {/* ------------------------------------------------------------ */}
-          {hairstyle === 'half-up-princess' && (
-            <g id="hair-model-6-half-up">
-              {/* Khối tóc buộc nửa đầu phồng nhẹ ở đỉnh (pouf volume) */}
-              <ellipse cx="180" cy="47" rx="18" ry="11" fill="url(#hairFrontGrad)" stroke={hairDark} strokeWidth="0.8" />
-              <path d="M170,45 Q180,39 190,45" stroke={hairSheen} strokeWidth="1.4" fill="none" />
-              <path d="M173,48 Q180,43 187,48" stroke={hairHalo} strokeWidth="1" fill="none" />
-
-              {/* Chiếc băng đô (headband) nhỏ tối màu tự nhiên thanh lịch */}
+              {/* Phần mái 3 bên trái vén gọn */}
               <path
-                d="M162,56 Q180,46 198,56"
-                stroke="#2D241E"
-                strokeWidth="4"
-                strokeLinecap="round"
-                fill="none"
-              />
-              {/* Đường chỉ thêu vàng nhạt tinh tế trên băng đô */}
-              <path
-                d="M163,56 Q180,47 197,56"
-                stroke="#C5A059"
+                d="M172,46 Q166,54 163,64 C164,66 167,62 171,54 Z"
+                fill={hairSoft}
+                stroke={hairDark}
                 strokeWidth="1"
-                strokeLinecap="round"
-                fill="none"
               />
 
-              {/* Kẹp nơ / kẹp tăm nhỏ phía sau mối buộc nửa đầu */}
-              <rect x="176" y="52" width="8" height="3" rx="1.5" fill="#1C1917" stroke="#9B2C2C" strokeWidth="0.8" />
-
-              {/* Lọn mái bay dài uốn nhẹ ôm hai bên gò má */}
-              {/* Mái bay trái */}
-              <path
-                d="M172,56 Q165,66 163,82 Q162,98 167,112 C168,112 169,102 168,90 Q168,72 176,60 Z"
-                fill={hairMid}
-              />
-              <path d="M172,56 Q165,66 163,82 Q162,98 167,112" stroke={hairDark} strokeWidth="0.9" fill="none" />
-              <path d="M161,84 Q159,100 163,116" stroke={hairDark} strokeWidth="0.8" strokeLinecap="round" fill="none" />
-              <path d="M164,80 Q163,94 167,108" stroke={hairSheen} strokeWidth="1.1" fill="none" />
-
-              {/* Mái bay phải */}
-              <path
-                d="M188,56 Q195,66 197,82 Q198,98 193,112 C192,112 191,102 192,90 Q192,72 184,60 Z"
-                fill={hairMid}
-              />
-              <path d="M188,56 Q195,66 197,82 Q198,98 193,112" stroke={hairDark} strokeWidth="0.9" fill="none" />
-              <path d="M199,84 Q201,100 197,116" stroke={hairDark} strokeWidth="0.8" strokeLinecap="round" fill="none" />
-              <path d="M196,80 Q197,94 193,108" stroke={hairSheen} strokeWidth="1.1" fill="none" />
-
-              {/* Sóng tóc uốn lượn tự nhiên buông lơi trước hai bên vai */}
-              {/* Lọn sóng trái */}
-              <path
-                d="M162,85 Q154,120 160,155 Q152,190 158,225 Q154,248 156,260"
-                stroke={hairDark}
-                strokeWidth="4"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M162,85 Q154,120 160,155 Q152,190 158,225"
-                stroke={hairSheen}
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-
-              {/* Lọn sóng phải */}
-              <path
-                d="M198,85 Q206,120 200,155 Q208,190 202,225 Q206,248 204,260"
-                stroke={hairDark}
-                strokeWidth="4"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M198,85 Q206,120 200,155 Q208,190 202,225"
-                stroke={hairSheen}
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                fill="none"
-              />
+              {/* Hai bên mai tỉa gọn gàng khoe góc hàm nam tính */}
+              <path d="M161,70 L161,84" stroke={hairDark} strokeWidth="2" strokeLinecap="round" />
+              <path d="M199,70 L199,84" stroke={hairDark} strokeWidth="2" strokeLinecap="round" />
             </g>
           )}
 
-          {/* Các kiểu tóc phụ khác */}
+          {/* 2. Nam: Búi củ tỏi cổ trang cách tân (Heritage Topknot / Man Bun) */}
+          {(hairstyle === 'male-topknot-bun' || hairstyle === 'heritage-topknot-bun') && (
+            <g id="front-hair-male-topknot">
+              {/* Chân tóc trán cong sạch sẽ, để lộ trán cao sáng sủa, nét phong trần chốn kinh kỳ xưa */}
+              <path
+                d="M161,72 C160,54 170,48 180,48 C190,48 200,54 199,72 C196,62 188,58 180,58 C172,58 164,62 161,72 Z"
+                fill="url(#hairFrontGrad)"
+              />
+              <ellipse cx="180" cy="52" rx="14" ry="2" fill="url(#animeHalo)" />
+
+              {/* Đường chân tóc sạch sẽ lộ trán */}
+              <path d="M165,66 C170,60 175,58 180,58 C185,58 190,60 195,66" stroke={hairDark} strokeWidth="1.4" strokeLinecap="round" fill="none" />
+
+              {/* Tóc mai gọn gàng hai bên */}
+              <line x1="162" y1="72" x2="162" y2="82" stroke={hairDark} strokeWidth="1.8" strokeLinecap="round" />
+              <line x1="198" y1="72" x2="198" y2="82" stroke={hairDark} strokeWidth="1.8" strokeLinecap="round" />
+              {/* Vài sợi tóc mai tơ mảnh */}
+              <path d="M163,80 Q161,86 163,90" stroke={hairSoft} strokeWidth="0.8" fill="none" />
+              <path d="M197,80 Q199,86 197,90" stroke={hairSoft} strokeWidth="0.8" fill="none" />
+            </g>
+          )}
+
+          {/* 3. Nam: Layer mái rũ Ghibli (Shaggy Ghibli Flow) */}
+          {(hairstyle === 'male-curtain-layers' || hairstyle === 'shaggy-ghibli-flow') && (
+            <g id="front-hair-male-ghibli">
+              {/* Đỉnh đầu bồng bềnh volume overhead */}
+              <path
+                d="M159,72 C158,46 170,42 180,42 C190,42 202,46 201,72 C196,56 188,50 180,50 C172,50 164,56 159,72 Z"
+                fill="url(#hairFrontGrad)"
+              />
+              <ellipse cx="180" cy="48" rx="16" ry="2.2" fill="url(#animeHalo)" />
+
+              {/* Các thớ tóc layer mái rủ chạm nhẹ lông mày với các thớ tóc tơi xốp, đánh rối nhẹ lãng mạn Ghibli */}
+              <path
+                d="M162,60 L166,72 L171,64 L175,73 L180,63 L185,74 L190,64 L195,73 L198,60"
+                stroke={hairDark}
+                strokeWidth="1.4"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                fill="none"
+              />
+              {/* Cel-shading từng lọn layer */}
+              <path d="M172,52 L175,71 L178,64" fill={hairMid} stroke={hairDark} strokeWidth="1" />
+              <path d="M181,52 L185,72 L188,64" fill={hairMid} stroke={hairDark} strokeWidth="1" />
+              <path d="M166,54 L169,68 L171,62" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+              <path d="M189,54 L192,69 L195,62" fill={hairSoft} stroke={hairDark} strokeWidth="0.9" />
+
+              {/* Hai bên mai tỉa layer ôm nhẹ mang tai */}
+              <path d="M160,70 Q158,82 161,92" stroke={hairDark} strokeWidth="1.8" strokeLinecap="round" fill="none" />
+              <path d="M200,70 Q202,82 199,92" stroke={hairDark} strokeWidth="1.8" strokeLinecap="round" fill="none" />
+            </g>
+          )}
+
+          {/* 4. Nam: Tóc ngắn tân thời (Modern Short Taper / Crew Cut) */}
+          {(hairstyle === 'male-short-neat' || hairstyle === 'modern-short-taper') && (
+            <g id="front-hair-male-short-neat">
+              {/* Đỉnh đầu chải phồng nhẹ tự nhiên 4-5cm gọn gàng đĩnh đạc */}
+              <path
+                d="M162,68 C161,48 171,44 180,44 C189,44 199,48 198,68 C195,54 188,50 180,50 C172,50 165,54 162,68 Z"
+                fill="url(#hairFrontGrad)"
+              />
+              <ellipse cx="180" cy="49" rx="14" ry="2" fill="url(#animeHalo)" />
+
+              {/* Nếp chải texture gọn gàng thanh lịch */}
+              <path d="M170,52 Q175,48 180,52" stroke={hairSheen} strokeWidth="1.2" strokeLinecap="round" fill="none" />
+              <path d="M180,52 Q185,48 190,52" stroke={hairSheen} strokeWidth="1.2" strokeLinecap="round" fill="none" />
+              <path d="M174,56 Q180,53 186,56" stroke={hairDark} strokeWidth="1.2" strokeLinecap="round" fill="none" />
+
+              {/* Chân tóc trán sạch sẽ */}
+              <path d="M166,64 C171,58 176,56 180,56 C184,56 189,58 194,64" stroke={hairDark} strokeWidth="1.4" strokeLinecap="round" fill="none" />
+
+              {/* Mai và gáy tỉa mờ thanh lịch (tapered fade) khoe góc hàm */}
+              <line x1="162" y1="68" x2="162" y2="80" stroke={hairDark} strokeWidth="1.8" opacity="0.8" />
+              <line x1="198" y1="68" x2="198" y2="80" stroke={hairDark} strokeWidth="1.8" opacity="0.8" />
+            </g>
+          )}
+
+          {/* 5. Nam: Bổ luống 5/5 lãng tử (Retro Middle Part Curtain) */}
+          {(hairstyle === 'male-middle-curtain-55' || hairstyle === 'retro-middle-part-55') && (
+            <g id="front-hair-male-curtain-55">
+              {/* Rẽ ngôi chính giữa 5/5 rõ nét tại x=180 */}
+              <path
+                d="M160,72 C159,48 170,44 179,44 L181,44 C190,44 201,48 200,72 C195,58 188,52 181,52 L179,52 C172,52 165,58 160,72 Z"
+                fill="url(#hairFrontGrad)"
+              />
+              <line x1="180" y1="44" x2="180" y2="53" stroke={hairDark} strokeWidth="1.5" />
+              <ellipse cx="180" cy="49" rx="16" ry="2" fill="url(#animeHalo)" />
+
+              {/* Cánh rèm chữ C trái: uốn cong sang trái ôm trọn gò má */}
+              <path
+                d="M179,48 C172,52 165,62 166,76 C168,76 170,70 172,64 C175,56 178,52 179,48 Z"
+                fill={hairMid}
+                stroke={hairDark}
+                strokeWidth="1.2"
+              />
+              <path d="M178,50 C171,55 167,64 167,74" stroke={hairSheen} strokeWidth="1.1" fill="none" />
+
+              {/* Cánh rèm chữ C phải: uốn cong sang phải ôm trọn gò má */}
+              <path
+                d="M181,48 C188,52 195,62 194,76 C192,76 190,70 188,64 C185,56 182,52 181,48 Z"
+                fill={hairMid}
+                stroke={hairDark}
+                strokeWidth="1.2"
+              />
+              <path d="M182,50 C189,55 193,64 193,74" stroke={hairSheen} strokeWidth="1.1" fill="none" />
+
+              {/* Hai bên mai tỉa gọn gàng */}
+              <line x1="161" y1="72" x2="161" y2="82" stroke={hairDark} strokeWidth="1.8" strokeLinecap="round" />
+              <line x1="199" y1="72" x2="199" y2="82" stroke={hairDark} strokeWidth="1.8" strokeLinecap="round" />
+            </g>
+          )}
+
+          {/* 6. Nam: Tóc vuốt Slicked-back Quiff thanh lịch (Slicked-Back Quiff) */}
+          {(hairstyle === 'male-textured-undercut' || hairstyle === 'male-slicked-back-quiff' || hairstyle === 'modern-textured-fade') && (
+            <g id="front-hair-male-slicked-quiff">
+              {/* Vuốt ngược ra sau nhẹ nhàng giữ độ phồng tự nhiên (không bóng nhẫy keo) */}
+              <path
+                d="M162,68 C161,46 170,40 180,40 C190,40 199,46 198,68 C195,54 188,48 180,48 C172,48 165,54 162,68 Z"
+                fill="url(#hairFrontGrad)"
+              />
+              {/* Khối quiff vuốt ngược trên đỉnh đầu */}
+              <path
+                d="M167,56 C167,42 173,38 180,38 C187,38 193,42 193,56 C190,50 185,46 180,46 C175,46 170,50 167,56 Z"
+                fill={hairMid}
+                stroke={hairDark}
+                strokeWidth="1.2"
+              />
+              {/* Nếp chải vuốt ngược ra sau mượt mà */}
+              <path d="M172,54 Q176,42 180,42 Q184,42 188,54" stroke={hairSheen} strokeWidth="1.3" fill="none" />
+              <path d="M175,52 Q178,44 180,44 Q182,44 185,52" stroke={hairHalo} strokeWidth="1.1" fill="none" />
+              <ellipse cx="180" cy="45" rx="10" ry="2" fill="url(#animeHalo)" />
+
+              {/* Chân tóc trán vuốt ngược sạch sẽ, tôn trọn vầng trán cao sáng sủa */}
+              <path d="M166,62 C171,54 176,52 180,52 C184,52 189,54 194,62" stroke={hairDark} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+
+              {/* Hai bên mai tỉa mờ thanh lịch khoe góc hàm */}
+              <line x1="162" y1="66" x2="162" y2="80" stroke={hairDark} strokeWidth="1.8" opacity="0.8" />
+              <line x1="198" y1="66" x2="198" y2="80" stroke={hairDark} strokeWidth="1.8" opacity="0.8" />
+            </g>
+          )}
+
+          {/* Các kiểu phụ tương thích ngược */}
           {hairstyle === 'wavy-headband' && (
             <g id="hair-model-wavy-headband">
               <path d="M160,65 Q180,48 200,65" stroke="#94A3B8" strokeWidth="5" strokeLinecap="round" fill="none" />
@@ -1816,69 +2829,85 @@ export const AvatarMannequin: React.FC<AvatarMannequinProps> = ({
       </svg>
 
       {/* Bottom Bar: 6 Thẻ Card Bo Tròn (Thumbnail Cards) Hiển Thị Ma-nơ-canh Đầu Mini */}
-      <div className="w-full z-20 px-3 pb-3 space-y-2">
-        <div className="flex items-center justify-between px-1">
-          <span className="text-[11px] font-bold text-[#4A3B32] flex items-center gap-1.5 uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-[#9B2C2C]" />
-            Chọn Kiểu Tóc Anime / Manhwa
-          </span>
-          <span className="text-[10px] text-[#8C7A6B]">
-            6 mẫu ma-nơ-canh mini
-          </span>
-        </div>
-
-        {/* 6 Thumbnail Cards Row */}
-        <div className="flex items-center gap-2 overflow-x-auto py-1 px-1 bg-white/90 backdrop-blur-md rounded-2xl border border-[#D8C7B0] shadow-xs scrollbar-none">
-          {[
-            { id: 'long-straight-waist' as Hairstyle, name: '1. Dài thẳng', sub: 'Suôn tơi lọn' },
-            { id: 'short-bob-straight' as Hairstyle, name: '2. Ngắn vai', sub: 'Lob mái bay' },
-            { id: 'braided-twin-waist' as Hairstyle, name: '3. Tết 2 bím', sub: 'Lỏng tự nhiên' },
-            { id: 'braided-single-side' as Hairstyle, name: '4. Bím vai phải', sub: 'Phồng buông lơi' },
-            { id: 'side-bun-right' as Hairstyle, name: '5. Búi lệch phải', sub: 'Mai xoăn lơi' },
-            { id: 'half-up-princess' as Hairstyle, name: '6. Nửa đầu', sub: 'Sóng tiểu thư' },
-          ].map((item) => (
-            <HairThumbnailCard
-              key={item.id}
-              id={item.id}
-              name={item.name}
-              sub={item.sub}
-              isSelected={hairstyle === item.id}
-              onSelect={() => handleHairstyleChange(item.id)}
-            />
-          ))}
-        </div>
-
-        {/* Outfit Swatch Indicator */}
-        <div className="flex items-center justify-between text-xs text-[#6B5A4B] bg-[#FAF7F2]/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#D8C7B0]">
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-medium text-[#4A3B32]">Áo:</span>
-            <span
-              className="w-3.5 h-3.5 rounded-full border border-black/20 shadow-2xs"
-              style={{ backgroundColor: top.primaryColor }}
-              title={`Màu áo: ${top.primaryColor}`}
-            />
-            <span className="text-[11px] font-medium text-[#4A3B32] ml-1.5">Quần:</span>
-            <span
-              className="w-3.5 h-3.5 rounded-full border border-black/20 shadow-2xs"
-              style={{ backgroundColor: bottom.color }}
-              title={`Màu quần: ${bottom.color}`}
-            />
-          </div>
-
-          <div className="flex items-center gap-2 text-[10px] font-medium text-[#7A3E2D]">
-            <span>Mặt: <strong className="text-[#9B2C2C]">{faceShape === 'oval' ? 'Trái xoan' : 'Mặt tròn'}</strong></span>
-            <span className="text-[#D8C7B0]">|</span>
-            <span className="flex items-center gap-1 text-amber-800">
-              <Sparkles className="w-2.5 h-2.5 text-amber-600" />
-              <span>Ghibli: <strong className="text-amber-900">{
-                ghibliFilter === 'ghibli-warm' ? 'Pastel Ấm' :
-                ghibliFilter === 'ghibli-sunlit' ? 'Nắng Chiều' :
-                ghibliFilter === 'ghibli-watercolor' ? 'Màu Nước' : 'Nguyên Bản'
-              }</strong></span>
+      {effectiveShowDetails && (
+        <div className="w-full z-20 px-3 pb-3 space-y-2">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] font-bold text-[#4A3B32] flex items-center gap-1.5 uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-[#8B1E1E]" />
+              {isMale ? 'Kiểu Tóc Nam Đĩnh Đạc (6 Kiểu)' : 'Kiểu Tóc Nữ Anime (6 Kiểu)'}
+            </span>
+            <span className="text-[10px] text-[#8C7A6B]">
+              {isMale ? '6 kiểu tóc nam tính Gen Z' : '6 mẫu ma-nơ-canh mini'}
             </span>
           </div>
+
+          {/* 6 Thumbnail Cards Row */}
+          <div className="flex items-center gap-2 overflow-x-auto py-1 px-1 bg-white/90 backdrop-blur-md rounded-2xl border border-[#D8C7B0] shadow-xs scrollbar-none">
+            {(isMale ? [
+              { id: 'male-short-part' as Hairstyle, name: '1. Rẽ ngôi 7/3', sub: 'Thư sinh comma' },
+              { id: 'male-topknot-bun' as Hairstyle, name: '2. Búi củ tỏi', sub: 'Cổ trang trâm gỗ' },
+              { id: 'male-curtain-layers' as Hairstyle, name: '3. Layer Ghibli', sub: 'Mái rủ lãng tử' },
+              { id: 'male-short-neat' as Hairstyle, name: '4. Ngắn tân thời', sub: 'Tapered đĩnh đạc' },
+              { id: 'male-middle-curtain-55' as Hairstyle, name: '5. Bổ luống 5/5', sub: 'Lãng tử chữ C' },
+              { id: 'male-textured-undercut' as Hairstyle, name: '6. Slicked Quiff', sub: 'Vuốt ngược đĩnh đạc' },
+            ] : [
+              { id: 'long-straight-waist' as Hairstyle, name: '1. Dài thẳng', sub: 'Suôn tơi layer' },
+              { id: 'short-bob-straight' as Hairstyle, name: '2. Ngắn vai', sub: 'Cúp nhẹ air-bangs' },
+              { id: 'braided-twin-waist' as Hairstyle, name: '3. Tết 2 bím', sub: 'Phồng lơi Gen Z' },
+              { id: 'braided-single-side' as Hairstyle, name: '4. Bím vai phải', sub: 'Đuôi cá lệch e ấp' },
+              { id: 'side-bun-right' as Hairstyle, name: '5. Búi lệch phải', sub: 'Búi hoa mai lơi' },
+              { id: 'half-up-princess' as Hairstyle, name: '6. Sóng nửa lưng', sub: 'Mermaid mềm mại' },
+            ]).map((item) => (
+              <HairThumbnailCard
+                key={item.id}
+                id={item.id}
+                name={item.name}
+                sub={item.sub}
+                hairColor={hairColorHex}
+                isSelected={hairstyle === item.id}
+                onSelect={() => handleHairstyleChange(item.id)}
+              />
+            ))}
+          </div>
+
+          {/* Outfit Swatch Indicator */}
+          <div className="flex items-center justify-between text-xs text-[#6B5A4B] bg-[#FAF7F2]/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#D8C7B0]">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-medium text-[#4A3B32]">Áo:</span>
+              <span
+                className="w-3.5 h-3.5 rounded-full border border-black/20 shadow-2xs"
+                style={{ backgroundColor: top.primaryColor }}
+                title={`Màu áo: ${top.primaryColor}`}
+              />
+              <span className="text-[11px] font-medium text-[#4A3B32] ml-1.5">Quần:</span>
+              <span
+                className="w-3.5 h-3.5 rounded-full border border-black/20 shadow-2xs"
+                style={{ backgroundColor: bottom.color }}
+                title={`Màu quần: ${bottom.color}`}
+              />
+            </div>
+
+            <div className="flex items-center gap-2 text-[10px] font-medium text-[#7A3E2D]">
+              <span>Mặt: <strong className="text-[#8B1E1E]">{faceShape === 'oval' ? 'Trái xoan' : 'Mặt tròn'}</strong></span>
+              {isHoldingFan && (
+                <>
+                  <span className="text-[#D8C7B0]">|</span>
+                  <span className="text-[#8B1E1E] font-bold">🪭 Quạt xếp mẫu</span>
+                </>
+              )}
+              <span className="text-[#D8C7B0]">|</span>
+              <span className="flex items-center gap-1 text-amber-800">
+                <Sparkles className="w-2.5 h-2.5 text-amber-600" />
+                <span>Ghibli: <strong className="text-amber-900">{
+                  ghibliFilter === 'ghibli-warm' ? 'Pastel Ấm' :
+                  ghibliFilter === 'ghibli-sunlit' ? 'Nắng Chiều' :
+                  ghibliFilter === 'ghibli-watercolor' ? 'Màu Nước' : 'Nguyên Bản'
+                }</strong></span>
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

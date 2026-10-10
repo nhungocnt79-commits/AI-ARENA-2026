@@ -39,11 +39,11 @@ export const CompareOutfitsModal: React.FC<CompareOutfitsModalProps> = ({
 
         {/* Header */}
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-[#9B2C2C]/10 text-[#9B2C2C] flex items-center justify-center">
+          <div className="w-11 h-11 rounded-2xl bg-[#8B1E1E]/10 text-[#8B1E1E] flex items-center justify-center">
             <GitCompare className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#9B2C2C]">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#8B1E1E]">
               Thử Nghiệm & Cân Nhắc
             </span>
             <h3 className="text-xl lg:text-2xl font-serif font-bold text-[#2C241E]">
@@ -58,7 +58,7 @@ export const CompareOutfitsModal: React.FC<CompareOutfitsModalProps> = ({
           <div className="p-4 rounded-2xl bg-white border border-[#D8C7B0] space-y-4 shadow-2xs flex flex-col justify-between">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#9B2C2C] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#8B1E1E] uppercase tracking-wider">
                   Phương Án A
                 </span>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#EFE7DC] text-[#4A3B32]">
@@ -98,7 +98,7 @@ export const CompareOutfitsModal: React.FC<CompareOutfitsModalProps> = ({
                 onApplyOutfit(outfitA);
                 onClose();
               }}
-              className="w-full py-2 text-xs font-semibold text-white bg-[#9B2C2C] hover:bg-[#781818] rounded-xl transition-colors cursor-pointer mt-3"
+              className="w-full py-2 text-xs font-semibold text-white bg-[#8B1E1E] hover:bg-[#7A1C1C] rounded-xl transition-colors cursor-pointer mt-3"
             >
               Chọn Phương Án A Làm Lookbook
             </button>

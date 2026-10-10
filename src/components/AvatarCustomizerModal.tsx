@@ -16,7 +16,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
   onUpdateAvatar,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [hairCategoryTab, setHairCategoryTab] = useState<'recommended' | 'all'>('recommended');
+  const [hairCategoryTab, setHairCategoryTab] = useState<'recommended' | 'female-only' | 'male-only' | 'all'>('recommended');
 
   if (!isOpen) return null;
 
@@ -36,105 +36,105 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
     return 'Phúc hậu tròn trịa';
   };
 
-  // Male hairstyles (Thư sinh, Hiệp khách, Nam chính Ghibli)
+  // Male hairstyles (6 kiểu đặc tả chuẩn mực cho Nam)
   const maleHairstyles: { id: Hairstyle; name: string; desc: string; tag: string }[] = [
     {
       id: 'male-short-part',
-      name: '1. Rẽ Ngôi 7/3 Thư Sinh',
-      desc: 'Tóc rẽ ngôi 7/3 lãng tử, lọn mái phồng nhẹ buông lơi tự nhiên che một phần trán, mai ôm gọn gàng thanh nhã chuẩn nam chính anime/webtoon.',
+      name: '1. Rẽ Ngôi 7/3 Thư Sinh (Classic Side Part)',
+      desc: 'Chia ngôi 7/3 rõ nét, phần mái 7 được sấy phồng nhẹ tạo độ bồng thư sinh, vuốt cong nhẹ hình dấu phẩy (comma hair); hai bên mai tỉa gọn gàng khoe góc hàm nam tính.',
       tag: 'Nam 1'
     },
     {
       id: 'male-topknot-bun',
-      name: '2. Búi Củ Tỏi Cổ Trang',
-      desc: 'Tóc búi gọn trên đỉnh đầu cài trâm gỗ hoặc đai buộc, tóc mai buông lơi hai bên tai, toát lên phong thái nam nhi tuấn tú, khí phách hiệp khách Việt.',
+      name: '2. Búi Củ Tỏi Cổ Trang (Heritage Topknot)',
+      desc: 'Tóc dài gom hết lên đỉnh đầu búi thành củ tỏi tròn gọn gàng; cắm trâm gỗ hoặc dây cột vải; chân tóc trán sạch sẽ, tôn trọn nét phong trần chốn kinh kỳ xưa.',
       tag: 'Nam 2'
     },
     {
       id: 'male-curtain-layers',
-      name: '3. Layer Mái Rủ Ghibli',
-      desc: 'Mái curtain rủ tự nhiên hai bên mắt, các tầng tóc layer bồng bềnh trong gió như Haku hay Howl, lãng mạn và trong trẻo đậm chất điện ảnh.',
+      name: '3. Layer Mái Rũ Ghibli (Shaggy Ghibli Flow)',
+      desc: 'Tóc cắt layer nhiều tầng tự nhiên, mái rủ chạm nhẹ lông mày với các thớ tóc tơi xốp, đánh rối nhẹ bồng bềnh như nhân vật thư sinh lãng mạn trong phim anime Ghibli.',
       tag: 'Nam 3'
     },
     {
       id: 'male-short-neat',
-      name: '4. Tóc Ngắn Tân Thời',
-      desc: 'Tóc ngắn cắt tỉa cao ráo, vầng trán sáng sủa, phong thái thư sinh hiện đại, đĩnh đạc và thanh lịch khi diện trang phục truyền thống.',
+      name: '4. Tóc Ngắn Tân Thời (Modern Short Taper)',
+      desc: 'Tỉa ngắn cổ điển thập niên 1930 cách tân, mai và gáy tỉa mờ thanh lịch (tapered), phần đỉnh dài 4-5cm chải phồng nhẹ tự nhiên, gọn gàng, đĩnh đạc khi mặc áo Ngũ thân hoặc Bà ba.',
       tag: 'Nam 4'
+    },
+    {
+      id: 'male-middle-curtain-55',
+      name: '5. Bổ Luống 5/5 Lãng Tử (Retro Curtain)',
+      desc: 'Rẽ ngôi chính giữa 5/5 uốn cong nhẹ sang hai bên hình chữ C, ôm trọn gò má, mang đậm chất lãng tử nho nhã của công tử đất Hà Thành xưa.',
+      tag: 'Nam 5'
+    },
+    {
+      id: 'male-textured-undercut',
+      name: '6. Tóc Vuốt Slicked-back Quiff (Slicked-Back Quiff)',
+      desc: 'Vuốt ngược ra sau nhẹ nhàng giữ độ phồng tự nhiên (không bóng nhẫy keo), tôn vầng trán cao sáng sủa, tạo phong thái đĩnh đạc, hiện đại khi phối cùng Việt phục.',
+      tag: 'Nam 6'
     }
   ];
 
-  // Female hairstyles (Thiếu nữ dịu dàng, tiểu thư Kinh Bắc)
+  // Female hairstyles (6 kiểu đặc tả chuẩn mực cho Nữ)
   const femaleHairstyles: { id: Hairstyle; name: string; desc: string; tag: string }[] = [
     { 
       id: 'long-straight-waist', 
-      name: '1. Dài Thẳng Eo', 
-      desc: 'Tóc dài qua eo tự nhiên, suôn mượt và tơi thành từng lọn mảnh nhỏ ở đuôi, mái ôm nhẹ gò má, sợi tóc con lơ thơ trước trán, rẽ ngôi tự nhiên.',
+      name: '1. Dài Thẳng Tự Nhiên (Long Sleek Natural)', 
+      desc: 'Mái rẽ ngôi giữa nhẹ hoặc không mái, vén hờ sau tai, vài sợi tóc mai mảnh buông dọc gò má. Thân tóc xõa thẳng mượt mà ra sau lưng, độ rủ suôn mượt qua ngực, đuôi tóc tỉa layer vát nhọn tự nhiên.',
       tag: 'Nữ 1'
     },
     { 
       id: 'short-bob-straight', 
-      name: '2. Ngắn Ngang Vai', 
-      desc: 'Tóc lob chạm ngang vai, cúp nhẹ ôm lấy khuôn mặt. Mái bay (curtain bangs) rẽ ngôi giữa có độ phồng chân tóc, đuôi tỉa layer so le tự nhiên.',
+      name: '2. Ngắn Ngang Vai Uốn Cụp (Soft Bob Collarbone)', 
+      desc: 'Mái thưa kiểu Hàn nhẹ nhàng (Air bangs). Thân tóc dài chạm xương quai xanh, ôm nhẹ lấy xương hàm giúp khuôn mặt thon gọn, đuôi cúp nhẹ tạo độ bồng bềnh nữ tính.',
       tag: 'Nữ 2'
     },
     { 
       id: 'braided-twin-waist', 
-      name: '3. Tết 2 Bím', 
-      desc: 'Chia ngôi giữa tự nhiên ở đỉnh đầu, 2 bên tết lỏng tay vừa phải buông dài xuống ngực, đuôi cột chun nhỏ, vài sợi tóc mai ôm hai bên má.',
+      name: '3. Tết Hai Bím Năng Động (Playful Twin Braids)', 
+      desc: 'Mái rẽ nhẹ, hai dải tóc mai uốn lơi buông trước tai. Thân tóc tết đuôi sam hai bên buông thả phía trước ngực, mối tết phồng đều tay có độ nới lỏng kiểu Gen Z, đuôi bím cột nơ vải mảnh.',
       tag: 'Nữ 3'
     },
     { 
       id: 'braided-single-side', 
-      name: '4. Tết 1 Bím Vai Phải', 
-      desc: 'Mái xéo/thưa nhẹ nhàng che một phần trán, tóc gạt và tết lệch sang vai phải, bím dày phồng nhẹ buông lơi tự nhiên đậm chất duyên thầm.',
+      name: '4. Tết 1 Bím Lệch Vai Phải (Side-Swept Braid)', 
+      desc: 'Toàn bộ tóc được gom lệch nhẹ nhàng vắt sang vai phải; bím tết lơi kiểu đuôi cá mềm mại, điểm vài sợi buông lơi tự nhiên bên vai trái tạo nét e ấp duyên dáng.',
       tag: 'Nữ 4'
     },
     { 
       id: 'side-bun-right', 
-      name: '5. Búi Lệch Phải', 
-      desc: 'Tóc gom cao búi tròn lớn có độ phồng lỏng trễ lệch sang phải, hai bên mai và gáy có lọn uốn xoăn nhẹ buông lơi thanh thoát.',
+      name: '5. Búi Lệch Bên Phải (Asymmetrical Side Low Bun)', 
+      desc: 'Tóc chải mượt gom thấp sau gáy hơi chếch về bên phải, búi cuộn hình hoa tròn thanh tú; có khe cài trâm gỗ hoặc hoa cài nhỏ; để rủ một lọn tóc mai uốn nhẹ bên tai đối diện.',
       tag: 'Nữ 5'
     },
     { 
       id: 'half-up-princess', 
-      name: '6. Nửa Đầu Tiểu Thư', 
-      desc: 'Tóc dài uốn sóng lơi bồng bềnh, đỉnh đầu kẹp nửa đầu phồng nhẹ kết hợp băng đô nhỏ, lọn mái bay dài ôm nhẹ hai bên má.',
+      name: '6. Gợn Sóng Dài Nửa Lưng (Mermaid Waves)', 
+      desc: 'Tóc dài chấm giữa lưng, uốn sóng nước lượn sóng mềm mại (soft S-curl). Độ bồng bềnh cao, các lọn sóng ôm lấy bờ vai mà không che mất cổ áo.',
       tag: 'Nữ 6'
-    },
-    { 
-      id: 'wavy-headband', 
-      name: 'Sóng Lơi Cài Băng Đô Lụa', 
-      desc: 'Băng đô thanh xuân, lọn tóc mái uốn cong chữ C, sóng tóc bồng bềnh nữ tính',
-      tag: 'Thêm'
-    },
-    { 
-      id: 'side-ponytail-wavy', 
-      name: 'Đuôi Ngựa Lệch Bồng Bềnh', 
-      desc: 'Mái rủ bồng bềnh kiểu Hàn Quốc, đuôi tóc uốn sóng lơi lệch sang bờ vai phải',
-      tag: 'Thêm'
-    },
-    { 
-      id: 'short-curly-bows', 
-      name: 'Bob Ngắn Uốn Cụp Đính Nơ', 
-      desc: 'Tóc bob ngắn ngang cằm uốn vểnh nhẹ, mái bằng thưa, hai bím nhỏ đính nơ xinh xắn',
-      tag: 'Thêm'
-    },
-    { 
-      id: 'high-artistic-bun', 
-      name: 'Búi Cao Xoắn Cố Đô', 
-      desc: 'Búi xoắn to quý phái đỉnh đầu, lọn tóc mai uốn sóng nhẹ tôn kiềng bạc và cổ cao',
-      tag: 'Thêm'
-    },
+    }
+  ];
+
+  // Quick hair color palettes
+  const hairColorPresets = [
+    { id: '#1A1A1A', name: 'Đen Tuyền', hex: '#1A1A1A', desc: 'Đen nhánh truyền thống ngàn đời' },
+    { id: '#2E2E32', name: 'Đen Khói', hex: '#2E2E32', desc: 'Khói huyền bí thời thượng Gen Z' },
+    { id: '#4A3728', name: 'Nâu Hạt Dẻ', hex: '#4A3728', desc: 'Ấm áp thanh lịch tôn da' },
+    { id: '#5C4033', name: 'Nâu Tây Trầm', hex: '#5C4033', desc: 'Nâu trầm tây đoan trang đài các' },
   ];
 
   // Active list based on gender and tab
   const activeHairstyles = 
     hairCategoryTab === 'all'
       ? [...maleHairstyles, ...femaleHairstyles]
-      : isMale
-        ? [...maleHairstyles, ...femaleHairstyles.slice(0, 2)]
-        : [...femaleHairstyles, ...maleHairstyles.slice(0, 2)];
+      : hairCategoryTab === 'female-only'
+        ? femaleHairstyles
+        : hairCategoryTab === 'male-only'
+          ? maleHairstyles
+          : isMale
+            ? maleHairstyles
+            : femaleHairstyles;
 
   const faceShapes: { id: FaceShape; name: string; desc: string; iconLabel: string }[] = isMale ? [
     {
@@ -246,11 +246,11 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
         <div className="space-y-3 p-4 bg-white rounded-2xl border border-[#D8C7B0] shadow-2xs">
           <div className="flex items-center justify-between pb-1 border-b border-[#F0E6D8]">
             <label className="text-xs font-bold uppercase tracking-wider text-[#4A3B32] flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-[#9B2C2C]" />
+              <User className="w-3.5 h-3.5 text-[#8B1E1E]" />
               1. Giới Tính Nhân Vật (Nam / Nữ Tự Do Tùy Chỉnh)
             </label>
             <span className="text-[11px] text-[#8C7A6B]">
-              Đang chọn: <strong className="text-[#9B2C2C]">{isMale ? '♂ Nhân Vật Nam' : '♀ Nhân Vật Nữ'}</strong>
+              Đang chọn: <strong className="text-[#8B1E1E]">{isMale ? '♂ Nhân Vật Nam' : '♀ Nhân Vật Nữ'}</strong>
             </span>
           </div>
 
@@ -261,7 +261,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
               onClick={() => handleGenderChange('female')}
               className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
                 !isMale
-                  ? 'bg-rose-50/70 border-[#9B2C2C] ring-2 ring-[#9B2C2C]/20 shadow-xs'
+                  ? 'bg-rose-50/70 border-[#8B1E1E] ring-2 ring-[#8B1E1E]/20 shadow-xs'
                   : 'bg-[#FAF7F2]/60 hover:bg-white border-[#E8DEC8]'
               }`}
             >
@@ -275,7 +275,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
                     <span className="text-[10px] text-rose-700 font-medium">Thiếu Nữ Đoan Trang · Duyên Thầm</span>
                   </div>
                 </div>
-                {!isMale && <Check className="w-4 h-4 text-[#9B2C2C]" />}
+                {!isMale && <Check className="w-4 h-4 text-[#8B1E1E]" />}
               </div>
               <p className="text-[11px] text-[#6B5A4B] leading-relaxed">
                 Đường nét mềm mại, dịu dàng, vóc dáng uyển chuyển, kiềng bạc hoa sen và các kiểu tóc thướt tha Kinh Bắc. Chuẩn dáng: <strong>160 cm · 52 kg</strong>.
@@ -288,7 +288,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
               onClick={() => handleGenderChange('male')}
               className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
                 isMale
-                  ? 'bg-amber-50/70 border-[#9B2C2C] ring-2 ring-[#9B2C2C]/20 shadow-xs'
+                  ? 'bg-amber-50/70 border-[#8B1E1E] ring-2 ring-[#8B1E1E]/20 shadow-xs'
                   : 'bg-[#FAF7F2]/60 hover:bg-white border-[#E8DEC8]'
               }`}
             >
@@ -302,7 +302,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
                     <span className="text-[10px] text-amber-800 font-medium">Thư Sinh Khôi Ngô · Khí Phách</span>
                   </div>
                 </div>
-                {isMale && <Check className="w-4 h-4 text-[#9B2C2C]" />}
+                {isMale && <Check className="w-4 h-4 text-[#8B1E1E]" />}
               </div>
               <p className="text-[11px] text-[#6B5A4B] leading-relaxed">
                 Bờ vai rộng đĩnh đạc, ngũ quan khôi ngô, phong thái nho nhã chuẩn nam chính anime/Ghibli, hợp diện Áo Ngũ Thân & Áo Bà Ba nam. Chuẩn dáng: <strong>172 cm · 64 kg</strong>.
@@ -315,18 +315,18 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
         <div className="space-y-3.5 p-4 bg-white rounded-2xl border border-[#D8C7B0] shadow-2xs">
           <div className="flex items-center justify-between pb-1 border-b border-[#F0E6D8]">
             <label className="text-xs font-bold uppercase tracking-wider text-[#4A3B32] flex items-center gap-1.5">
-              <Ruler className="w-3.5 h-3.5 text-[#9B2C2C]" />
+              <Ruler className="w-3.5 h-3.5 text-[#8B1E1E]" />
               2. Tùy Chỉnh Vóc Dáng ({isMale ? 'Chuẩn Nam 172cm/64kg' : 'Chuẩn Nữ 160cm/52kg'})
             </label>
             <div className="flex items-center gap-2">
               <span className="text-[11px] text-[#8C7A6B]">
-                BMI: <strong className="text-[#9B2C2C]">{bmi}</strong> ({getBmiStatus(bmi)})
+                BMI: <strong className="text-[#8B1E1E]">{bmi}</strong> ({getBmiStatus(bmi)})
               </span>
               {(height !== defaultStandardHeight || weight !== defaultStandardWeight) && (
                 <button
                   type="button"
                   onClick={() => onUpdateAvatar({ height: defaultStandardHeight, weight: defaultStandardWeight })}
-                  className="text-[10px] text-[#9B2C2C] hover:underline font-bold flex items-center gap-0.5"
+                  className="text-[10px] text-[#8B1E1E] hover:underline font-bold flex items-center gap-0.5"
                   title={`Đặt lại dáng chuẩn: ${defaultStandardHeight} cm và ${defaultStandardWeight} kg`}
                 >
                   <RotateCcw className="w-3 h-3" />
@@ -341,7 +341,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
             <div className="space-y-1.5 p-3 rounded-xl bg-[#FAF7F2]/80 border border-[#E8DEC8]">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[#4A3B32]">Chiều cao:</span>
-                <span className="font-bold text-[#9B2C2C] bg-white px-2 py-0.5 rounded-md border border-[#E8DEC8]">
+                <span className="font-bold text-[#8B1E1E] bg-white px-2 py-0.5 rounded-md border border-[#E8DEC8]">
                   {height} cm
                 </span>
               </div>
@@ -352,7 +352,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
                 step={1}
                 value={height}
                 onChange={(e) => onUpdateAvatar({ height: Number(e.target.value) })}
-                className="w-full accent-[#9B2C2C] cursor-pointer h-2 bg-[#E8DEC8] rounded-lg"
+                className="w-full accent-[#8B1E1E] cursor-pointer h-2 bg-[#E8DEC8] rounded-lg"
               />
               <div className="flex justify-between text-[10px] text-[#8C7A6B]">
                 <span>140 cm</span>
@@ -365,7 +365,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
             <div className="space-y-1.5 p-3 rounded-xl bg-[#FAF7F2]/80 border border-[#E8DEC8]">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[#4A3B32]">Cân nặng:</span>
-                <span className="font-bold text-[#9B2C2C] bg-white px-2 py-0.5 rounded-md border border-[#E8DEC8]">
+                <span className="font-bold text-[#8B1E1E] bg-white px-2 py-0.5 rounded-md border border-[#E8DEC8]">
                   {weight} kg
                 </span>
               </div>
@@ -376,7 +376,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
                 step={1}
                 value={weight}
                 onChange={(e) => onUpdateAvatar({ weight: Number(e.target.value) })}
-                className="w-full accent-[#9B2C2C] cursor-pointer h-2 bg-[#E8DEC8] rounded-lg"
+                className="w-full accent-[#8B1E1E] cursor-pointer h-2 bg-[#E8DEC8] rounded-lg"
               />
               <div className="flex justify-between text-[10px] text-[#8C7A6B]">
                 <span>40 kg</span>
@@ -409,7 +409,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
                 onClick={() => onUpdateAvatar({ height: preset.h, weight: preset.w })}
                 className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer border ${
                   height === preset.h && weight === preset.w
-                    ? 'bg-[#9B2C2C] text-white border-[#9B2C2C]'
+                    ? 'bg-[#8B1E1E] text-white border-[#8B1E1E]'
                     : 'bg-[#FAF7F2] text-[#4A3B32] border-[#E8DEC8] hover:bg-white'
                 }`}
               >
@@ -423,11 +423,11 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
         <div className="space-y-3 p-4 bg-white rounded-2xl border border-[#D8C7B0] shadow-2xs">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold uppercase tracking-wider text-[#4A3B32] flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#9B2C2C]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#8B1E1E]" />
               3. Chọn Dáng Mặt ({isMale ? 'Mặt Chữ Điền Hoặc Thiếu Niên' : 'Mặt Trái Xoan Hoặc Mặt Tròn'})
             </label>
             <span className="text-[11px] text-[#8C7A6B]">
-              Đang chọn: <strong className="text-[#9B2C2C]">{
+              Đang chọn: <strong className="text-[#8B1E1E]">{
                 isMale 
                   ? (currentFaceShape === 'oval' ? 'Mặt Thư Sinh' : 'Mặt Thiếu Niên')
                   : (currentFaceShape === 'oval' ? 'Mặt Trái Xoan' : 'Mặt Tròn')
@@ -444,7 +444,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
                   onClick={() => onUpdateAvatar({ faceShape: shape.id })}
                   className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1.5 ${
                     isSelected
-                      ? 'bg-amber-50/60 border-[#9B2C2C] ring-2 ring-[#9B2C2C]/20 shadow-xs'
+                      ? 'bg-amber-50/60 border-[#8B1E1E] ring-2 ring-[#8B1E1E]/20 shadow-xs'
                       : 'bg-[#FAF7F2]/60 hover:bg-white border-[#E8DEC8]'
                   }`}
                 >
@@ -453,7 +453,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
                       <span className="text-sm">{shape.iconLabel.split(' ')[0]}</span>
                       {shape.name}
                     </span>
-                    {isSelected && <Check className="w-4 h-4 text-[#9B2C2C]" />}
+                    {isSelected && <Check className="w-4 h-4 text-[#8B1E1E]" />}
                   </div>
                   <p className="text-[11px] text-[#6B5A4B] leading-relaxed">
                     {shape.desc}
@@ -466,33 +466,89 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
 
         {/* 4. Bộ Sưu Tập Kiểu Tóc */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <label className="text-xs font-bold uppercase tracking-wider text-[#4A3B32] block">
-              4. Bộ Sưu Tập Kiểu Tóc 2D Webtoon/Anime/Ghibli
+              4. Bộ Sưu Tập Kiểu Tóc 2D Webtoon/Anime (12 Kiểu)
             </label>
-            <div className="flex items-center gap-1 bg-white p-0.5 rounded-xl border border-[#D8C7B0] text-[10px]">
+            <div className="flex items-center gap-1 bg-white p-0.5 rounded-xl border border-[#D8C7B0] text-[10px] self-start sm:self-auto overflow-x-auto">
               <button
                 type="button"
                 onClick={() => setHairCategoryTab('recommended')}
-                className={`px-2 py-0.5 rounded-lg font-bold transition-all ${
+                className={`px-2 py-0.5 rounded-lg font-bold transition-all whitespace-nowrap ${
                   hairCategoryTab === 'recommended'
-                    ? 'bg-[#9B2C2C] text-white shadow-2xs'
+                    ? 'bg-[#8B1E1E] text-white shadow-2xs'
                     : 'text-[#6B5A4B] hover:bg-[#FAF7F2]'
                 }`}
               >
-                Gợi ý cho {isMale ? 'Nam ♂' : 'Nữ ♀'}
+                Gợi ý {isMale ? 'Nam ♂' : 'Nữ ♀'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setHairCategoryTab('female-only')}
+                className={`px-2 py-0.5 rounded-lg font-bold transition-all whitespace-nowrap ${
+                  hairCategoryTab === 'female-only'
+                    ? 'bg-[#8B1E1E] text-white shadow-2xs'
+                    : 'text-[#6B5A4B] hover:bg-[#FAF7F2]'
+                }`}
+              >
+                Nữ ♀ (6 kiểu)
+              </button>
+              <button
+                type="button"
+                onClick={() => setHairCategoryTab('male-only')}
+                className={`px-2 py-0.5 rounded-lg font-bold transition-all whitespace-nowrap ${
+                  hairCategoryTab === 'male-only'
+                    ? 'bg-[#8B1E1E] text-white shadow-2xs'
+                    : 'text-[#6B5A4B] hover:bg-[#FAF7F2]'
+                }`}
+              >
+                Nam ♂ (6 kiểu)
               </button>
               <button
                 type="button"
                 onClick={() => setHairCategoryTab('all')}
-                className={`px-2 py-0.5 rounded-lg font-bold transition-all ${
+                className={`px-2 py-0.5 rounded-lg font-bold transition-all whitespace-nowrap ${
                   hairCategoryTab === 'all'
-                    ? 'bg-[#9B2C2C] text-white shadow-2xs'
+                    ? 'bg-[#8B1E1E] text-white shadow-2xs'
                     : 'text-[#6B5A4B] hover:bg-[#FAF7F2]'
                 }`}
               >
-                Tất cả kiểu tóc
+                Tất cả (12)
               </button>
+            </div>
+          </div>
+
+          {/* Bảng Đổi Màu Tóc Nhanh (Palette 4 màu chuẩn) */}
+          <div className="p-3 bg-white rounded-xl border border-[#D8C7B0] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span className="text-xs font-bold text-[#4A3B32] flex items-center gap-1.5">
+              <span>Màu tóc:</span>
+              <span className="text-[11px] font-normal text-[#8C7A6B]">
+                {hairColorPresets.find(p => p.hex === (avatar.hairColor || '#1A1A1A'))?.name || 'Đen Tuyền'}
+              </span>
+            </span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {hairColorPresets.map((palette) => {
+                const isSelected = (avatar.hairColor || '#1A1A1A') === palette.hex;
+                return (
+                  <button
+                    key={palette.id}
+                    type="button"
+                    onClick={() => onUpdateAvatar({ hairColor: palette.hex })}
+                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[11px] font-medium transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#FDF4EE] border-[#8B1E1E] ring-2 ring-[#8B1E1E]/30 text-[#8B1E1E] font-bold shadow-2xs'
+                        : 'bg-[#FAF7F2] hover:bg-white border-[#E8DEC8] text-[#4A3B32]'
+                    }`}
+                    title={palette.desc}
+                  >
+                    <span
+                      className="w-3.5 h-3.5 rounded-full border border-black/20 shrink-0 shadow-2xs"
+                      style={{ backgroundColor: palette.hex }}
+                    />
+                    <span>{palette.name}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -505,7 +561,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
                   onClick={() => onUpdateAvatar({ hairstyle: style.id })}
                   className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1.5 ${
                     isSelected
-                      ? 'bg-white border-[#9B2C2C] ring-2 ring-[#9B2C2C]/20 shadow-xs'
+                      ? 'bg-white border-[#8B1E1E] ring-2 ring-[#8B1E1E]/20 shadow-xs'
                       : 'bg-white/70 hover:bg-white border-[#E8DEC8]'
                   }`}
                 >
@@ -523,7 +579,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
                           {style.name}
                         </span>
                       </div>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-[#9B2C2C] shrink-0" />}
+                      {isSelected && <Check className="w-3.5 h-3.5 text-[#8B1E1E] shrink-0" />}
                     </div>
                     <p className="text-[10px] text-[#8C7A6B] leading-relaxed">
                       {style.desc}
@@ -549,7 +605,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
                   onClick={() => onUpdateAvatar({ skinTone: skin.id })}
                   className={`flex-1 p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1.5 ${
                     isSelected
-                      ? 'bg-white border-[#9B2C2C] ring-2 ring-[#9B2C2C]/20 shadow-2xs'
+                      ? 'bg-white border-[#8B1E1E] ring-2 ring-[#8B1E1E]/20 shadow-2xs'
                       : 'bg-white/70 hover:bg-white border-[#E8DEC8]'
                   }`}
                 >
@@ -586,7 +642,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
           <div className="flex items-center gap-3">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#9B2C2C] hover:bg-[#781818] rounded-xl transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#8B1E1E] hover:bg-[#7A1C1C] rounded-xl transition-colors cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5" />
               <span>Tải Ảnh Của Bạn</span>
@@ -608,7 +664,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
               <img
                 src={avatar.customPhotoUrl}
                 alt="Avatar uploaded"
-                className="w-12 h-12 rounded-full object-cover border-2 border-[#9B2C2C] shadow-xs"
+                className="w-12 h-12 rounded-full object-cover border-2 border-[#8B1E1E] shadow-xs"
               />
               <span className="text-xs text-[#15803D] font-medium">
                 ✓ Đang áp dụng khuôn mặt tải lên!
@@ -620,7 +676,7 @@ export const AvatarCustomizerModal: React.FC<AvatarCustomizerModalProps> = ({
         {/* Confirm Button */}
         <button
           onClick={onClose}
-          className="w-full py-2.5 text-xs font-semibold text-white bg-[#9B2C2C] hover:bg-[#781818] rounded-xl transition-colors cursor-pointer"
+          className="w-full py-2.5 text-xs font-semibold text-white bg-[#8B1E1E] hover:bg-[#7A1C1C] rounded-xl transition-colors cursor-pointer"
         >
           Hoàn Tất & Áp Dụng Lên Nhân Vật
         </button>

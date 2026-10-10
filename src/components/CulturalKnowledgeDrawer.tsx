@@ -53,7 +53,7 @@ export const CulturalKnowledgeDrawer: React.FC<CulturalKnowledgeDrawerProps> = (
             <button
               onClick={() => setFilter('all')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
-                filter === 'all' ? 'bg-white text-[#9B2C2C] shadow-2xs' : 'text-[#6B5A4B] hover:text-[#2C241E]'
+                filter === 'all' ? 'bg-white text-[#8B1E1E] shadow-2xs' : 'text-[#6B5A4B] hover:text-[#2C241E]'
               }`}
             >
               Tất Cả Di Sản
@@ -61,7 +61,7 @@ export const CulturalKnowledgeDrawer: React.FC<CulturalKnowledgeDrawerProps> = (
             <button
               onClick={() => setFilter('costume')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
-                filter === 'costume' ? 'bg-white text-[#9B2C2C] shadow-2xs' : 'text-[#6B5A4B] hover:text-[#2C241E]'
+                filter === 'costume' ? 'bg-white text-[#8B1E1E] shadow-2xs' : 'text-[#6B5A4B] hover:text-[#2C241E]'
               }`}
             >
               3 Hệ Phục Trang
@@ -69,7 +69,7 @@ export const CulturalKnowledgeDrawer: React.FC<CulturalKnowledgeDrawerProps> = (
             <button
               onClick={() => setFilter('accessories')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
-                filter === 'accessories' ? 'bg-white text-[#9B2C2C] shadow-2xs' : 'text-[#6B5A4B] hover:text-[#2C241E]'
+                filter === 'accessories' ? 'bg-white text-[#8B1E1E] shadow-2xs' : 'text-[#6B5A4B] hover:text-[#2C241E]'
               }`}
             >
               Kho Phụ Kiện
@@ -83,7 +83,7 @@ export const CulturalKnowledgeDrawer: React.FC<CulturalKnowledgeDrawerProps> = (
               placeholder="Tìm kiếm ý nghĩa, tên..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-xs bg-white rounded-lg border border-[#D8C7B0] focus:outline-hidden focus:border-[#9B2C2C] text-[#2C241E]"
+              className="pl-8 pr-3 py-1.5 text-xs bg-white rounded-lg border border-[#D8C7B0] focus:outline-hidden focus:border-[#8B1E1E] text-[#2C241E]"
             />
           </div>
         </div>
@@ -125,7 +125,7 @@ export const CulturalKnowledgeDrawer: React.FC<CulturalKnowledgeDrawerProps> = (
                         onSelectRootFromDrawer(c.id);
                         onClose();
                       }}
-                      className="w-full py-1.5 text-xs font-semibold text-[#9B2C2C] bg-[#9B2C2C]/5 hover:bg-[#9B2C2C]/10 border border-[#9B2C2C]/20 rounded-xl transition-colors cursor-pointer"
+                      className="w-full py-1.5 text-xs font-semibold text-[#8B1E1E] bg-[#8B1E1E]/5 hover:bg-[#8B1E1E]/10 border border-[#8B1E1E]/20 rounded-xl transition-colors cursor-pointer"
                     >
                       Bắt đầu phối bộ này →
                     </button>
@@ -157,7 +157,7 @@ export const CulturalKnowledgeDrawer: React.FC<CulturalKnowledgeDrawerProps> = (
                         {acc.type === 'shoes' ? 'Giày' : acc.type === 'jewelry' ? 'Trang sức' : 'Phụ kiện tóc'}
                       </span>
                     </div>
-                    <div className="text-[10px] text-[#9B2C2C] italic">
+                    <div className="text-[10px] text-[#8B1E1E] italic">
                       {acc.culturalOrigin}
                     </div>
                     <p className="text-[11px] text-[#6B5A4B] leading-relaxed">

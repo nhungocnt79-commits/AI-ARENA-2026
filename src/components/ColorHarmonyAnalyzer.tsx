@@ -14,7 +14,7 @@ export const ColorHarmonyAnalyzer: React.FC<ColorHarmonyAnalyzerProps> = ({ outf
     <div className="bg-[#FAF7F2] p-5 rounded-2xl border border-[#E8DEC8] space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9B2C2C]">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#8B1E1E]">
           <Palette className="w-4 h-4" />
           <span>Kiểm Tra Sự Hài Hòa Của Màu Sắc</span>
         </div>
@@ -42,7 +42,7 @@ export const ColorHarmonyAnalyzer: React.FC<ColorHarmonyAnalyzerProps> = ({ outf
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs text-[#4A3B32]">
           <span className="font-semibold flex items-center gap-1">
-            <Sliders className="w-3.5 h-3.5 text-[#9B2C2C]" />
+            <Sliders className="w-3.5 h-3.5 text-[#8B1E1E]" />
             Phân Bổ Tỷ Lệ Màu 60 - 30 - 10
           </span>
           <span className="text-[11px] text-[#8C7A6B]">Chuẩn Mỹ Thuật Thị Giác</span>

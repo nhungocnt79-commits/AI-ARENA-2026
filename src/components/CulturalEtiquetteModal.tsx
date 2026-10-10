@@ -60,7 +60,7 @@ export const CulturalEtiquetteModal: React.FC<CulturalEtiquetteModalProps> = ({
         {/* Educational Etiquette Principles for Gen Z */}
         <div className="space-y-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-[#4A3B32] flex items-center gap-1.5">
-            <HeartHandshake className="w-4 h-4 text-[#9B2C2C]" />
+            <HeartHandshake className="w-4 h-4 text-[#8B1E1E]" />
             Quy Chuẩn Khi Mặc Việt Phục Đi Lễ Hội & Đền Đình
           </h4>
 
@@ -99,7 +99,7 @@ export const CulturalEtiquetteModal: React.FC<CulturalEtiquetteModalProps> = ({
 
         {/* Historical Lore Quote */}
         {assessment.historicalQuote && (
-          <div className="p-4 rounded-2xl bg-[#EFE7DC]/60 border-l-4 border-[#9B2C2C] italic text-xs text-[#5C4D40] leading-relaxed">
+          <div className="p-4 rounded-2xl bg-[#EFE7DC]/60 border-l-4 border-[#8B1E1E] italic text-xs text-[#5C4D40] leading-relaxed">
             {assessment.historicalQuote}
           </div>
         )}
@@ -107,7 +107,7 @@ export const CulturalEtiquetteModal: React.FC<CulturalEtiquetteModalProps> = ({
         {/* Button */}
         <button
           onClick={onClose}
-          className="w-full py-2.5 text-xs font-semibold text-white bg-[#9B2C2C] hover:bg-[#781818] rounded-xl transition-colors cursor-pointer"
+          className="w-full py-2.5 text-xs font-semibold text-white bg-[#8B1E1E] hover:bg-[#7A1C1C] rounded-xl transition-colors cursor-pointer"
         >
           Đã Hiểu & Tiếp Tục Trải Nghiệm
         </button>

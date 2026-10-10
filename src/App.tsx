@@ -17,6 +17,7 @@ import { CulturalKnowledgeDrawer } from './components/CulturalKnowledgeDrawer';
 import { AvatarCustomizerModal } from './components/AvatarCustomizerModal';
 import { SavedOutfitsArchiveModal } from './components/SavedOutfitsArchiveModal';
 import { LandingIntroPage } from './components/LandingIntroPage';
+import { Atelier3DGarmentShowroomModal, Nguthantype } from './components/Atelier3DGarmentShowroomModal';
 import { evaluateCulturalEtiquette, evaluateColorHarmony } from './utils/costumeEvaluation';
 import { ShieldCheck, Palette, Calendar, Sparkles } from 'lucide-react';
 
@@ -99,6 +100,8 @@ export default function App() {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
+  const [isAtelier3DOpen, setIsAtelier3DOpen] = useState(false);
+  const [initialAtelierType, setInitialAtelierType] = useState<Nguthantype>('tay-chen');
   const [showWeatherDrawer, setShowWeatherDrawer] = useState(false);
   const [showHarmonyDrawer, setShowHarmonyDrawer] = useState(false);
 
@@ -170,7 +173,7 @@ export default function App() {
   const harmony = evaluateColorHarmony(outfit);
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#2C241E] flex flex-col font-sans selection:bg-[#9B2C2C]/20 selection:text-[#781818]">
+    <div className="min-h-screen bg-[#FAF7F2] text-[#2C241E] flex flex-col font-sans selection:bg-[#8B1E1E]/20 selection:text-[#7A1C1C]">
       {/* 1. Global Header with View Navigation */}
       <Header
         pageView={pageView}
@@ -187,6 +190,14 @@ export default function App() {
         onOpenEtiquette={() => setIsEtiquetteOpen(true)}
         onOpenCompare={() => setIsCompareOpen(true)}
         onOpenArchive={() => setIsArchiveOpen(true)}
+        onOpenAtelier3D={() => {
+          const targetType = 
+            outfit.rootId === 'tu-than' ? 'tu-than' :
+            outfit.rootId === 'ba-ba' ? 'ba-ba' :
+            outfit.top.silhouetteId === 'ngu-than-tay-thung-trang-trong' ? 'tay-thung' : 'tay-chen';
+          setInitialAtelierType(targetType);
+          setIsAtelier3DOpen(true);
+        }}
         onGoToStep={(step) => {
           setPageView('atelier');
           setCurrentStep(step);
@@ -239,14 +250,14 @@ export default function App() {
                   {/* The Live Interactive Mannequin */}
                   <div className="bg-white p-4 rounded-3xl border border-[#D8C7B0] shadow-sm space-y-3">
                     <div className="flex items-center justify-between pb-2 border-b border-[#E8DEC8]">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#9B2C2C] flex items-center gap-1.5">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#8B1E1E] flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" />
                         Phác Thảo Trực Tiếp
                       </span>
                       <button
                         type="button"
                         onClick={() => setIsArchiveOpen(true)}
-                        className="text-[11px] text-[#8C7A6B] hover:text-[#9B2C2C] font-medium transition-colors"
+                        className="text-[11px] text-[#8C7A6B] hover:text-[#8B1E1E] font-medium transition-colors"
                       >
                         Lưu vào kho →
                       </button>
@@ -325,7 +336,7 @@ export default function App() {
                         </div>
                       </div>
                     </div>
-                    <span className="text-xs font-semibold text-[#9B2C2C]">
+                    <span className="text-xs font-semibold text-[#8B1E1E]">
                       {showWeatherDrawer ? 'Đóng' : 'Đổi sự kiện & thời tiết'}
                     </span>
                   </button>
@@ -368,6 +379,14 @@ export default function App() {
                       onChangeTop={handleUpdateTop}
                       onPrev={() => setCurrentStep(1)}
                       onNext={() => setCurrentStep(3)}
+                      onOpenAtelier3D={() => {
+                        const targetType = 
+                          outfit.rootId === 'tu-than' ? 'tu-than' :
+                          outfit.rootId === 'ba-ba' ? 'ba-ba' :
+                          outfit.top.silhouetteId === 'ngu-than-tay-thung-trang-trong' ? 'tay-thung' : 'tay-chen';
+                        setInitialAtelierType(targetType);
+                        setIsAtelier3DOpen(true);
+                      }}
                     />
                   )}
 
@@ -377,6 +396,10 @@ export default function App() {
                       onChangeBottom={handleUpdateBottom}
                       onPrev={() => setCurrentStep(2)}
                       onNext={() => setCurrentStep(4)}
+                      onOpenAtelier3D={(bottomType) => {
+                        setInitialAtelierType(bottomType || 'quan-ong-xeo');
+                        setIsAtelier3DOpen(true);
+                      }}
                     />
                   )}
 
@@ -478,6 +501,144 @@ export default function App() {
         onClose={() => setIsAvatarOpen(false)}
         avatar={outfit.avatar}
         onUpdateAvatar={handleUpdateAvatar}
+      />
+
+      {/* Phòng Trưng Bày 3D Chiếc Áo Riêng Biệt (Haute Couture 3D Atelier 360°) */}
+      <Atelier3DGarmentShowroomModal
+        isOpen={isAtelier3DOpen}
+        onClose={() => setIsAtelier3DOpen(false)}
+        initialType={initialAtelierType}
+        onApplyToStudio={(chosenType, chosenPatternId) => {
+          if (chosenType === 'vay-xep-ly-dai') {
+            setOutfit(prev => ({
+              ...prev,
+              bottom: {
+                ...prev.bottom,
+                bottomId: 'bot-vay-xep-ly-dai',
+                color: '#FAF7F2',
+              },
+            }));
+            setPageView('atelier');
+            setCurrentStep(3);
+          } else if (chosenType === 'vay-lua-bong') {
+            setOutfit(prev => ({
+              ...prev,
+              bottom: {
+                ...prev.bottom,
+                bottomId: 'bot-vay-lua-bong-cat-xeo',
+                color: '#FAF7F2',
+              },
+            }));
+            setPageView('atelier');
+            setCurrentStep(3);
+          } else if (chosenType === 'quan-ong-xeo') {
+            setOutfit(prev => ({
+              ...prev,
+              bottom: {
+                ...prev.bottom,
+                bottomId: 'bot-quan-ong-xeo-lua-trang-nga',
+                color: '#FAF7F2',
+              },
+            }));
+            setPageView('atelier');
+            setCurrentStep(3);
+          } else if (chosenType === 'vay-dup-trang') {
+            setOutfit(prev => ({
+              ...prev,
+              bottom: {
+                ...prev.bottom,
+                bottomId: 'bot-vay-dup-lua-trang-xoe-rong',
+                color: '#FAF7F2',
+              },
+            }));
+            setPageView('atelier');
+            setCurrentStep(3);
+          } else if (chosenType === 'ngu-than-cach-tan') {
+            handleSelectRoot('ngu-than');
+            setOutfit(prev => ({
+              ...prev,
+              rootId: 'ngu-than',
+              top: {
+                ...prev.top,
+                silhouetteId: 'ngu-than-cach-tan-hoa-3d',
+                buttonTypeId: 'btn-hoa-vai-3d-dinh-noi',
+                necklineId: 'neck-lap-linh-chuan',
+                primaryColor: '#D8B4E2',
+                accentColor: '#0D9488',
+                innerYemColor: '#FB7185',
+                patternId: chosenPatternId,
+              },
+              bottom: {
+                ...prev.bottom,
+                bottomId: 'bot-quan-ong-xeo-lua-trang-nga',
+                color: '#FAF7F2',
+              },
+              outfitName: 'Áo Ngũ Thân Cách Tân Hoa 3D & Ombre Khúc Xạ',
+            }));
+            setPageView('atelier');
+            setCurrentStep(2);
+          } else if (chosenType === 'tu-than') {
+            handleSelectRoot('tu-than');
+            setOutfit(prev => ({
+              ...prev,
+              rootId: 'tu-than',
+              top: {
+                ...prev.top,
+                silhouetteId: 'tu-than-buoc-vat-truoc',
+                primaryColor: '#FFFFFF',
+                innerYemColor: '#FFFDF5',
+                sashColor: '#0D9488',
+                patternId: chosenPatternId,
+              },
+              bottom: {
+                ...prev.bottom,
+                color: '#18181B',
+              },
+              outfitName: 'Áo Tứ Thân Trắng Kinh Bắc Đoan Trang',
+            }));
+            setPageView('atelier');
+            setCurrentStep(2);
+          } else if (chosenType === 'ba-ba') {
+            handleSelectRoot('ba-ba');
+            setOutfit(prev => ({
+              ...prev,
+              rootId: 'ba-ba',
+              top: {
+                ...prev.top,
+                silhouetteId: 'ba-ba-nu-chit-eo',
+                necklineId: 'neck-co-tim-la-trau',
+                primaryColor: '#FFFFFF',
+                patternId: chosenPatternId,
+              },
+              bottom: {
+                ...prev.bottom,
+                color: '#18181B',
+              },
+              outfitName: 'Áo Bà Ba Trắng Duyên Dáng Nam Bộ',
+            }));
+            setPageView('atelier');
+            setCurrentStep(2);
+          } else {
+            handleSelectRoot('ngu-than');
+            setOutfit(prev => ({
+              ...prev,
+              rootId: 'ngu-than',
+              top: {
+                ...prev.top,
+                silhouetteId: chosenType === 'tay-thung' ? 'ngu-than-tay-thung-trang-trong' : 'ngu-than-tay-chen',
+                primaryColor: '#FFFFFF',
+                patternId: chosenPatternId,
+              },
+              bottom: {
+                ...prev.bottom,
+                color: '#FFFFFF',
+              },
+              outfitName: chosenType === 'tay-thung' ? 'Áo Ngũ Thân Tay Thụng Trắng Đoan Trang' : 'Áo Ngũ Thân Tay Chẽn Trắng Thanh Lịch',
+            }));
+            setPageView('atelier');
+            setCurrentStep(2);
+          }
+        }}
       />
     </div>
   );

@@ -8,6 +8,7 @@ interface Step2TopCustomizationProps {
   onChangeTop: (updatedTop: Partial<CostumeOutfitState['top']>) => void;
   onPrev: () => void;
   onNext: () => void;
+  onOpenAtelier3D?: () => void;
 }
 
 export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
@@ -15,6 +16,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
   onChangeTop,
   onPrev,
   onNext,
+  onOpenAtelier3D,
 }) => {
   const root = COSTUME_ROOTS[outfit.rootId];
 
@@ -31,8 +33,8 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
     <div className="space-y-6">
       {/* Step Header */}
       <div className="bg-[#FAF7F2] p-6 rounded-2xl border border-[#E8DEC8] space-y-2">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#9B2C2C]">
-          <Wand2 className="w-4 h-4" />
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#8B1E1E]">
+          <Wand2 className="w-4 h-4 text-[#8B1E1E]" />
           <span>Bước 2 · Định Hình Chi Tiết Thân Áo & Bảng Màu</span>
         </div>
         <h2 className="text-2xl font-serif font-bold text-[#2C241E]">
@@ -41,6 +43,34 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
         <p className="text-xs lg:text-sm text-[#6B5A4B] leading-relaxed">
           Tùy chỉnh phom dáng vạt áo, kiểu cổ áo đoan trang, chất liệu khuy cài và họa tiết thêu. Tự do sáng tạo màu áo từ bảng màu lễ hội dân tộc hoặc chọn mã màu riêng biệt theo sở thích GenZ!
         </p>
+
+        {/* Nút Mở Phòng Trưng Bày 3D 360° Của Nhà Thiết Kế */}
+        {onOpenAtelier3D && (
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={onOpenAtelier3D}
+              className="w-full p-3.5 rounded-xl bg-gradient-to-r from-[#8B1E1E] via-[#78350F] to-[#047857] text-white hover:opacity-95 transition-all cursor-pointer flex items-center justify-between shadow-xs group"
+            >
+              <div className="flex items-center gap-2.5 text-left">
+                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white group-hover:text-amber-200 transition-colors">
+                    Phòng Trưng Bày 3D 360°: Chiếc Áo Màu Trắng (Haute Couture Atelier)
+                  </h4>
+                  <p className="text-[11px] text-white/85">
+                    Xoay 360° toàn diện mọi góc độ · Xem riêng Áo Tứ Thân, Áo Bà Ba, Áo Ngũ Thân · 6 chất liệu vải trắng cao cấp (nhũ bóng, tơ vân mây, gấm dệt chìm, sa tơ...)
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-bold text-amber-300 shrink-0 ml-2">
+                Mở 3D 360° →
+              </span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Recommended Color Harmonies Banner (Đề xuất giải pháp phối màu tối ưu) */}
@@ -57,7 +87,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
               className="p-3 bg-white/90 hover:bg-white rounded-xl border border-amber-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer flex flex-col justify-between space-y-2 group"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#2C241E] group-hover:text-[#9B2C2C] transition-colors">
+                <span className="text-xs font-bold text-[#2C241E] group-hover:text-[#8B1E1E] transition-colors">
                   {rec.title}
                 </span>
                 <div className="flex items-center gap-1">
@@ -80,7 +110,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
       {/* 1. Silhouette / Garment Cut */}
       <div className="space-y-3">
         <label className="text-xs font-bold uppercase tracking-wider text-[#4A3B32] flex items-center gap-1.5">
-          <Layers className="w-3.5 h-3.5 text-[#9B2C2C]" />
+          <Layers className="w-3.5 h-3.5 text-[#8B1E1E]" />
           1. Phom Dáng Vạt Áo (Silhouette)
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -92,7 +122,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                 onClick={() => onChangeTop({ silhouetteId: sil.id })}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-white border-[#9B2C2C] ring-2 ring-[#9B2C2C]/15 shadow-xs'
+                    ? 'bg-white border-[#8B1E1E] ring-2 ring-[#8B1E1E]/15 shadow-xs'
                     : 'bg-[#FAF7F2] hover:bg-white border-[#E8DEC8]'
                 }`}
               >
@@ -101,7 +131,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                     <span className="text-xs font-bold text-[#2C241E]">
                       {sil.name}
                     </span>
-                    {isSelected && <Check className="w-3.5 h-3.5 text-[#9B2C2C]" />}
+                    {isSelected && <Check className="w-3.5 h-3.5 text-[#8B1E1E]" />}
                   </div>
                   <p className="text-[11px] text-[#6B5A4B] leading-relaxed">
                     {sil.description}
@@ -130,7 +160,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                 onClick={() => onChangeTop({ necklineId: neck.id })}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-white border-[#9B2C2C] ring-2 ring-[#9B2C2C]/15 shadow-xs'
+                    ? 'bg-white border-[#8B1E1E] ring-2 ring-[#8B1E1E]/15 shadow-xs'
                     : 'bg-[#FAF7F2] hover:bg-white border-[#E8DEC8]'
                 }`}
               >
@@ -138,7 +168,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                   <span className="text-xs font-bold text-[#2C241E]">
                     {neck.name}
                   </span>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-[#9B2C2C]" />}
+                  {isSelected && <Check className="w-3.5 h-3.5 text-[#8B1E1E]" />}
                 </div>
                 <p className="text-[11px] text-[#6B5A4B] leading-relaxed">
                   {neck.description}
@@ -163,7 +193,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                 onClick={() => onChangeTop({ buttonId: btn.id })}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-white border-[#9B2C2C] ring-2 ring-[#9B2C2C]/15 shadow-xs'
+                    ? 'bg-white border-[#8B1E1E] ring-2 ring-[#8B1E1E]/15 shadow-xs'
                     : 'bg-[#FAF7F2] hover:bg-white border-[#E8DEC8]'
                 }`}
               >
@@ -171,7 +201,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                   <span className="text-xs font-bold text-[#2C241E]">
                     {btn.name}
                   </span>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-[#9B2C2C]" />}
+                  {isSelected && <Check className="w-3.5 h-3.5 text-[#8B1E1E]" />}
                 </div>
                 <p className="text-[10px] text-[#8C7A6B] mb-1 font-medium">
                   Chất liệu: {btn.material}
@@ -199,7 +229,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                 onClick={() => onChangeTop({ patternId: pat.id })}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-white border-[#9B2C2C] ring-2 ring-[#9B2C2C]/15 shadow-xs'
+                    ? 'bg-white border-[#8B1E1E] ring-2 ring-[#8B1E1E]/15 shadow-xs'
                     : 'bg-[#FAF7F2] hover:bg-white border-[#E8DEC8]'
                 }`}
               >
@@ -207,7 +237,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                   <span className="text-xs font-bold text-[#2C241E]">
                     {pat.name}
                   </span>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-[#9B2C2C]" />}
+                  {isSelected && <Check className="w-3.5 h-3.5 text-[#8B1E1E]" />}
                 </div>
                 <p className="text-[11px] text-[#6B5A4B] leading-relaxed mb-1.5">
                   {pat.description}
@@ -225,7 +255,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
       <div className="bg-[#FAF7F2] p-5 rounded-2xl border border-[#E8DEC8] space-y-4">
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold uppercase tracking-wider text-[#4A3B32] flex items-center gap-1.5">
-            <Palette className="w-4 h-4 text-[#9B2C2C]" />
+            <Palette className="w-4 h-4 text-[#8B1E1E]" />
             5. Bảng Màu Sắc Áo Đầy Đủ (Palette Presets & Tùy Chọn Tự Do)
           </label>
 
@@ -255,7 +285,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                 onClick={() => onChangeTop({ primaryColor: palette.hex })}
                 className={`p-2 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1.5 ${
                   isSelected
-                    ? 'bg-white border-[#9B2C2C] ring-2 ring-[#9B2C2C]/20 shadow-xs'
+                    ? 'bg-white border-[#8B1E1E] ring-2 ring-[#8B1E1E]/20 shadow-xs'
                     : 'bg-white/70 hover:bg-white border-[#E8DEC8]'
                 }`}
               >
@@ -264,7 +294,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                     className="w-5 h-5 rounded-full border border-black/15 shadow-2xs"
                     style={{ backgroundColor: palette.hex }}
                   />
-                  {isSelected && <Check className="w-3 h-3 text-[#9B2C2C]" />}
+                  {isSelected && <Check className="w-3 h-3 text-[#8B1E1E]" />}
                 </div>
                 <div>
                   <div className="text-[11px] font-bold text-[#2C241E] truncate">
@@ -301,7 +331,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                     key={c}
                     onClick={() => onChangeTop({ innerYemColor: c })}
                     className={`w-6 h-6 rounded-full border border-black/10 transition-transform ${
-                      outfit.top.innerYemColor === c ? 'scale-110 ring-2 ring-[#9B2C2C]' : ''
+                      outfit.top.innerYemColor === c ? 'scale-110 ring-2 ring-[#8B1E1E]' : ''
                     }`}
                     style={{ backgroundColor: c }}
                   />
@@ -328,7 +358,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
                     key={c}
                     onClick={() => onChangeTop({ sashColor: c })}
                     className={`w-6 h-6 rounded-full border border-black/10 transition-transform ${
-                      outfit.top.sashColor === c ? 'scale-110 ring-2 ring-[#9B2C2C]' : ''
+                      outfit.top.sashColor === c ? 'scale-110 ring-2 ring-[#8B1E1E]' : ''
                     }`}
                     style={{ backgroundColor: c }}
                   />
@@ -351,7 +381,7 @@ export const Step2TopCustomization: React.FC<Step2TopCustomizationProps> = ({
 
         <button
           onClick={onNext}
-          className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#9B2C2C] hover:bg-[#781818] rounded-xl shadow-xs transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#8B1E1E] hover:bg-[#7A1C1C] rounded-xl shadow-xs transition-colors cursor-pointer"
         >
           <span>Tiếp Tục Chọn Quần / Váy Phối Cùng</span>
           <ArrowRight className="w-4 h-4" />

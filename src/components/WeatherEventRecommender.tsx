@@ -32,7 +32,7 @@ export const WeatherEventRecommender: React.FC<WeatherEventRecommenderProps> = (
   return (
     <div className="bg-[#FAF7F2] p-5 rounded-2xl border border-[#E8DEC8] space-y-5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#9B2C2C]">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#8B1E1E]">
           <Calendar className="w-4 h-4" />
           <span>Bối Cảnh Lễ Hội & Điều Kiện Thời Tiết</span>
         </div>
@@ -55,7 +55,7 @@ export const WeatherEventRecommender: React.FC<WeatherEventRecommenderProps> = (
                 onClick={() => onSelectEvent(event.id, event.recommendedRoot)}
                 className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1.5 ${
                   isSelected
-                    ? 'bg-white border-[#9B2C2C] ring-2 ring-[#9B2C2C]/20 shadow-2xs'
+                    ? 'bg-white border-[#8B1E1E] ring-2 ring-[#8B1E1E]/20 shadow-2xs'
                     : 'bg-white/70 hover:bg-white border-[#E8DEC8]'
                 }`}
               >
@@ -63,10 +63,10 @@ export const WeatherEventRecommender: React.FC<WeatherEventRecommenderProps> = (
                   <span className="text-xs font-bold text-[#2C241E] truncate">
                     {event.name}
                   </span>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-[#9B2C2C]" />}
+                  {isSelected && <Check className="w-3.5 h-3.5 text-[#8B1E1E]" />}
                 </div>
                 <div className="text-[10px] text-[#8C7A6B] flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-[#9B2C2C]" />
+                  <MapPin className="w-3 h-3 text-[#8B1E1E]" />
                   <span className="truncate">{event.venue}</span>
                 </div>
               </button>
@@ -97,7 +97,7 @@ export const WeatherEventRecommender: React.FC<WeatherEventRecommenderProps> = (
                 onClick={() => onSelectWeather(weather.id)}
                 className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                   isSelected
-                    ? 'bg-white border-[#9B2C2C] ring-2 ring-[#9B2C2C]/20 shadow-2xs'
+                    ? 'bg-white border-[#8B1E1E] ring-2 ring-[#8B1E1E]/20 shadow-2xs'
                     : 'bg-white/70 hover:bg-white border-[#E8DEC8]'
                 }`}
               >
@@ -112,7 +112,7 @@ export const WeatherEventRecommender: React.FC<WeatherEventRecommenderProps> = (
                     </div>
                   </div>
                 </div>
-                {isSelected && <Check className="w-3.5 h-3.5 text-[#9B2C2C]" />}
+                {isSelected && <Check className="w-3.5 h-3.5 text-[#8B1E1E]" />}
               </button>
             );
           })}
